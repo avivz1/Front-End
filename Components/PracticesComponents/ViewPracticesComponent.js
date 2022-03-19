@@ -17,20 +17,23 @@ export default function ViewPracticesComponent() {
 
 
   return (
-    <View><Text>Practices 3</Text></View>
+    <View>
+      <Text>Practices 4</Text>
+    </View>
+
   )
 
-  const styles = StyleSheet.create({
-    container: {
-      alignSelf: 'center',
-      flex: 2,
-      height: '40%',
-      width: '80%',
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontSize: 10,
-    }
-  })
-
 }
+const styles = StyleSheet.create({
+  container: {
+    alignSelf: 'center',
+    flex: 2,
+    height: '40%',
+    width: '80%',
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: 10,
+  }
+})
+
