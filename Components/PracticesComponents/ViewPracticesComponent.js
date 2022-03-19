@@ -17,7 +17,7 @@ export default function ViewPracticesComponent() {
 
 
   return (
-    <View><Text>Practices</Text></View>
+    <View><Text>Practices 2</Text></View>
   )
 
   const styles = StyleSheet.create({
