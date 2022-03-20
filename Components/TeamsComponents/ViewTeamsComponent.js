@@ -25,8 +25,8 @@ export default function ViewTeamsComponent() {
     const [addVisible, setAddVisible] = React.useState(false);
     const [removeVisible, setRemoveVisible] = React.useState(false);
     const [pickedTeam, setPickedTeam] = React.useState({});
-    const [searchText, setSearchText] = React.useState('');
     const [students, setStudents] = React.useState([]);
+    const [searchText, setSearchText] = React.useState('');
     const onChangeSearch = query => setSearchText(query)
 
     useEffect(() => {
