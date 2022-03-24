@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, TextInput,ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, ScrollView } from 'react-native';
 import AddPracticeComponent from './AddPracticeComponent'
 import EditPracticeComponent from './EditPracticeComponent'
 import PracticeCardComponent from './PracticeCardComponent'
@@ -10,13 +10,19 @@ import { Context } from '../../ContextAPI/Context';
 import { IP } from '../../IP_Address';
 import Overlay from 'react-native-modal-overlay';
 import { Card, FAB, Searchbar } from 'react-native-paper'
+import { Alert } from 'react-native-web';
 
 
 
 export default function ViewPracticesComponent() {
 
+  const { userId } = React.useContext(Context);
+  const [userIdValue] = userId;
+
+  const [studentsArr, setStudents] = React.useState([]);
+  const [allTeams, setTeams] = React.useState([]);
   const [allPractices, setPractices] = React.useState(false);
-  const [pickedPractice, setPickedPractice ] =React.useState({})
+  const [pickedPractice, setPickedPractice] = React.useState({})
   const [detailsVisible, setDetailsVisible] = React.useState(false);
   const [editVisible, setEditVisible] = React.useState(false);
   const [addVisible, setAddVisible] = React.useState(false);
@@ -25,8 +31,46 @@ export default function ViewPracticesComponent() {
 
 
   useEffect(async () => {
-
+    getAllPractices()
+    getAllStudents()
+    getAllTeams()
   }, [])
+
+  const getAllStudents = () => {
+    axios.post('http://' + IP + '/students/getallstudentsbyuserid', { userid: userIdValue }).then(res => {
+      if (res.data) {
+        setStudents(res.data)
+      } else {
+        //Toast there was a problem
+      }
+    })
+
+  }
+
+  const getAllTeams = () => {
+    axios.post('http://' + IP + '/teams/getalluserteams', { userID: userIdValue }).then(res => {
+      if (res.data) {
+        setTeams(res.data)
+        // res.data.forEach(team => {
+        //   setMap(teamsNameMap.set(team._id, team.Name))
+        // });
+      } else {
+        //Toast there was a problem
+
+      }
+    })
+  }
+
+  const getAllPractices = () => {
+    axios.post('http://'+IP+'/practices/getallpractices' ,{ userID: userIdValue }).then(res=>{
+      if(res.data){
+        setPractices(res.data)
+      }else{
+        Alert.alert('no practices')
+        //Toast problem
+      }
+    })
+  }
 
   const isVisible = () => {
     if (editVisible || detailsVisible || addVisible) {
@@ -37,7 +81,7 @@ export default function ViewPracticesComponent() {
   }
   const openAddModal = () => {
     setAddVisible(true);
-}
+  }
 
   const onCloseModal = () => {
     if (detailsVisible) {
@@ -53,24 +97,24 @@ export default function ViewPracticesComponent() {
   }
 
   const closeEditModal = () => {
-    //get all practices
+    getAllPractices()
     setEditVisible(false);
   }
 
   const closeAddModal = () => {
-    //get all practices
+    getAllPractices()
     setAddVisible(false);
   }
 
   const practiceCardPress = (practice, btnType) => {
     setPickedPractice(practice)
     switch (btnType) {
-        case 'detailsBtn': setDetailsVisible(true)
-            break;
-        case 'editBtn': setEditVisible(true)
-            break;
-        case 'removeBtn': //alert
-          break;
+      case 'detailsBtn': setDetailsVisible(true)
+        break;
+      case 'editBtn': setEditVisible(true)
+        break;
+      case 'removeBtn': //alert
+        break;
     }
   }
 
@@ -81,7 +125,7 @@ export default function ViewPracticesComponent() {
       <Overlay visible={isVisible() ? true : false} onClose={onCloseModal} closeOnTouchOutside>
         {editVisible && <EditPracticeComponent onPracticeUpdate={closeEditModal} practice={pickedPractice ? pickedPractice : ''} />}
         {detailsVisible && <PracticeDetailsComponent practice={pickedPractice ? pickedPractice : ''} />}
-        {addVisible && <AddPracticeComponent onAddPractice={closeAddModal} />}
+        {addVisible && <AddPracticeComponent teams={allTeams} students={studentsArr} onAddPractice={closeAddModal} />}
       </Overlay>
 
 

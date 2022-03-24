@@ -121,19 +121,19 @@ export default function ViewStudentsComponent() {
             </Overlay>
 
 
-                <Searchbar placeholder='Search' onChangeText={onChangeSearch} value={searchText} />
+            <Searchbar placeholder='Search' onChangeText={onChangeSearch} value={searchText} />
             <ScrollView>
                 <View style={[styles.container]}>
 
                     {studentsArr.length > 0 ? studentsArr.map((stu, index) => {
-                             return (
-                                 <View key={index}>
-                                    {
-                                     stu.Name.includes(searchText) &&
-                                     <ViewCardStudentComp key={index} callBack={StudentCardPress} data={stu} />
-                                    }
-                                    </View>
-                                 )
+                        return (
+                            <View key={index}>
+                                {
+                                    stu.Name.includes(searchText) &&
+                                    <ViewCardStudentComp key={index} callBack={StudentCardPress} data={stu} />
+                                }
+                            </View>
+                        )
                     }) : <Text>No Students</Text>}
                 </View>
 
