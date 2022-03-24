@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Alert ,ScrollView} from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { Context } from '../../ContextAPI/Context';
@@ -8,6 +8,7 @@ import { IP } from '../../IP_Address';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Button } from 'react-native-paper'
 import { getDrawerStatusFromState } from '@react-navigation/drawer';
+import StudentCard from './StudentCheckBoxCard'
 
 
 
@@ -20,7 +21,20 @@ export default function AddPracticeComponent(props) {
     const [practiceName, setPracticeName] = useState('')
     const [isPickerShow, setIsPickerShow] = useState(false);
     const [date, setDate] = useState(new Date());
+    const [pickedStudents, setPickedStudents] = useState('')
+    const [checkedStudents, setCheckedStudents] = useState('')
 
+    useEffect(() => {
+        if (props.teams.length > 0) {
+            if(props.students.length > 0){
+                let stus = props.students.filter(s=>s.Team_ID==props.teams[index]._id);
+                setPickedStudents(stus)
+            }
+        }else{
+            Alert.alert('No Team Found! you must have atlist 1 team')
+            props.onAddPractice()
+        }
+    }, [])
 
 
     const showPicker = () => {
@@ -28,58 +42,46 @@ export default function AddPracticeComponent(props) {
     };
 
     const onChange = (event, value) => {
-        console.log(value)
         setIsPickerShow(false);
         if (value != undefined) {
             setDate(value);
         }
-        // if (Platform.OS === 'android') {
-        //     setIsPickerShow(false);
-        // }
     };
 
-    
-    
-    useEffect(() => {
-        
-    }, [])
-    
     const setChoosenTeam = (picked, index) => {
-        setPickedTeam(picked)
         setIndex(index)
+        let stus = props.students.filter(s=>s.Team_ID==props.teams[index]._id);
+        setPickedStudents(stus)
+        setPickedTeam(picked)
+        
     }
-    
-    const modifyDate = (d) => {
-        let year = d.getFullYear() 
-        let day = d.getDay() 
-        let month = d.getMonth() 
 
-        // let hours = d.getHours() 
-        // let minutes = d.getMinutes()
-        return day+'/'+month+'/'+year
+    const callBackCheckStudent = (stu_id)=>{
+        checkedStudents.includes(stu_id)? setCheckedStudents(checkedStudents.filter(x=> x != stu_id)): setCheckedStudents([...checkedStudents,stu_id])
     }
+
 
     const onSubmit = () => {
-
+        // props.onAddPractice()
     }
 
     return (
         <View style={styles.container}>
 
-            <TextInput onChangeText={setPracticeName} placeholder='Practice Name'></TextInput>
-            <TextInput type="date" onChangeText={setDate} value={date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()} placeholder='Date'></TextInput>
+            <TextInput style={styles.input} onChangeText={setPracticeName} placeholder='Practice Name'></TextInput>
+            <TextInput type="date" onChangeText={setDate} value={date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()} placeholder='Date'></TextInput>
 
             <Button title='calendar' icon='calendar' onPress={showPicker} />
 
             {isPickerShow && (
                 <DateTimePicker
-                    value={date}
-                    mode={'date'}
-                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                    is24Hour={true}
-                    onChange={onChange}
+                value={date}
+                mode={'date'}
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                is24Hour={true}
+                onChange={onChange}
                 />
-            )}
+                )}
 
             < Picker
                 selectedValue={props.teams.lenght > 0 ? pickedTeam : props.teams[index]}
@@ -90,6 +92,21 @@ export default function AddPracticeComponent(props) {
                     })
                 }
             </Picker>
+
+            <ScrollView>
+                <View style={[styles.container]}>
+                    {pickedStudents.length > 0 ? pickedStudents.map((stu, index) => {
+                        return (
+                            <View key={index}>
+                                    <StudentCard key={index} callBack={callBackCheckStudent} data={stu} />
+                            </View>
+                        )
+                    }) : <Text>No Students</Text>}
+                </View>
+
+            </ScrollView>
+
+            <Button  onPress={onSubmit}>press</Button>
 
 
         </View >

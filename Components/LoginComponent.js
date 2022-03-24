@@ -41,8 +41,8 @@ export default function LoginComponent({ navigation }) {
     return (
         <View style={styles.container}>
             {/* <ImageBackground source={image} resizeMode="cover" style={styles.image}> */}
-                <TextInput onChangeText={onEmailChange} style={styles.text} placeholder='Email'></TextInput>
-                <TextInput secureTextEntry={true} onChangeText={onPasswordChange} style={styles.text} placeholder='Password'></TextInput>
+                <TextInput onChangeText={onEmailChange} style={styles.input} placeholder='Email'></TextInput>
+                <TextInput secureTextEntry={true} onChangeText={onPasswordChange} style={styles.input} placeholder='Password'></TextInput>
                 <View>
                     <Button style={styles.center} onPress={onLoginPress} title='Login' />
                     <Text onPress={onSignUpPress} style={styles.text}>Sign Up</Text>
@@ -78,6 +78,13 @@ const styles = StyleSheet.create({
     text: {
         margin: 10
 
-    }
+    },
+    input: {
+        margin: 15,
+        height: 40,
+        borderColor: '#7a42f4',
+        borderWidth: 1,
+        fontSize: 15,
+    },
 
 });

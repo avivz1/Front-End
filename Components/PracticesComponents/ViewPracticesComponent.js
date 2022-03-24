@@ -138,7 +138,7 @@ export default function ViewPracticesComponent() {
               <View key={index}>
                 {
                   practice.Name.includes(searchText) &&
-                  <TeamCardComoponent key={index} callBack={practiceCardPress} practice={practice} />
+                  <PracticeCardComponent key={index} callBack={practiceCardPress} practice={practice} />
                 }
               </View>
             )

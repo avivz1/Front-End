@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Card,Button } from 'react-native-paper' 
 
 
-export default function ViewCardStudentComp(props) {
+export default function StudentCardComponent(props) {
 
     const [flag, setFlag] = useState(false)
 
