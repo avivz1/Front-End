@@ -115,7 +115,7 @@ export default function AddPracticeComponent(props) {
             </Picker>
 
             <ScrollView>
-                <View style={[styles.container]}>
+                <View style={styles.container}>
                     {pickedStudents.length > 0 ? pickedStudents.map((stu, index) => {
                         return (
                             <View key={index}>
@@ -159,5 +159,12 @@ const styles = StyleSheet.create({
         margin: 10,
         alignItems: 'center',
         justifyContent: 'center',
-    }
+    },
+    card: {
+        margin: 8,
+        height: 49,
+        width:'80%',
+        // alignContent: "center",
+        // alignItems: 'center',
+      }
 });

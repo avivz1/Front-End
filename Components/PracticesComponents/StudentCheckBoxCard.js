@@ -9,7 +9,7 @@ export default function StudentCheckBoxCard(props) {
 
     return (
         <View >
-            <Card style={styles.mainCardViewFlag} >
+            <Card onPress={()=>{}} style={styles.mainCardViewFlag} >
                 <Text  >{props.data.Name}</Text>
                 <Checkbox
                     status={checked ? 'checked' : 'unchecked'}
@@ -30,9 +30,6 @@ const styles = StyleSheet.create({
         paddingTop: Platform.OS === 'android' ? 0 : 0,
         paddingEnd: 10,
         margin: 10,
-
-
-
     },
     title: {
         textAlign: 'right'

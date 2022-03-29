@@ -37,7 +37,7 @@ export default function ViewTeamsComponent() {
             axios.post('http://' + IP + '/students/changestudentsteams/', { students: students, teamId: switchToTeam._id }).then(res => {
                 if (res.data) {
                     Alert.alert('All Student of this team Was Moved to another team')
-                    axios.delete('http://' + IP + '/teams/deleteteam/' + pickedTeam._id).then((res_=> {
+                    axios.post('http://' + IP + '/teams/deleteteam' ,{teamId:pickedTeam._id,userId:userIdValue} ).then((res_=> {
                         if (res_.data) {
                             getAllTeams()
                             Alert.alert('Team has been deleted');
@@ -127,7 +127,7 @@ export default function ViewTeamsComponent() {
                                                             Alert.alert('Failed. try again')
                                                         } else {
                                                             Alert.alert('All Student of this team Was Deleted')
-                                                            axios.delete('http://' + IP + '/teams/deleteteam/' + team._id).then((res_DeleteTeam => {
+                                                            axios.post('http://' + IP + '/teams/deleteteam' , { teamId: team._id, userId: userIdValue }).then((res_DeleteTeam => {
                                                                 if (res_DeleteTeam.data) {
                                                                     getAllTeams()
                                                                     Alert.alert('Team has been deleted');
@@ -147,7 +147,7 @@ export default function ViewTeamsComponent() {
                                             { text: 'Cancel' }
                                         ])
                                 } else {
-                                    axios.delete('http://' + IP + '/teams/deleteteam/' + team._id).then(res2 => {
+                                    axios.post('http://' + IP + '/teams/deleteteam',{ teamId: team._id, userId: userIdValue }).then(res2 => {
                                         if (res2.data) {
                                             getAllTeams()
                                             Alert.alert('Team has been deleted');

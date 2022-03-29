@@ -89,7 +89,7 @@ export default function ViewStudentsComponent() {
                 { text: 'Cancel' },
                 {
                     text: 'Yes', onPress: () => {
-                        axios.delete('http://' + IP + '/students/deletestudent/' + stu._id).then((res => {
+                        axios.post('http://' + IP + '/students/deletestudent',{userId:userIdValue,stuId:stu._id}).then((res => {
                             if (res.data) {
                                 getAllStudents()
                                 Alert.alert('Student has been deleted');
