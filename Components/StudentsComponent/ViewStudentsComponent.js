@@ -36,8 +36,6 @@ export default function ViewStudentsComponent() {
         axios.post('http://' + IP + '/students/getallstudentsbyuserid', { userid: userIdValue }).then(res => {
             if (res.data) {
                 setStudents(res.data)
-            } else {
-                //Toast there was a problem
             }
         })
 
@@ -50,9 +48,6 @@ export default function ViewStudentsComponent() {
                 res.data.forEach(team => {
                     setMap(teamsNameMap.set(team._id, team.Name))
                 });
-            } else {
-                //Toast there was a problem
-
             }
         })
     }

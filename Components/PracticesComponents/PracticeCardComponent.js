@@ -24,9 +24,9 @@ export default function PracticeCardComponent(props) {
                                 uri: 'https://gsmauditors.com/wp-content/uploads/2016/05/istockphoto-1133765772-612x612-1.jpg',
                             }}></Image>
                         <Card.Actions>
-                            <Button  onPress={() => { props.callBack(props.team,'detailsBtn') }}>More Details</Button>
-                            <Button  onPress={() => { props.callBack(props.team,'editBtn') }}>Edit</Button>
-                            <Button  onPress={() => { props.callBack(props.team,'removeBtn') }} >Remove</Button>
+                            <Button  onPress={() => { props.callBack(props.practice,'detailsBtn') }}>More Details</Button>
+                            <Button  onPress={() => { props.callBack(props.practice,'editBtn') }}>Edit</Button>
+                            <Button  onPress={() => { props.callBack(props.practice,'removeBtn') }} >Remove</Button>
                         </Card.Actions>
                 </Card>
                 :

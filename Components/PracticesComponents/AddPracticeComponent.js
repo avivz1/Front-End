@@ -6,9 +6,10 @@ import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 import { IP } from '../../IP_Address';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Button } from 'react-native-paper'
+import { Button, Snackbar } from 'react-native-paper'
 import { getDrawerStatusFromState } from '@react-navigation/drawer';
 import StudentCard from './StudentCheckBoxCard'
+
 
 
 
@@ -23,6 +24,7 @@ export default function AddPracticeComponent(props) {
     const [date, setDate] = useState(new Date());
     const [pickedStudents, setPickedStudents] = useState('')
     const [checkedStudents, setCheckedStudents] = useState('')
+
 
     useEffect(() => {
         if (props.teams.length > 0) {
@@ -61,8 +63,27 @@ export default function AddPracticeComponent(props) {
     }
 
 
-    const onSubmit = () => {
-        // props.onAddPractice()
+    const onSubmit = (data) => {
+        let obj ={
+            userid:userIdValue,
+            _date:date,
+            name:practiceName,
+            teamID:props.teams[index]._id,
+        }
+
+        axios.post('http://' + IP + '/practices/addpractice',{
+            practice : obj,
+            allStudents: pickedStudents,
+            chosenStudents:checkedStudents 
+        }).then(res=>{
+            if(res.data){
+                Alert.alert('Succesfully added')
+                props.onAddPractice()
+            }else{
+                Alert.alert('ther was a problem try again')
+                props.onAddPractice()
+            }
+        })
     }
 
     return (
@@ -106,7 +127,7 @@ export default function AddPracticeComponent(props) {
 
             </ScrollView>
 
-            <Button  onPress={onSubmit}>press</Button>
+            <Button  onPress={onSubmit}>Submit</Button>
 
 
         </View >

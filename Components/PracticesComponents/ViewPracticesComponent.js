@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, TextInput, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, Alert,ScrollView } from 'react-native';
 import AddPracticeComponent from './AddPracticeComponent'
 import EditPracticeComponent from './EditPracticeComponent'
 import PracticeCardComponent from './PracticeCardComponent'
@@ -10,7 +10,6 @@ import { Context } from '../../ContextAPI/Context';
 import { IP } from '../../IP_Address';
 import Overlay from 'react-native-modal-overlay';
 import { Card, FAB, Searchbar } from 'react-native-paper'
-import { Alert } from 'react-native-web';
 
 
 
@@ -30,7 +29,7 @@ export default function ViewPracticesComponent() {
   const onChangeSearch = query => setSearchText(query)
 
 
-  useEffect(async () => {
+  useEffect(() => {
     getAllPractices()
     getAllStudents()
     getAllTeams()
@@ -65,9 +64,6 @@ export default function ViewPracticesComponent() {
     axios.post('http://'+IP+'/practices/getallpractices' ,{ userID: userIdValue }).then(res=>{
       if(res.data){
         setPractices(res.data)
-      }else{
-        Alert.alert('no practices')
-        //Toast problem
       }
     })
   }
@@ -106,15 +102,29 @@ export default function ViewPracticesComponent() {
     setAddVisible(false);
   }
 
-  const practiceCardPress = (practice, btnType) => {
-    setPickedPractice(practice)
+  const practiceCardPress = (practiceObj, btnType) => {
+    setPickedPractice(practiceObj)
     switch (btnType) {
       case 'detailsBtn': setDetailsVisible(true)
         break;
       case 'editBtn': setEditVisible(true)
         break;
-      case 'removeBtn': //alert
-        break;
+        case 'removeBtn': Alert.alert('Warning', 'Are you sure you want to delete this practice? ' + '\n' + practiceObj.Name + '\n', [
+          { text: 'Cancel' },
+          {
+              text: 'Yes', onPress: () => {
+                  axios.post('http://' + IP + '/practices/deletepractice' , {practice:practiceObj}).then((res => {
+                      if (res.data) {
+                          getAllPractices()
+                          Alert.alert('Practice has been deleted');
+                      } else {
+                          Alert.alert('There was a problem. try again')
+                      }
+                  }))
+              }
+          }
+      ])
+          break;
     }
   }
 
