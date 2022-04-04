@@ -74,7 +74,7 @@ export default function AddPracticeComponent(props) {
         axios.post('http://' + IP + '/practices/addpractice',{
             practice : obj,
             allStudents: pickedStudents,
-            chosenStudents:checkedStudents 
+            chosenStudents:checkedStudents
         }).then(res=>{
             if(res.data){
                 Alert.alert('Succesfully added')

@@ -1,15 +1,18 @@
 import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image } from "react-native";
-import React, { useState } from "react";
+import React, {useEffect, useState } from "react";
 import { Card, Button, Checkbox } from 'react-native-paper'
+import axios from "axios";
 
 
 export default function StudentCheckBoxCard(props) {
 
     const [checked, setChecked] = React.useState(false);
 
+
+
     return (
         <View >
-            <Card onPress={()=>{}} style={styles.mainCardViewFlag} >
+            <Card onPress={() => { }} style={styles.mainCardViewFlag} >
                 <Text  >{props.data.Name}</Text>
                 <Checkbox
                     status={checked ? 'checked' : 'unchecked'}

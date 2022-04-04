@@ -7,8 +7,12 @@ export default RemoveTeamDialog = forwardRef((props, ref) => {
 
     const [isVisible, setIsVisible] = useState(true);
     const [index, setIndex] = useState(0);
+    const [teams,setTeams] = useState([])
 
-
+    useEffect(() => {
+        let filteredTeams = props.teams.filter(t => t._id != props.pickedTeam._id);
+        setTeams(filteredTeams)
+    }, [])
 
     const setChoosenTeam = (picked, index) => {
         setIndex(index)
@@ -43,24 +47,24 @@ export default RemoveTeamDialog = forwardRef((props, ref) => {
                     }}>
                     <Text>To Which Team do you want to switch?</Text>
                     <Picker
-                        selectedValue={props.teams[index]}
+                        selectedValue={teams[index]}
                         onValueChange={setChoosenTeam}>
-                        {props.teams.map((team, index) => {
+                        {teams.map((team, index) => {
                             return (<Picker.Item key={index} label={team.Name} value={team}></Picker.Item>)
                         })}
                     </Picker>
                     <Button
-                        onPress={() => { 
-                            props.onRemoveOkPress(props.teams[index])
+                        onPress={() => {
+                            props.onRemoveOkPress(teams[index])
                             setIsVisible(false)
-                         }
+                        }
                         }
                         title="OK"
                     />
                     <Button style={{ width: 50 }}
-                        onPress={() => { 
+                        onPress={() => {
                             props.onRemoveCanclePress()
-                            setIsVisible(false) 
+                            setIsVisible(false)
                         }
                         }
                         title="Close"

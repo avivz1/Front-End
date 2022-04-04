@@ -122,7 +122,7 @@ export default function ViewTeamsComponent() {
                                         [
                                             {
                                                 text: 'Delete Students', onPress: () => {
-                                                    axios.post('http://' + IP + '/students/deleteFewStudents', { students: res.data }).then(res_DeleteFewStudents => {
+                                                    axios.post('http://' + IP + '/students/deleteFewStudents', { students: res.data, userId:userIdValue }).then(res_DeleteFewStudents => {
                                                         if (!res_DeleteFewStudents.data) {
                                                             Alert.alert('Failed. try again')
                                                         } else {
@@ -186,7 +186,7 @@ export default function ViewTeamsComponent() {
                 {detailsVisible && <TeamDetailsComponent team={pickedTeam ? pickedTeam : ''} />}
                 {addVisible && <AddTeamComponent onAddTeam={closeAddModal} />}
             </Overlay>
-                { removeVisible && <RemoveTeamDialog teams={allTeams} onRemoveOkPress={switchStudentsAndDeleteTeam} onRemoveCanclePress={closeRemoveModal} />} 
+                { removeVisible && <RemoveTeamDialog pickedTeam={pickedTeam} teams={allTeams} onRemoveOkPress={switchStudentsAndDeleteTeam} onRemoveCanclePress={closeRemoveModal} />} 
             
 
             <Searchbar placeholder='Search' onChangeText={onChangeSearch} value={searchText} />
