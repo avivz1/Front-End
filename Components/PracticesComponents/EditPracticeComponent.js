@@ -9,6 +9,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Button, Snackbar } from 'react-native-paper'
 import { getDrawerStatusFromState } from '@react-navigation/drawer';
 import StudentCard from './StudentCheckBoxCard'
+import { useDispatch, useSelector } from 'react-redux'
+
 
 
 
@@ -18,31 +20,43 @@ export default function EditPracticeComponent(props) {
     const [userIdValue] = userId;
 
     const [isPickerShow, setIsPickerShow] = useState(false);
-    const [pickedStudents, setPickedStudents] = useState('')
+    const [pickedStudents, setPickedStudents] = useState([])
     const [checkedStudents, setCheckedStudents] = useState('')
     const [date, setDate] = useState(new Date(props.practice.Date));
     const [teamName, setTeamName] = useState('')
+    const dispatch = useDispatch()
+    const selectorArr = useSelector((s) => s.StudentSelected)
 
     //need to set the students array to match in the map in the return.
     //now there is an array of ID's, and need to filter the right ones to the map,
     //or to write a function in the server that give students by practice id.
 
     useEffect(() => {
+        dispatch({ type: "CLEAR" })
         if (props.practice.Team.Name == null || props.practice.Team.Name == '') {
             let team = props.allTeams.filter(t => t._id == props.practice.Team.Team_ID)
             setTeamName(team[0].Name)
         } else {
             setTeamName(props.practice.Team.Name)
         }
+
         if (props.practice.Students.length > 0) {
-            let students_Arr = props.allStudents;
-            students_Arr.forEach(stu => {
-                //im here. not sure if the foreach is correct.
-            });
-            // let filteredStudents = students_Arr.filter(s=>s._id==)
+            getStudentsList()
         }
 
     }, [])
+
+
+    const getStudentsList = () => {
+        axios.post('http://' + IP + '/practices/getstudentlistforpratice', { practiceId: props.practice._id, students: props.practice.Students, userId: userIdValue }).then((res => {
+            if (res.data != false) {
+                setPickedStudents(res.data)
+                res.data.forEach(st => {
+                });
+            }
+        }))
+
+    }
 
     const showPicker = () => {
         setIsPickerShow(true);
@@ -60,11 +74,36 @@ export default function EditPracticeComponent(props) {
     }
 
     const onSubmit = (data) => {
+        let obj = {
+            userid: userIdValue,
+            _date: date,
+            name: props.practice.Name,
+            teamID: props.practice.Team.Team_ID,
+            _id: props.practice._id
+        }
+
+        axios.post('http://' + IP + '/practices/updatepractice', {
+            practice: obj,
+            allStudents: pickedStudents,
+            chosenStudents: selectorArr
+        }).then(res => {
+            if (res.data) {
+                Alert.alert('Succesfully Updated')
+                props.onPracticeUpdate()
+            } else {
+                Alert.alert('there was a problem try again')
+                props.onPracticeUpdate()
+            }
+        })
     }
 
-    const studentsCallBack = () => {
+    // const studentsCallBack = (stu_id) => {
+    //     console.log(checkedStudents.length)
+    //     console.log(stu_id)
+    //     console.log(checkedStudents.includes(stu_id))
 
-    }
+    //     checkedStudents.includes(stu_id) ? setCheckedStudents(checkedStudents.filter(x => x != stu_id)) : setCheckedStudents([...checkedStudents, stu_id])
+    // }
 
     return (
         <View style={styles.container}>
@@ -87,10 +126,10 @@ export default function EditPracticeComponent(props) {
 
             <ScrollView>
                 <View style={styles.container}>
-                    {props.practice.Students.length > 0 ? props.practice.Students.map((stu, index) => {
+                    {pickedStudents.length > 0 ? pickedStudents.map((stu, index) => {
                         return (
                             <View key={index}>
-                                <StudentCard key={index} callBack={studentsCallBack} data={stu} />
+                                <StudentCard key={index} data={stu} />
                             </View>
                         )
                     }) : <Text>No Students</Text>}

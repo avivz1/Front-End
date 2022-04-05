@@ -1,25 +1,45 @@
 import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image } from "react-native";
-import React, {useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Button, Checkbox } from 'react-native-paper'
 import axios from "axios";
+import {useDispatch} from 'react-redux'
 
 
 export default function StudentCheckBoxCard(props) {
 
     const [checked, setChecked] = React.useState(false);
+    const [isDeleted, setIsDeleted] = React.useState(false);
+    const dispatch = useDispatch();
 
+    
+    useEffect(() => {
+        if (props.data.isChecked) {
+            setChecked(props.data.isChecked)
+            if(props.data.isChecked==true){
+                dispatch({type:"ADD",newItem:props.data._id})
+            }
+        }
+        if (props.data.isDeleted == true) {
+            setIsDeleted(true)
+        } else {
+            setIsDeleted(false)
+
+        }
+    }, [])
 
 
     return (
         <View >
             <Card onPress={() => { }} style={styles.mainCardViewFlag} >
-                <Text  >{props.data.Name}</Text>
-                <Checkbox
-                    status={checked ? 'checked' : 'unchecked'}
-                    onPress={() => {
-                        setChecked(!checked);
-                        props.callBack(props.data._id)
-                    }} />
+                <Text style={isDeleted ? styles.deleted : styles.notDeleted} >{isDeleted ? 'This Student Was Deleted || ' + props.data.Name : props.data.Name}</Text>
+                {!isDeleted &&
+                    <Checkbox
+                        status={checked ? 'checked' : 'unchecked'}
+                        onPress={() => {
+                            setChecked(!checked);
+                            dispatch({type:"ADD",newItem:props.data._id})
+                        }} />
+                }
             </Card>
 
 
@@ -37,6 +57,13 @@ const styles = StyleSheet.create({
     title: {
         textAlign: 'right'
     },
+    deleted: {
+        backgroundColor: '#FC5252'
+    },
+    notDeleted: {
+        backgroundColor: '#7AA1DD'
+    },
+
     card: {
         height: 100,
         width: 100,
