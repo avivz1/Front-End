@@ -9,6 +9,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Button, Snackbar } from 'react-native-paper'
 import { getDrawerStatusFromState } from '@react-navigation/drawer';
 import StudentCard from './StudentCheckBoxCard'
+import { useDispatch, useSelector } from 'react-redux'
 
 
 
@@ -25,8 +26,12 @@ export default function AddPracticeComponent(props) {
     const [pickedStudents, setPickedStudents] = useState('')
     const [checkedStudents, setCheckedStudents] = useState('')
 
+    const dispatch = useDispatch()
+    const selectorArr = useSelector((s) => s.StudentSelected)
+
 
     useEffect(() => {
+        dispatch({ type: "CLEAR" })
         if (props.teams.length > 0) {
             if(props.students.length > 0){
                 let stus = props.students.filter(s=>s.Team_ID==props.teams[index]._id);
@@ -58,9 +63,9 @@ export default function AddPracticeComponent(props) {
         
     }
 
-    const callBackCheckStudent = (stu_id)=>{
-        checkedStudents.includes(stu_id)? setCheckedStudents(checkedStudents.filter(x=> x != stu_id)): setCheckedStudents([...checkedStudents,stu_id])
-    }
+    // const callBackCheckStudent = (stu_id)=>{
+    //     checkedStudents.includes(stu_id)? setCheckedStudents(checkedStudents.filter(x=> x != stu_id)): setCheckedStudents([...checkedStudents,stu_id])
+    // }
 
 
     const onSubmit = (data) => {
@@ -74,7 +79,7 @@ export default function AddPracticeComponent(props) {
         axios.post('http://' + IP + '/practices/addpractice',{
             practice : obj,
             allStudents: pickedStudents,
-            chosenStudents:checkedStudents
+            chosenStudents:selectorArr.arr
         }).then(res=>{
             if(res.data){
                 Alert.alert('Succesfully added')
@@ -119,7 +124,7 @@ export default function AddPracticeComponent(props) {
                     {pickedStudents.length > 0 ? pickedStudents.map((stu, index) => {
                         return (
                             <View key={index}>
-                                    <StudentCard key={index} callBack={callBackCheckStudent} data={stu} />
+                                    <StudentCard key={index} data={stu} />
                             </View>
                         )
                     }) : <Text>No Students</Text>}

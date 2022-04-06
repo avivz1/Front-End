@@ -27,10 +27,6 @@ export default function EditPracticeComponent(props) {
     const dispatch = useDispatch()
     const selectorArr = useSelector((s) => s.StudentSelected)
 
-    //need to set the students array to match in the map in the return.
-    //now there is an array of ID's, and need to filter the right ones to the map,
-    //or to write a function in the server that give students by practice id.
-
     useEffect(() => {
         dispatch({ type: "CLEAR" })
         if (props.practice.Team.Name == null || props.practice.Team.Name == '') {
@@ -50,9 +46,7 @@ export default function EditPracticeComponent(props) {
     const getStudentsList = () => {
         axios.post('http://' + IP + '/practices/getstudentlistforpratice', { practiceId: props.practice._id, students: props.practice.Students, userId: userIdValue }).then((res => {
             if (res.data != false) {
-                setPickedStudents(res.data)
-                res.data.forEach(st => {
-                });
+                setPickedStudents(res.data);
             }
         }))
 
@@ -73,7 +67,11 @@ export default function EditPracticeComponent(props) {
         props.practice.Name = data
     }
 
+    const updateStudentList = (data) => {
+    }
+
     const onSubmit = (data) => {
+        // updateStudentList(pickedStudents)
         let obj = {
             userid: userIdValue,
             _date: date,
@@ -85,7 +83,7 @@ export default function EditPracticeComponent(props) {
         axios.post('http://' + IP + '/practices/updatepractice', {
             practice: obj,
             allStudents: pickedStudents,
-            chosenStudents: selectorArr
+            chosenStudents: selectorArr.arr
         }).then(res => {
             if (res.data) {
                 Alert.alert('Succesfully Updated')
@@ -98,16 +96,13 @@ export default function EditPracticeComponent(props) {
     }
 
     // const studentsCallBack = (stu_id) => {
-    //     console.log(checkedStudents.length)
-    //     console.log(stu_id)
-    //     console.log(checkedStudents.includes(stu_id))
 
     //     checkedStudents.includes(stu_id) ? setCheckedStudents(checkedStudents.filter(x => x != stu_id)) : setCheckedStudents([...checkedStudents, stu_id])
     // }
 
     return (
         <View style={styles.container}>
-            <TextInput style={styles.input} onChangeText={setPracticeName} value={props.practice.Name} placeholder='Practice Name'></TextInput>
+            <TextInput style={styles.input} onChangeText={setPracticeName} defaultValue={props.practice.Name} placeholder='Practice Name'></TextInput>
             <TextInput type="date" onChangeText={setDate} value={date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()} placeholder='Date'></TextInput>
 
             <Button title='calendar' icon='calendar' onPress={showPicker} />
