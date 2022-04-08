@@ -8,28 +8,44 @@ import { Calendar, CalendarList, Agenda } from 'react-native-calendars'
 
 
 export default function ViewStudentComponent(props) {
-    const { teamsMap } = React.useContext(Context);
+    const dateOBject = new Date()
+    const { teamsMap, userId } = React.useContext(Context);
+    const [userIdValue] = userId;
     const [teamsNameMap, setMap] = teamsMap
     const [practicesList, setPractices] = useState([])
-    const [okDates, setOkDates] = useState({})
+    const [dates, setDates] = useState({})
+    const [currentMonthDate, setCurrentMonthDate] = useState(dateOBject.getMonth() + 1)
+    const [presentMonthPrecentage , setPresentMonthPrecentage] = useState('')
+
 
     useEffect(() => {
         getStudentPracticesDetails()
     }, []);
 
     const getStudentPracticesDetails = () => {
-        axios.post('http://' + IP + '/practices/getFewPractices', { practices: props.student.Practices }).then(res => {
+        axios.post('http://' + IP + '/practices/getstudentattendents', { userId: userIdValue, stuId: props.student._id }).then(res => {
             if (res.data != false) {
-                let datesArr = []
-                setPractices(res.data)
-                res.data.forEach(pr => {
-                    let d = pr.Date.split('T')
-                    d = d[0]
-                    //d = d.toString().replace(/-/g, '/')
-                    datesArr.push(d)
+                let arr = [];
+                res.data.notPresentPractices.forEach(prac => {
+                    let d = prac.Date.split('T');
+                    d = d[0];
+                    let obj = {
+                        was: false,
+                        date: d
+                    }
+                    arr.push(obj)
                 });
-                processOkDates(datesArr)
-
+                res.data.presentPractices.forEach(prac => {
+                    let d = prac.Date.split('T');
+                    d = d[0];
+                    let obj = {
+                        was: true,
+                        date: d
+                    }
+                    arr.push(obj)
+                });
+                getPrecentageByMonth(arr);
+                processDates(arr);
             }
         })
     }
@@ -39,14 +55,33 @@ export default function ViewStudentComponent(props) {
         return name;
     }
 
-    const processOkDates = (arr) => {
+    const getPrecentageByMonth = (arr)=>{
+        let byMonth = arr.filter(pra=>{
+            let preDate = pra.date.split('-')
+            preDate= preDate[1]
+            if(preDate==currentMonthDate){
+                return pra;
+            }
+        })
+        let wasNumber = byMonth.filter(p=>p.was==true)        
+        setPresentMonthPrecentage((wasNumber.length/byMonth.length)*100)
+    }
+    
+    const monthChange = (data)=>{
+        setCurrentMonthDate(data.month)
+    }
+
+    const processDates = (arr) => {
         let obj = {}
-        // {'2022-04-07': {selected: true, marked: true, selectedColor: 'blue'}
-        arr.forEach(date => {
-            obj[date] = { selected: true, marked: true }
+        arr.forEach(details => {
+            if (details.was) {
+                obj[details.date] = { selected: true, marked: true, selectedColor: 'blue' }
+            } else {
+                obj[details.date] = { selected: true, marked: true, selectedColor: 'red' }
+            }
             return obj;
         });
-        setOkDates(obj)
+        setDates(obj)
     }
 
     return (
@@ -56,10 +91,12 @@ export default function ViewStudentComponent(props) {
             <Text>Belt : {props.student.Belt}</Text>
             <Text>Age : {props.student.Age}</Text>
             <Text>Team : {getTeamName(props.student.Team_ID)}  </Text>
+            <Text>Precentage By Month :{presentMonthPrecentage}%  </Text>
 
             {/* <Text>{JSON.stringify(practicesList)}</Text> */}
             <Calendar
-                markedDates={okDates}
+             onMonthChange={monthChange}
+                markedDates={dates}
             />
         </View>
     )

@@ -63,7 +63,7 @@ export default function PracticeDetailsComponent(props) {
             <Text style={{padding:5}}>Total Students :{props.practice.Students.length}</Text>
 
             <Text style={{padding:5}}>Team : {getTeamName(props.practice.Team.Team_ID)}  </Text>
-            <Text style={{padding:5}}>Arrivel Precent : {precentage ? precentage.toFixed(2) : ''}%  </Text>
+            <Text style={{padding:5}}>Arrivel Precentage : {precentage ? precentage.toFixed(2) : ''}%  </Text>
 
             <DataTable style={[styles.TableText]} >
                 <DataTable.Header>
