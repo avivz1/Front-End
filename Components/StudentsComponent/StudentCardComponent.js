@@ -27,6 +27,7 @@ export default function StudentCardComponent(props) {
                             <Button  onPress={() => { props.callBack(props.data,'detailsBtn') }}>More Details</Button>
                             <Button  onPress={() => { props.callBack(props.data,'editBtn') }}>Edit</Button>
                             <Button  onPress={() => { props.callBack(props.data,'removeBtn') }} >Remove</Button>
+                            {/* <Button  onPress={() => { props.callBack(props.data,'Picture') }} >Picture</Button> */}
                         </Card.Actions>
                 </Card>
                 :

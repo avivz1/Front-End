@@ -61,7 +61,6 @@ export default function ViewStudentComponent(props) {
     const getPrecentageByMonth = (month) => {
         let obj = {}
         let arr = []
-        console.log(attendanceArray)
         attendanceArray.forEach(practice => {
             let preDate = practice.date.split('-')
             preDate = preDate[1]
@@ -70,7 +69,6 @@ export default function ViewStudentComponent(props) {
                 arr.push(obj);
             }
         })
-        console.log(arr)
 
         // let byMonth = attendanceArray.filter(pra => {
         //     if (preDate == '0' + month) {
