@@ -12,20 +12,27 @@ export default function ViewStudentComponent(props) {
     const { teamsMap, userId } = React.useContext(Context);
     const [userIdValue] = userId;
     const [teamsNameMap, setMap] = teamsMap
-    const [practicesList, setPractices] = useState([])
     const [dates, setDates] = useState({})
-    const [currentMonthDate, setCurrentMonthDate] = useState(dateOBject.getMonth() + 1)
-    const [presentMonthPrecentage , setPresentMonthPrecentage] = useState('')
+    // const [month, setMonth] = useState(dateOBject.getMonth() + 1)
+    const [presentMonthPrecentage, setPresentMonthPrecentage] = useState('')
+    const [attendanceArray, setAttendanceArray] = useState([])
+
 
 
     useEffect(() => {
         getStudentPracticesDetails()
     }, []);
+    
+    useEffect(()=>{
+        getPrecentageByMonth(dateOBject.getMonth() + 1);
+        processDates();
+    },[attendanceArray])
+
 
     const getStudentPracticesDetails = () => {
         axios.post('http://' + IP + '/practices/getstudentattendents', { userId: userIdValue, stuId: props.student._id }).then(res => {
             if (res.data != false) {
-                let arr = [];
+                let arr = []
                 res.data.notPresentPractices.forEach(prac => {
                     let d = prac.Date.split('T');
                     d = d[0];
@@ -44,37 +51,43 @@ export default function ViewStudentComponent(props) {
                     }
                     arr.push(obj)
                 });
-                getPrecentageByMonth(arr);
-                processDates(arr);
+                setAttendanceArray(arr)
             }
         })
     }
 
-    const getTeamName = (teamId) => {
-        let name = teamsNameMap.get(teamId);
-        return name;
-    }
 
-    const getPrecentageByMonth = (arr)=>{
-        let byMonth = arr.filter(pra=>{
-            let preDate = pra.date.split('-')
-            preDate= preDate[1]
-            if(preDate==currentMonthDate){
-                return pra;
-            }
-        })
-        let wasNumber = byMonth.filter(p=>p.was==true)        
-        setPresentMonthPrecentage((wasNumber.length/byMonth.length)*100)
-    }
-    
-    const monthChange = (data)=>{
-        setCurrentMonthDate(data.month)
-    }
 
-    const processDates = (arr) => {
+    const getPrecentageByMonth = (month) => {
         let obj = {}
-        arr.forEach(details => {
-            if (details.was) {
+        let arr = []
+        console.log(attendanceArray)
+        attendanceArray.forEach(practice => {
+            let preDate = practice.date.split('-')
+            preDate = preDate[1]
+            if (preDate == month) {
+                obj=practice;
+                arr.push(obj);
+            }
+        })
+        console.log(arr)
+
+        // let byMonth = attendanceArray.filter(pra => {
+        //     if (preDate == '0' + month) {
+        //         obj = pra;
+        //     }
+        //     return obj;
+        // })
+        let wasNumber = arr.filter(p => p.was == true)
+        setPresentMonthPrecentage((wasNumber.length / arr.length) * 100)
+    }
+
+
+
+    const processDates = () => {
+        let obj = {}
+        attendanceArray.forEach(details => {
+            if (details.was && details) {
                 obj[details.date] = { selected: true, marked: true, selectedColor: 'blue' }
             } else {
                 obj[details.date] = { selected: true, marked: true, selectedColor: 'red' }
@@ -84,6 +97,17 @@ export default function ViewStudentComponent(props) {
         setDates(obj)
     }
 
+    const monthChange = (data) => {
+        let d = '0'+data.month
+        getPrecentageByMonth(d)
+        processDates();
+    }
+
+    const getTeamName = (teamId) => {
+        let name = teamsNameMap.get(teamId);
+        return name;
+    }
+
     return (
 
         <View >
@@ -91,11 +115,11 @@ export default function ViewStudentComponent(props) {
             <Text>Belt : {props.student.Belt}</Text>
             <Text>Age : {props.student.Age}</Text>
             <Text>Team : {getTeamName(props.student.Team_ID)}  </Text>
-            <Text>Precentage By Month :{presentMonthPrecentage}%  </Text>
+            <Text>Precentage By Month :{presentMonthPrecentage ? presentMonthPrecentage : 0}%  </Text>
 
             {/* <Text>{JSON.stringify(practicesList)}</Text> */}
             <Calendar
-             onMonthChange={monthChange}
+                onMonthChange={monthChange}
                 markedDates={dates}
             />
         </View>
