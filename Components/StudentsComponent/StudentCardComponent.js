@@ -96,7 +96,7 @@ export default function StudentCardComponent(props) {
         <View >
             {flag ?
                 <Card style={styles.mainCardViewFlag} onPress={setSelectedFlag} >
-                    <Text  >{props.data.Name}</Text>
+                    <Text style={{fontSize:20}} >{props.data.Name}</Text>
                     <Image
                         style={styles.tinyLogo}
                         source={{
@@ -111,7 +111,7 @@ export default function StudentCardComponent(props) {
                 </Card>
                 :
                 <Card style={styles.mainCardView} onPress={setSelectedFlag} >
-                    <Text  >{props.data.Name}</Text>
+                    <Text style={{fontSize:20}} >{props.data.Name}</Text>
                     <Image
                         style={styles.tinyLogo}
                         source={{
@@ -143,8 +143,8 @@ const styles = StyleSheet.create({
         fontSize: 100,
     },
     tinyLogo: {
-        width: 50,
-        height: 50,
+        width: '50%',
+        height: '50%',
     },
     mainCardView: {
         margin: 10,

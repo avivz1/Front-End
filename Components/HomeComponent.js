@@ -22,8 +22,8 @@ export default function HomeComponent() {
 
   const [teamsPieData, setTeamsPieData] = useState([])
   const [practicePieData, setPracticePieData] = useState([])
-  const redColors = ['rgb(255, 0, 30)', 'rgb(255, 80, 70)', 'rgb(200, 0, 0)', 'rgb(255, 208, 66)', 'rgb(255, 255, 66)', 'rgb(255, 66, 66)']
-  const greenColors = ['rgb(130, 255, 50)', 'rgb(130, 240, 40)', 'rgb(66, 255, 113)', 'rgb(255, 255, 66)', 'rgb(66, 255, 208)', 'rgb(113, 255, 66)']
+  const redColors = ['rgb(255, 0, 0)', 'rgb(255, 80, 70)', 'rgb(200, 0, 0)', 'rgb(255, 100, 66)', 'rgb(255, 155, 66)', 'rgb(255, 66, 66)']
+  const greenColors = ['rgb(150, 250, 100)', 'rgb(100, 240, 40)', 'rgb(66, 255, 113)', 'rgb(255, 255, 66)', 'rgb(66, 255, 208)', 'rgb(113, 255, 66)']
   const blueColors = ['rgb(66, 255, 255)', 'rgb(66, 208, 255)', 'rgb(66, 161, 255)', 'rgb(66, 113, 255)', 'rgb(66, 66, 255)', 'rgb(113, 66, 255)']
 
   useEffect(async () => {
@@ -34,7 +34,7 @@ export default function HomeComponent() {
           let obj = {
             name: data.name,
             population: data.studQuantity,
-            color: redColors[i],
+            color: blueColors[i],
             legendFontSize: 15,
             legendFontColor: "#7F7F7F",
           }
@@ -54,14 +54,14 @@ export default function HomeComponent() {
         let obj = {
           name: '%  Present',
           population: ((res.data.present / res.data.total) * 100),
-          color: blueColors[0],
+          color: greenColors[0],
           legendFontSize: 15,
           legendFontColor: "#7F7F7F",
         }
         let obj1 = {
           name: '%  Not Present',
           population: ((res.data.notPresent / res.data.total) * 100),
-          color: blueColors[1],
+          color: greenColors[1],
           legendFontSize: 15,
           legendFontColor: "#7F7F7F",
         }
