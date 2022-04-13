@@ -10,18 +10,18 @@ import { IP } from '../IP_Address';
 export default function LoginComponent({ navigation }) {
 
     const { userId } = React.useContext(Context);
-    const [userIdValue, setUserId] = userId;
+    const [userIdValue,setUserId] = userId;
     const [email, onEmailChange] = React.useState("");
     const [password, onPasswordChange] = React.useState("");
 
-    // const image = { uri: "https://reactjs.org/logo-og.png" };
 
 
-    const onSignUpPress = function () {
+
+    const onSignUpPress =  ()=> {
         navigation.navigate('SignUp');
     }
 
-    const onLoginPress = function () {
+    const onLoginPress =  () =>{
         if (!email) {
             alert('Please fill Email');
         }
@@ -44,7 +44,8 @@ export default function LoginComponent({ navigation }) {
                 <TextInput onChangeText={onEmailChange} style={styles.input} placeholder='Email'></TextInput>
                 <TextInput secureTextEntry={true} onChangeText={onPasswordChange} style={styles.input} placeholder='Password'></TextInput>
                 <View>
-                    <Button style={styles.center} onPress={onLoginPress} title='Login' />
+                <Button style={styles.center} onPress={onLoginPress} title='Login' />
+                    
                     <Text onPress={onSignUpPress} style={styles.text}>Sign Up</Text>
                 </View>
                 {/* </ImageBackground> */}

@@ -9,6 +9,8 @@ import EditStudentComponent from './EditStudentComponent';
 import StudentDetailsComponent from './StudentDetailsComponent'
 import AddStudentComponent from './AddStudentComponent'
 import { Card, FAB, Searchbar } from 'react-native-paper'
+import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from 'expo-permissions';
 
 
 
@@ -18,6 +20,8 @@ export default function ViewStudentsComponent() {
     const [userIdValue] = userId;
     const [teamsNameMap, setMap] = teamsMap
 
+
+    const [pickedImage, setPickedImage] = React.useState();
     const [studentsArr, setStudents] = React.useState([]);
     const [allTeams, setTeams] = React.useState([]);
     const [detailsVisible, setDetailsVisible] = React.useState(false);
@@ -39,6 +43,11 @@ export default function ViewStudentsComponent() {
             }
         })
 
+    }
+
+    const addOrUpdateStudentPhoto = () => {
+        axios.post('http://' + IP + '/students/addorupdatestudentphoto ', { userID: userIdValue, studentId: pickedStudent._id, photo: pickedImage }).then(res => {
+    })
     }
 
     const getAllTeams = () => {
@@ -78,18 +87,71 @@ export default function ViewStudentsComponent() {
 
     }
 
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.cancelled) {
+            setPickedImage(result.uri);
+            addOrUpdateStudentPhoto()
+        }
+    };
+
+    const verifyPermissions = async () => {
+        const result = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        // const result = await Permissions.askAsync(Permissions.CAMERA);
+        if (result.status !== 'granted') {
+            Alert.alert(
+                'Insufficient permissions!',
+                'You need to grant camera permissions to use this app.',
+                [{ text: 'Okay' }]
+            );
+            return false;
+        }
+        return true;
+    };
+
+    const takeImageHandler = async () => {
+        const hasPermission = await verifyPermissions();
+        if (!hasPermission) {
+            return;
+        }
+        const image = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            aspect: [16, 14],
+            quality: 0.5,
+
+        });
+
+        setPickedImage(image.uri);
+        addOrUpdateStudentPhoto()
+    };
+
     const StudentCardPress = (stu, btnType) => {
         setPickedStudent(stu);
         switch (btnType) {
+            case 'updateRequest' :
+                getAllStudents();
+                break;
+            case 'pictureBtn': Alert.alert('a', 'b', [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Take a Picture', onPress: () => { takeImageHandler() } },
+                { text: 'Gallery', onPress: () => { pickImage() } }
+            ])
+                break;
             case 'detailsBtn': setDetailsVisible(true)
                 break;
-            case 'editBtn': setEditVisible(true) //props.setBtnPress(stu, 'edit')
+            case 'editBtn': setEditVisible(true)
                 break;
             case 'removeBtn': Alert.alert('Warning', 'Are you sure you want to delete this student? ' + '\n' + stu.Name + '\n', [
                 { text: 'Cancel' },
                 {
                     text: 'Yes', onPress: () => {
-                        axios.post('http://' + IP + '/students/deletestudent',{userId:userIdValue,stuId:stu._id}).then((res => {
+                        axios.post('http://' + IP + '/students/deletestudent', { userId: userIdValue, stuId: stu._id }).then((res => {
                             if (res.data) {
                                 getAllStudents()
                                 Alert.alert('Student has been deleted');

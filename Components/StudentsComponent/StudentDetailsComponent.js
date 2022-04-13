@@ -13,7 +13,6 @@ export default function ViewStudentComponent(props) {
     const [userIdValue] = userId;
     const [teamsNameMap, setMap] = teamsMap
     const [dates, setDates] = useState({})
-    // const [month, setMonth] = useState(dateOBject.getMonth() + 1)
     const [presentMonthPrecentage, setPresentMonthPrecentage] = useState('')
     const [attendanceArray, setAttendanceArray] = useState([])
 
