@@ -8,9 +8,8 @@ import Overlay from 'react-native-modal-overlay';
 import EditStudentComponent from './EditStudentComponent';
 import StudentDetailsComponent from './StudentDetailsComponent'
 import AddStudentComponent from './AddStudentComponent'
-import { Card, FAB, Searchbar } from 'react-native-paper'
+import { FAB, Searchbar } from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker';
-import * as Permissions from 'expo-permissions';
 
 
 
