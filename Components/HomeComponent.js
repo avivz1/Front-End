@@ -36,7 +36,7 @@ export default function HomeComponent() {
     barPercentage: 0.5,
     useShadowColorFromDataset: false // optional
   };
-
+  //comment 
   const data12 = {
     labels: ["January", "February", "March", "April", "May", "June"],
     datasets: [
