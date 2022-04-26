@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, Dimensions, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Button, Dimensions, TextInput,ScrollView } from 'react-native';
 import { Context } from '../ContextAPI/Context';
 import { IP } from '../IP_Address';
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
@@ -31,10 +31,22 @@ export default function HomeComponent() {
     backgroundGradientFromOpacity: 0,
     backgroundGradientTo: "#08130D",
     backgroundGradientToOpacity: 0.5,
-    color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+    color: (opacity = 1) => `rgba(200, 0, 0, ${opacity})`,
     strokeWidth: 2, // optional, default 3
     barPercentage: 0.5,
     useShadowColorFromDataset: false // optional
+  };
+
+  const data12 = {
+    labels: ["January", "February", "March", "April", "May", "June"],
+    datasets: [
+      {
+        data: [20, 45, 28, 80, 99, 43],
+        color: (opacity = 1) => `rgba(200, 0, 0, ${opacity})`, // optional
+        strokeWidth: 2 // optional
+      }
+    ],
+    // legend: ["Rainy Days"] // optional
   };
 
   const headers = [
@@ -209,7 +221,6 @@ export default function HomeComponent() {
       encoding: FileSystem.EncodingType.Base64
     });
 
-    // const info = await FileSystem.getInfoAsync(uri)
 
 
     await FileSystem.getContentUriAsync(uri).then(cUri => {
@@ -225,6 +236,8 @@ export default function HomeComponent() {
   return (
 
     <View style={styles.container}>
+      <ScrollView>
+
       <Text style={{ fontSize: 30, padding: 15 }}>Student By Team</Text>
       <PieChart
         data={teamsPieData}
@@ -249,10 +262,19 @@ export default function HomeComponent() {
         center={[10, 10]}
         absolute
       />
+      <LineChart
+        data={data12}
+        width={screenWidth}
+        height={256}
+        verticalLabelRotation={30}
+        chartConfig={chartConfig}
+        bezier
+/>
 
       <Button style={styles.center} onPress={addData} title='Add Data' />
       {excelData &&
         <Button style={''} onPress={checkPermission} title='Export Db To Excel' />}
+      </ScrollView>
 
     </View>
 
