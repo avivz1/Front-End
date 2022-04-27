@@ -14,11 +14,15 @@ export default function SignUp({ navigation }) {
     const [email, onEmailChange] = React.useState("");
     const [password, onPasswordChange] = React.useState("");
     const [passwordConfirm,onPasswordConfirmChange] = React.useState("");
+    const [userIdValue, setUserId] = userId;
+
 
     const onSingUpPress = function (){
         if(password==passwordConfirm){
             axios.post('http://'+IP+'/login/signup',{inputEmail:email,inputPassword:password}).then((res)=>{
                 if(res.data){
+                    setUserId(res.data)
+
                     alert('User Created'+'\n'+res.data);
                     navigation.replace('Home')
                 }else {
