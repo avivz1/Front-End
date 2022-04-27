@@ -12,7 +12,7 @@ export default function HomeStack({ navigation }) {
     return (
         <NavigationContainer>
             <Drawer.Navigator>
-                <Drawer.Screen name='Home' header={false} options={{ unmountOnBlur: true, headerTitle: '' }} component={MainNavigation} />
+                <Drawer.Screen name='Home' header={false} options={{ unmountOnBlur: true, headerTitle: "'"+'App Name'+"'" }} component={MainNavigation} />
             </Drawer.Navigator>
 
         </NavigationContainer>

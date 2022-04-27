@@ -30,13 +30,13 @@ export default function HomeComponent() {
     backgroundGradientFrom: "#1E2923",
     backgroundGradientFromOpacity: 0,
     backgroundGradientTo: "#08130D",
-    backgroundGradientToOpacity: 0.5,
+    backgroundGradientToOpacity: 0,
     color: (opacity = 1) => `rgba(200, 0, 0, ${opacity})`,
     strokeWidth: 2, // optional, default 3
     barPercentage: 0.5,
     useShadowColorFromDataset: false // optional
   };
-  //comment 
+
   const data12 = {
     labels: ["January", "February", "March", "April", "May", "June"],
     datasets: [
@@ -46,7 +46,7 @@ export default function HomeComponent() {
         strokeWidth: 2 // optional
       }
     ],
-    // legend: ["Rainy Days"] // optional
+    // legend: ["Rainy"] // optional
   };
 
   const headers = [
@@ -65,7 +65,15 @@ export default function HomeComponent() {
 
   useEffect(async () => {
     dataForBackup();
-    axios.post('http://' + IP + '/teams/getdistributionbyTeam/', { userId: userIdValue }).then(res => {
+    
+    axios.post('http://' + IP + '/practices/getTotalDivisionByMonth', { userId: userIdValue }).then(res=>{
+    if(res.data){
+      console.log(res.data)
+    }
+    })
+
+
+    axios.post('http://' + IP + '/teams/getdistributionbyTeam', { userId: userIdValue }).then(res => {
       let arr = [];
       if (res.data.length > 0) {
         res.data.forEach((data, i) => {
@@ -82,7 +90,7 @@ export default function HomeComponent() {
       }
     })
 
-    axios.post('http://' + IP + '/practices/getTotalDivision/', { userId: userIdValue }).then(res => {
+    axios.post('http://' + IP + '/practices/getTotalDivision', { userId: userIdValue }).then(res => {
       let arr1 = [];
 
       if (res.data.present == 0 && res.data.notPresent == 0 && res.data.total == 0) {
@@ -262,13 +270,13 @@ export default function HomeComponent() {
         center={[10, 10]}
         absolute
       />
-      <LineChart
+      <BarChart
         data={data12}
         width={screenWidth}
-        height={256}
-        verticalLabelRotation={30}
+        height={220}
+        yAxisLabel="$"
         chartConfig={chartConfig}
-        bezier
+        verticalLabelRotation={30}
 />
 
       <Button style={styles.center} onPress={addData} title='Add Data' />

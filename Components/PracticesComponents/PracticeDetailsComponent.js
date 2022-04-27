@@ -49,7 +49,7 @@ export default function PracticeDetailsComponent(props) {
     const getAttendancePrecent = () => {
         axios.post('http://' + IP + '/practices/attendancepercentage', { practice: props.practice, userId: userIdValue }).then(res => {
             if (res.data != false) {
-                setPrecentage(res.data)
+                setPrecentage(res.data.result)
             }
         })
     }
