@@ -1,10 +1,10 @@
-import { StyleSheet, Text, View, ScrollView, TextInput, ViewComponent, Platform, Alert } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput, Image, ImageBackground, Dimensions, ViewComponent, Platform, Alert } from 'react-native';
 import React, { useState, useEffect } from 'react'
 import { Context } from '../../ContextAPI/Context';
 import axios from 'axios';
 import { IP } from '../../IP_Address';
-import { DataTable } from 'react-native-paper'
-
+import { DataTable, FAB } from 'react-native-paper'
+// import { ImageBackground } from 'react-native-web';
 
 
 
@@ -16,21 +16,21 @@ export default function PracticeDetailsComponent(props) {
     const [teamsNameMap, setMap] = teamsMap
     const [precentage, setPrecentage] = useState('')
     const [userIdValue] = userId;
-    const [studentsList,setStudentsList] = useState([])
+    const [studentsList, setStudentsList] = useState([])
+    const screenWidth = Dimensions.get("window").width;
 
 
 
 
-    useEffect(()=> {
+
+    useEffect(() => {
         getAttendancePrecent()
         getStudentsFullDetails()
         let x = props.practice.Date.split('T')
         props.practice.Date = x[0];
     }, []);
 
-    useEffect(()=>{
 
-    },[])
 
     const getTeamName = (teamId) => {
         let name = teamsNameMap.get(teamId);
@@ -38,10 +38,11 @@ export default function PracticeDetailsComponent(props) {
     }
 
     const getStudentsFullDetails = () => {
-        let stuArr = props.practice.Students.filter(s=>s.Name==null)
+        let stuArr = props.practice.Students.filter(s => s.Name == null)
         axios.post('http://' + IP + '/students/getFewStudents', { students: stuArr }).then(res => {
             if (res.data != false) {
                 setStudentsList(res.data)
+  
             }
         })
     }
@@ -53,38 +54,51 @@ export default function PracticeDetailsComponent(props) {
             }
         })
     }
-    
+
     return (
 
         <View style={[styles.container]}>
-            <Text style={{padding:5}} >Name : {props.practice.Name}</Text>
-            <Text style={{padding:5}}>Date : {props.practice.Date}</Text>
-            <Text style={{padding:5}}>Hour : {props.practice.PracticeHour}</Text>
-            <Text style={{padding:5}}>Total Students :{props.practice.Students.length}</Text>
+            <Text style={[styles.headLine]} >Name : {props.practice.Name}</Text>
+            <Text style={[styles.headLine]}>Date : {props.practice.Date}</Text>
+            <Text style={[styles.headLine]}>Hour : {props.practice.PracticeHour}</Text>
+            <Text style={[styles.headLine]}>Total Students : {props.practice.Students.length}</Text>
 
-            <Text style={{padding:5}}>Team : {getTeamName(props.practice.Team.Team_ID)}  </Text>
-            <Text style={{padding:5}}>Arrivel Precentage : {precentage ? precentage.toFixed(2) : ''}%  </Text>
+            <Text style={[styles.headLine]}>Team : {getTeamName(props.practice.Team.Team_ID)}  </Text>
+            <Text style={[styles.headLine]}>Present : {precentage ? precentage.toFixed(2) : ''}%  </Text>
 
-            <DataTable style={[styles.TableText]} >
-                <DataTable.Header>
-                    <DataTable.Title>Name</DataTable.Title>
-                    <DataTable.Title>Belt</DataTable.Title>
-                </DataTable.Header>
-            
-                {studentsList.length > 0 ? studentsList.map((stu, index) => {
-                    return (
-                        <DataTable.Row style={[styles.editForm]} key={index}>
-                                <DataTable.Cell>{stu.Name}</DataTable.Cell>
-                                <DataTable.Cell>{stu.Belt}</DataTable.Cell>
-                            </DataTable.Row>
-                        )
-                    })
-                    
-                    :
-                    <Text>No Students</Text>
-                    
-                }
-            </DataTable>
+            <View style={{}}>
+
+                <DataTable style={{ width: '100%', paddingTop: 30 }} >
+                    <DataTable.Header style={{ backgroundColor: '#cc99ff', fontWeight: 'bold' }}>
+                        <DataTable.Title style={{ fontWeight: 'bold' }}>Name</DataTable.Title>
+                        <DataTable.Title style={{ backgroundColor: '#cc99ff', fontWeight: 'bold' }}>Belt</DataTable.Title>
+                        <DataTable.Title style={{ backgroundColor: '#cc99ff', fontWeight: 'bold' }}>present</DataTable.Title>
+                    </DataTable.Header>
+
+                    <ScrollView style={[styles.scrollStyle]} >
+                        {studentsList.length > 0 ? studentsList.map((stu, index) => {
+                            return (
+                                <DataTable.Row onPress={() => { }} key={index}>
+                                    <DataTable.Cell>{stu.Name}</DataTable.Cell>
+                                    <DataTable.Cell>{stu.Belt}</DataTable.Cell>
+                                    <DataTable.Cell>{stu.Practices.includes(props.practice._id) ?
+                                        <Image style={{ width: 12, height: 11 }} source={require('../../assets/check.png')} />
+                                        :
+                                        <Image style={{ width: 11, height: 11 }} source={require('../../assets/uncheck.png')} />
+                                    }
+                                    </DataTable.Cell>
+                                </DataTable.Row>
+                            )
+                        })
+
+                            :
+                            <Text>No Students</Text>
+
+                        }
+                    </ScrollView>
+                </DataTable>
+            </View>
+
 
         </View>
     )
@@ -93,45 +107,26 @@ export default function PracticeDetailsComponent(props) {
 
 
 const styles = StyleSheet.create({
-
-    head: { height: 400, backgroundColor: 'orange' },
-    wrapper: { flexDirection: 'row' },
-    title: { flex: 1, backgroundColor: '#2ecc71' },
-    row: { height: 28 },
-    text: { textAlign: 'center' },
-
-
     container: {
         flex: 0,
-        padding: 10,
         paddingTop: 10,
         backgroundColor: '#ffffff',
-        height:'60%'
-      },
-      
-    input: {
-        margin: 15,
-        height: 40,
-        borderColor: '#7a42f4',
-        borderWidth: 1,
-        fontSize: 15,
+        height: '90%',
+        width: '100%',
+        alignContent: 'center',
     },
-    editForm: {
-        margin: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
+
+    scrollStyle: {
+        width: '100%',
+        height: '70%',
+        // backgroundColor: '#33ccff',
+
     },
-    HeadStyle: {
-        height: 50,
-        alignContent: "center",
-        backgroundColor: '#CE39FE'
-      },
-      TableText: {
-        margin: 8,
-        height: 49,
-        padding:5,
-        alignContent: "center",
-        alignItems: 'center',
-      }
-});
+
+    headLine: {
+        fontWeight: "bold",
+        padding: 5,
+    }
+
+})
 

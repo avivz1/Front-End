@@ -85,7 +85,6 @@ export default function HomeComponent() {
 
     axios.post('http://' + IP + '/practices/getTotalDivisionByMonth', { userId: userIdValue }).then(res => {
       if (res.data) {
-        console.log(res.data)
         setBarChartData(res.data)
       }
     })
@@ -317,7 +316,7 @@ export default function HomeComponent() {
             withHorizontalLabels={false}
             showBarTops={false}
             center={[0, 0]}
-fromZero
+            fromZero
 
           />
           :

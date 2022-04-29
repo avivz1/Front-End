@@ -10,12 +10,13 @@ import { Context } from '../../ContextAPI/Context';
 import { IP } from '../../IP_Address';
 import Overlay from 'react-native-modal-overlay';
 import { Card, FAB, Searchbar } from 'react-native-paper'
+import { BackHandler } from 'react-native';
 
 
 
 export default function ViewPracticesComponent() {
 
-  const { userId,teamsMap } = React.useContext(Context);
+  const { userId, teamsMap } = React.useContext(Context);
   const [userIdValue] = userId;
   const [teamsNameMap, setMap] = teamsMap
 
@@ -28,6 +29,8 @@ export default function ViewPracticesComponent() {
   const [editVisible, setEditVisible] = React.useState(false);
   const [addVisible, setAddVisible] = React.useState(false);
   const [searchText, setSearchText] = React.useState('');
+  const [deleteAllFlag, setDeleteAllFlag] = React.useState(false)
+
   const onChangeSearch = query => setSearchText(query)
 
 
@@ -131,6 +134,16 @@ export default function ViewPracticesComponent() {
     }
   }
 
+  BackHandler.addEventListener('hardwareBackPress', () => {
+    if (deleteAllFlag) {
+      setDeleteAllFlag(false)
+    }
+  })
+
+  const onChildCardLongPress = () => {
+    setDeleteAllFlag(true)
+  }
+
   return (
 
     <View style={[styles.container]}>
@@ -149,10 +162,16 @@ export default function ViewPracticesComponent() {
           {allPractices.length > 0 ? allPractices.map((practice, index) => {
             return (
               <View key={index}>
-                {
+                {/* {
                   practice.Name.includes(searchText) &&
-                  <PracticeCardComponent key={index} callBack={practiceCardPress} practice={practice} />
+                  <PracticeCardComponent key={index} onLongPress={onChildCardLongPress} callBack={practiceCardPress} practice={practice} />
+                } */}
+                {deleteAllFlag ?
+                  practice.Name.includes(searchText) && <PracticeCardComponent isRemoveAll={deleteAllFlag} key={index} onLongPress={onChildCardLongPress} callBack={practiceCardPress} practice={practice} />
+                  :
+                  <PracticeCardComponent isRemoveAll={deleteAllFlag} key={index} onLongPress={onChildCardLongPress} callBack={practiceCardPress} practice={practice} />
                 }
+
               </View>
             )
           }) : <Text>No Practices</Text>}
