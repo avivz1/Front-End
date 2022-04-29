@@ -115,7 +115,6 @@ export default function StudentCardComponent(props) {
                     <Image
                         style={styles.tinyLogo}
                         source={{
-                            // uri: 'https://gsmauditors.com/wp-content/uploads/2016/05/istockphoto-1133765772-612x612-1.jpg',
                             uri: props.data.Image ? props.data.Image : 'https://gsmauditors.com/wp-content/uploads/2016/05/istockphoto-1133765772-612x612-1.jpg'
                         }}></Image>
                 </Card>

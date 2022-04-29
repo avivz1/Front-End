@@ -8,6 +8,7 @@ import XLSX from 'xlsx'
 import * as FileSystem from 'expo-file-system';
 import { PermissionsAndroid } from 'react-native';
 import * as IntentLauncher from 'expo-intent-launcher';
+import { ActivityIndicator, Colors } from 'react-native-paper';
 
 
 
@@ -19,7 +20,7 @@ export default function HomeComponent() {
   const [userIdValue] = userId;
   const [excelData, setExcelData] = useState([])
 
-
+  
   const [teamsPieData, setTeamsPieData] = useState([])
   const [practicePieData, setPracticePieData] = useState([])
   const [barChartData, setBarChartData] = useState([])
@@ -56,7 +57,7 @@ export default function HomeComponent() {
     useShadowColorFromDataset: false, // optional
   };
 
-  const data12 = {
+  const dataBarPie = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"],
     datasets: [
       {
@@ -257,10 +258,22 @@ export default function HomeComponent() {
 
   }
 
+  const isLoading = ()=>{
+    if(barChartData.length<=0 || teamsPieData.length<=0 || practicePieData.length<=0){
+      return true;
+    }else{
+      return false
+    }
+  }
 
   return (
 
     <View style={styles.container}>
+
+      {isLoading() && <ActivityIndicator  type={'large'} animating={true} color={Colors.red800} />}
+
+      {!isLoading() &&
+      
       <ScrollView>
 
         <Text style={{ fontSize: 30, padding: 15 }}>Student By Team</Text>
@@ -300,10 +313,10 @@ export default function HomeComponent() {
         }
         <Text style={{ fontSize: 26, padding: 15 }}>Student Practices By Month (%)</Text>
 
-        {data12 ?
+        {dataBarPie ?
           <BarChart
             style={{ padding: 30 }}
-            data={data12}
+            data={dataBarPie}
             width={screenWidth}
             flatColor={true}
             showValuesOnTopOfBars={true}
@@ -329,6 +342,7 @@ export default function HomeComponent() {
         {excelData &&
           <Button style={''} onPress={checkPermission} title='Export Db To Excel' />}
       </ScrollView>
+      }
 
     </View>
 

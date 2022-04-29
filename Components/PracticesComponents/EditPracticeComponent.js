@@ -95,10 +95,6 @@ export default function EditPracticeComponent(props) {
         })
     }
 
-    // const studentsCallBack = (stu_id) => {
-
-    //     checkedStudents.includes(stu_id) ? setCheckedStudents(checkedStudents.filter(x => x != stu_id)) : setCheckedStudents([...checkedStudents, stu_id])
-    // }
 
     return (
         <View style={styles.container}>

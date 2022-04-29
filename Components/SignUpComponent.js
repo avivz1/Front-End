@@ -4,6 +4,7 @@ import axios from 'axios';
 import { StyleSheet, Text, View,Button, TextInput } from 'react-native';
 import React from "react";
 import { IP } from '../IP_Address';
+import { Context } from '../ContextAPI/Context';
 
 
 
@@ -11,6 +12,7 @@ import { IP } from '../IP_Address';
 
 export default function SignUp({ navigation }) {
 
+    const { userId } = React.useContext(Context);
     const [email, onEmailChange] = React.useState("");
     const [password, onPasswordChange] = React.useState("");
     const [passwordConfirm,onPasswordConfirmChange] = React.useState("");
