@@ -23,7 +23,7 @@ export default function PracticeCardComponent(props) {
             props.checkUnCheckPractice(false,props.practice._id)
         }
         
-    },[props.isRadioBtnON])
+    },[props.isRadioBtnON,props.isUserRemoveAll,props.isRadioBtnShow])
 
     const onPressEvent = () => {
         if (isRadioBtnShow == false) {
@@ -67,7 +67,7 @@ export default function PracticeCardComponent(props) {
                         }}
                     />
                 }
-                {!isRadioBtnShow &&<Image style={{ width: 150, height: 50 }} resizeMode='cover' source={require('../../assets/practicephoto.png')} />}
+                {!props.isRadioBtnShow &&<Image style={{ width: 150, height: 50 }} resizeMode='cover' source={require('../../assets/practicephoto.png')} />}
                 
                 {getBtnsState() &&
                     <View>

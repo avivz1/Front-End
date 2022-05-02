@@ -176,6 +176,7 @@ export default function ViewStudentsComponent() {
                 {addVisible && <AddStudentComponent onAddClostModal={closeAddModal} teams={allTeams} />}
             </Overlay>
 
+            {/* {isRadioBtnShow && <Button title='Change Team' style={{ width: '10%', height: 30, margin:7}} onPress={changeTeamToFewStudents} />} */}
 
             <Searchbar placeholder='Search' onChangeText={onChangeSearch} value={searchText} />
             <ScrollView>

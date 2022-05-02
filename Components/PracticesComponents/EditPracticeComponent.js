@@ -71,7 +71,6 @@ export default function EditPracticeComponent(props) {
     }
 
     const onSubmit = (data) => {
-        // updateStudentList(pickedStudents)
         let obj = {
             userid: userIdValue,
             _date: date,
@@ -79,14 +78,13 @@ export default function EditPracticeComponent(props) {
             teamID: props.practice.Team.Team_ID,
             _id: props.practice._id
         }
-
+        
         axios.post('http://' + IP + '/practices/updatepractice', {
             practice: obj,
             allStudents: pickedStudents,
             chosenStudents: selectorArr.arr
         }).then(res => {
             if (res.data) {
-                Alert.alert('Succesfully Updated')
                 props.onPracticeUpdate()
             } else {
                 Alert.alert('there was a problem try again')

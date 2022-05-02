@@ -321,6 +321,7 @@ export default function HomeComponent() {
             flatColor={true}
             showValuesOnTopOfBars={true}
             height={250}
+            decimalPlaces={2}
             yAxisLabel="%"
             xLabelsOffset={5}
             chartConfig={configBar}

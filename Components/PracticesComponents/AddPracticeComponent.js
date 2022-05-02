@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, Alert ,ScrollView} from 'react-native';
+import { StyleSheet, Text, View, TextInput, Alert, ScrollView } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { Context } from '../../ContextAPI/Context';
@@ -25,6 +25,7 @@ export default function AddPracticeComponent(props) {
     const [date, setDate] = useState(new Date());
     const [pickedStudents, setPickedStudents] = useState('')
     const [checkedStudents, setCheckedStudents] = useState('')
+    const [error, setError] = useState(false)
 
     const dispatch = useDispatch()
     const selectorArr = useSelector((s) => s.StudentSelected)
@@ -33,11 +34,11 @@ export default function AddPracticeComponent(props) {
     useEffect(() => {
         dispatch({ type: "CLEAR" })
         if (props.teams.length > 0) {
-            if(props.students.length > 0){
-                let stus = props.students.filter(s=>s.Team_ID==props.teams[index]._id);
+            if (props.students.length > 0) {
+                let stus = props.students.filter(s => s.Team_ID == props.teams[index]._id);
                 setPickedStudents(stus)
             }
-        }else{
+        } else {
             Alert.alert('No Team Found! you must have atlist 1 team')
             props.onAddPractice()
         }
@@ -57,38 +58,38 @@ export default function AddPracticeComponent(props) {
 
     const setChoosenTeam = (picked, index) => {
         setIndex(index)
-        let stus = props.students.filter(s=>s.Team_ID==props.teams[index]._id);
+        let stus = props.students.filter(s => s.Team_ID == props.teams[index]._id);
         setPickedStudents(stus)
         setPickedTeam(picked)
-        
-    }
 
-    // const callBackCheckStudent = (stu_id)=>{
-    //     checkedStudents.includes(stu_id)? setCheckedStudents(checkedStudents.filter(x=> x != stu_id)): setCheckedStudents([...checkedStudents,stu_id])
-    // }
+    }
 
 
     const onSubmit = (data) => {
-        let obj ={
-            userid:userIdValue,
-            _date:date,
-            name:practiceName,
-            teamID:props.teams[index]._id,
+        if (practiceName != '' && date) {
+            let obj = {
+                userid: userIdValue,
+                _date: date,
+                name: practiceName,
+                teamID: props.teams[index]._id,
+            }
+
+            axios.post('http://' + IP + '/practices/addpractice', {
+                practice: obj,
+                allStudents: pickedStudents,
+                chosenStudents: selectorArr.arr
+            }).then(res => {
+                if (res.data) {
+                    props.onAddPractice()
+                } else {
+                    Alert.alert('ther was a problem try again')
+                    props.onAddPractice()
+                }
+            })
+        }else{
+            setError(true)
         }
 
-        axios.post('http://' + IP + '/practices/addpractice',{
-            practice : obj,
-            allStudents: pickedStudents,
-            chosenStudents:selectorArr.arr
-        }).then(res=>{
-            if(res.data){
-                Alert.alert('Succesfully added')
-                props.onAddPractice()
-            }else{
-                Alert.alert('ther was a problem try again')
-                props.onAddPractice()
-            }
-        })
     }
 
     return (
@@ -101,13 +102,13 @@ export default function AddPracticeComponent(props) {
 
             {isPickerShow && (
                 <DateTimePicker
-                value={date}
-                mode={'date'}
-                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                is24Hour={true}
-                onChange={onChange}
+                    value={date}
+                    mode={'date'}
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    is24Hour={true}
+                    onChange={onChange}
                 />
-                )}
+            )}
 
             < Picker
                 selectedValue={props.teams.lenght > 0 ? pickedTeam : props.teams[index]}
@@ -124,15 +125,15 @@ export default function AddPracticeComponent(props) {
                     {pickedStudents.length > 0 ? pickedStudents.map((stu, index) => {
                         return (
                             <View key={index}>
-                                    <StudentCard key={index} data={stu} />
+                                <StudentCard key={index} data={stu} />
                             </View>
                         )
                     }) : <Text>No Students</Text>}
                 </View>
 
             </ScrollView>
-
-            <Button  onPress={onSubmit}>Submit</Button>
+            {error && <Text>Name OR Date are Required</Text>}
+            <Button onPress={onSubmit}>Submit</Button>
 
 
         </View >
@@ -168,8 +169,8 @@ const styles = StyleSheet.create({
     card: {
         margin: 8,
         height: 49,
-        width:'80%',
+        width: '80%',
         // alignContent: "center",
         // alignItems: 'center',
-      }
+    }
 });

@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, TextInput, Alert, ScrollView, BackHandler } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, Alert, ScrollView, BackHandler, Image, TouchableOpacity } from 'react-native';
 import AddPracticeComponent from './AddPracticeComponent'
 import EditPracticeComponent from './EditPracticeComponent'
 import PracticeCardComponent from './PracticeCardComponent'
@@ -47,6 +47,11 @@ export default function ViewPracticesComponent() {
     getAllTeams()
   }, [])
 
+  useEffect(() => {
+    if (practicesCheckedStatus.length == allPractices.length && !isUserPressRemoveAll) {
+      setIsRadioBtnON(true);
+    }
+  }, [practicesCheckedStatus])
 
   const getAllStudents = () => {
     axios.post('http://' + IP + '/students/getallstudentsbyuserid', { userid: userIdValue }).then(res => {
@@ -75,9 +80,7 @@ export default function ViewPracticesComponent() {
 
   const getAllPractices = () => {
     axios.post('http://' + IP + '/practices/getallpractices', { userID: userIdValue }).then(res => {
-      if (res.data) {
         setPractices(res.data)
-      }
     })
   }
 
@@ -142,11 +145,12 @@ export default function ViewPracticesComponent() {
   }
 
   BackHandler.addEventListener('hardwareBackPress', () => {
-    if (deleteAllFlag == true) {
-      setDeleteAllFlag(false)
-      setRadioBtn(false)
+    if (isRadioBtnShow == true) {
+      setIsRadioBtnShow(false)
+      setIsRadioBtnON(false)
+      setIsUserPressRemoveAll(true);
       return false;
-    } else if (deleteAllFlag == false) {
+    } else if (isRadioBtnShow == false) {
       // BackHandler.exitApp()
       return true
     }
@@ -158,6 +162,7 @@ export default function ViewPracticesComponent() {
 
 
   const checkOrUncheckPractice = (status, id) => {
+
     setIsUserPressRemoveAll(false);
     if (!status) {
       setIsRadioBtnON(false);
@@ -168,10 +173,8 @@ export default function ViewPracticesComponent() {
       if (!practicesCheckedStatus.includes(id)) {
         setPracticesCheckedStatus(practicesCheckedStatus => [...practicesCheckedStatus, id]);
       }
-      
-      if (practicesCheckedStatus.length == allPractices.length) {
-        setIsRadioBtnON(true);
-      }
+
+
     }
 
   }
@@ -182,12 +185,28 @@ export default function ViewPracticesComponent() {
       let arr = allPractices.map(practice => practice._id);
       setPracticesCheckedStatus(arr);
     } else {
-      let arr2=[]
+      let arr2 = []
       setPracticesCheckedStatus(arr2);
     }
 
     setIsRadioBtnON(!isRadioBtnON)
     setIsUserPressRemoveAll(true)
+  }
+
+  const removeFewPractices = () => {
+
+    axios.post('http://' + IP + '/practices/removeFewPractices', { userID: userIdValue, practices: practicesCheckedStatus }).then(res => {
+      if (res.data==true) {
+        axios.post('http://' + IP + '/practices/getallpractices', { userID: userIdValue }).then(res1 => {
+            setPractices(res1.data)
+            setIsRadioBtnShow(false)
+            setIsRadioBtnON(false)
+            setIsUserPressRemoveAll(false);
+            setPracticesCheckedStatus([])
+        })
+      }
+
+    })
   }
 
   return (
@@ -201,15 +220,17 @@ export default function ViewPracticesComponent() {
 
 
       <Searchbar placeholder='Search' onChangeText={onChangeSearch} value={searchText} />
+      {isRadioBtnShow &&
+        <RadioButton
+          value="mainRadioBtn"
+          status={isRadioBtnON ? 'checked' : 'unchecked'}
+          onPress={() => onRadionBtnPresses()}
+        />
+      }
+      {isRadioBtnShow && <TouchableOpacity onPress={removeFewPractices}><Image style={{ width: 20, height: 30, margin: 7 }}  source={require('../../assets/garbageIcon.png')} ></Image></TouchableOpacity>}
+
       <ScrollView>
         <View style={[styles.container]}>
-          {isRadioBtnShow &&
-            <RadioButton
-              value="mainRadioBtn"
-              status={isRadioBtnON ? 'checked' : 'unchecked'}
-              onPress={() => onRadionBtnPresses()}
-            />
-          }
           {allPractices.length > 0 ? allPractices.map((practice, index) => {
             return (
               <View key={index}>
@@ -249,7 +270,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     paddingTop: 10,
-    backgroundColor: '#ffffff'
+    backgroundColor: '#ffffff',
+    justifyContent: "center",
+
   },
   HeadStyle: {
     height: 50,
