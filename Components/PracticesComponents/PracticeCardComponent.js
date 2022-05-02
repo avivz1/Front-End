@@ -7,41 +7,40 @@ import { useDispatch } from 'react-redux'
 export default function PracticeCardComponent(props) {
 
     const [flag, setFlag] = useState(false)
-    const [removeAllFlag, setRemoveAllFlag] = useState(false)
+    const [isRadioBtnShow, setIsRadioBtnShow] = useState(false)
+    // const [removeAllFlag, setRemoveAllFlag] = useState(false)
     const [checked, setChecked] = useState(false)
     const dispatch = useDispatch();
 
     useEffect(() => {
-        setRemoveAllFlag(props.isRemoveAll)
+        setIsRadioBtnShow(props.isRadioBtnShow)
 
-        if(props.pressOnRemoveAll&& props.isRemoveAll){
+        if(props.isUserRemoveAll && props.isRadioBtnON ){
             setChecked(true)
-        }else if(!props.pressOnRemoveAll && props.isRemoveAll){
+            props.checkUnCheckPractice(true,props.practice._id)
+        }else if(!props.isRadioBtnON && props.isUserRemoveAll){
             setChecked(false)
+            props.checkUnCheckPractice(false,props.practice._id)
         }
+        
+    },[props.isRadioBtnON])
 
-    },[props])
-
-    const setSelectedFlag = () => {
-
-        if (removeAllFlag == false) {
+    const onPressEvent = () => {
+        if (isRadioBtnShow == false) {
             setFlag(!flag);
         } else {
-            if(!checked){
-                props.unCheckedPractice()
-            }
+            props.checkUnCheckPractice(!checked,props.practice._id)
             setChecked(!checked);
         }
     }
 
-    const setRemoveFlag = () => {
+    const longPressEvent = () => {
         setFlag(false)
-        // setRemoveAllFlag(true)
         props.onLongPress()
     }
 
     const getBtnsState = () => {
-        if (removeAllFlag == false && flag == true) {
+        if (isRadioBtnShow == false && flag == true) {
             return true;
         } else {
             return false
@@ -54,21 +53,22 @@ export default function PracticeCardComponent(props) {
     return (
         <View style={[styles.container]}>
 
-            <Card style={flag ? styles.mainCardWithBtns : styles.mainCardWithoutBtns} onPress={setSelectedFlag} onLongPress={setRemoveFlag} >
+            <Card style={flag ? styles.mainCardWithBtns : styles.mainCardWithoutBtns} onPress={onPressEvent} onLongPress={longPressEvent} >
                 <View >
                     <Text style={{ paddingLeft: '20%', fontWeight: 'bold', fontSize: 20 }} >{props.practice.Name}</Text>
                 </View>
-                {removeAllFlag &&
+                {props.isRadioBtnShow &&
                     <Checkbox
                         status={checked ? 'checked' : 'unchecked'}
                         onPress={() => {
                             setChecked(!checked);
+                            onPressEvent()
                             // dispatch({ type: "ADD", newItem: props.data._id })
                         }}
                     />
                 }
-                {!removeAllFlag &&<Image style={{ width: 150, height: 50 }} resizeMode='cover' source={require('../../assets/practicephoto.png')} />}
-                {/* <Image style={{ width: 150, height: 50 }} resizeMode='cover' source={require('../../assets/practicephoto.png')} /> */}
+                {!isRadioBtnShow &&<Image style={{ width: 150, height: 50 }} resizeMode='cover' source={require('../../assets/practicephoto.png')} />}
+                
                 {getBtnsState() &&
                     <View>
                         <Card.Actions>

@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
-import { useEffect,useState,useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, TextInput, Alert, ScrollView ,BackHandler} from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, Alert, ScrollView, BackHandler } from 'react-native';
 import AddPracticeComponent from './AddPracticeComponent'
 import EditPracticeComponent from './EditPracticeComponent'
 import PracticeCardComponent from './PracticeCardComponent'
@@ -9,7 +9,7 @@ import PracticeDetailsComponent from './PracticeDetailsComponent'
 import { Context } from '../../ContextAPI/Context';
 import { IP } from '../../IP_Address';
 import Overlay from 'react-native-modal-overlay';
-import { Card, FAB, Searchbar,RadioButton } from 'react-native-paper'
+import { Card, FAB, Searchbar, RadioButton } from 'react-native-paper'
 import { useDispatch } from 'react-redux'
 
 
@@ -30,7 +30,10 @@ export default function ViewPracticesComponent() {
   const [addVisible, setAddVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [deleteAllFlag, setDeleteAllFlag] = useState(false)
-  const [radioBtn, setRadioBtn] = useState(false)
+  const [isRadioBtnShow, setIsRadioBtnShow] = useState(false)
+  const [isRadioBtnON, setIsRadioBtnON] = useState(false)
+  const [isUserPressRemoveAll, setIsUserPressRemoveAll] = useState(false)
+  const [practicesCheckedStatus, setPracticesCheckedStatus] = useState([])
 
   const dispatch = useDispatch();
   const onChangeSearch = query => setSearchText(query)
@@ -150,15 +153,44 @@ export default function ViewPracticesComponent() {
   })
 
   const onChildCardLongPress = () => {
-    setDeleteAllFlag(true)
+    setIsRadioBtnShow(true)
   }
 
-  const unchekedChild = ()=>{
-    setRadioBtn(false)
+
+  const checkOrUncheckPractice = (status, id) => {
+    setIsUserPressRemoveAll(false);
+    if (!status) {
+      setIsRadioBtnON(false);
+      let state = practicesCheckedStatus.filter(x => x != id)
+      setPracticesCheckedStatus(state)
+    } else {
+
+      if (!practicesCheckedStatus.includes(id)) {
+        setPracticesCheckedStatus(practicesCheckedStatus => [...practicesCheckedStatus, id]);
+      }
+      
+      if (practicesCheckedStatus.length == allPractices.length) {
+        setIsRadioBtnON(true);
+      }
+    }
+
+  }
+
+  const onRadionBtnPresses = () => {
+
+    if (isRadioBtnON) {
+      let arr = allPractices.map(practice => practice._id);
+      setPracticesCheckedStatus(arr);
+    } else {
+      let arr2=[]
+      setPracticesCheckedStatus(arr2);
+    }
+
+    setIsRadioBtnON(!isRadioBtnON)
+    setIsUserPressRemoveAll(true)
   }
 
   return (
-
     <View style={[styles.container]}>
 
       <Overlay visible={isVisible() ? true : false} onClose={onCloseModal} closeOnTouchOutside>
@@ -171,19 +203,19 @@ export default function ViewPracticesComponent() {
       <Searchbar placeholder='Search' onChangeText={onChangeSearch} value={searchText} />
       <ScrollView>
         <View style={[styles.container]}>
-          {deleteAllFlag && 
-                  <RadioButton
-                  value="mainRadioBtn"
-                  status={ radioBtn? 'checked' : 'unchecked' }
-                  onPress={() => setRadioBtn(!radioBtn)}
-                />
+          {isRadioBtnShow &&
+            <RadioButton
+              value="mainRadioBtn"
+              status={isRadioBtnON ? 'checked' : 'unchecked'}
+              onPress={() => onRadionBtnPresses()}
+            />
           }
           {allPractices.length > 0 ? allPractices.map((practice, index) => {
             return (
               <View key={index}>
                 {
                   practice.Name.includes(searchText) &&
-                  <PracticeCardComponent unCheckedPractice={unchekedChild} pressOnRemoveAll={radioBtn} isRemoveAll={deleteAllFlag} key={index} onLongPress={onChildCardLongPress} callBack={practiceCardPress} practice={practice} />
+                  <PracticeCardComponent checkUnCheckPractice={checkOrUncheckPractice} isUserRemoveAll={isUserPressRemoveAll} isRadioBtnON={isRadioBtnON} isRadioBtnShow={isRadioBtnShow} key={index} onLongPress={onChildCardLongPress} callBack={practiceCardPress} practice={practice} />
                 }
                 {/* {deleteAllFlag ?
                   practice.Name.includes(searchText) && <PracticeCardComponent isRemoveAll={deleteAllFlag} key={index} onLongPress={onChildCardLongPress} callBack={practiceCardPress} practice={practice} />
