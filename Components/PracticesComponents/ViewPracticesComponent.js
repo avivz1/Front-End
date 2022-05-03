@@ -149,10 +149,10 @@ export default function ViewPracticesComponent() {
       setIsRadioBtnShow(false)
       setIsRadioBtnON(false)
       setIsUserPressRemoveAll(true);
-      return false;
+      return true;
     } else if (isRadioBtnShow == false) {
-      // BackHandler.exitApp()
-      return true
+      BackHandler.exitApp();
+      // return false;
     }
   })
 

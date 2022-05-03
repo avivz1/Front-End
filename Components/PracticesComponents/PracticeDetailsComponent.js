@@ -38,9 +38,18 @@ export default function PracticeDetailsComponent(props) {
     }
 
     const getStudentsFullDetails = () => {
-        let stuArr = props.practice.Students.filter(s => s.Name == null)
-        axios.post('http://' + IP + '/students/getFewStudents', { students: stuArr }).then(res => {
+        // let stuArr = props.practice.Students.filter(s => s.Name == null)
+        // axios.post('http://' + IP + '/students/getFewStudents', { students: stuArr }).then(res => {
+        //     if (res.data != false) {
+        //         setStudentsList(res.data)
+  
+        //     }
+        // })
+
+        // let stuArr = props.practice.Students.filter(s => s.Name == null)
+        axios.post('http://' + IP + '/practices/getstudentlistforpratice', {userId:userIdValue,practiceId:props.practice._id, students: props.practice.Students }).then(res => {
             if (res.data != false) {
+                console.log(res.data)
                 setStudentsList(res.data)
   
             }
@@ -64,7 +73,7 @@ export default function PracticeDetailsComponent(props) {
             <Text style={[styles.headLine]}>Total Students : {props.practice.Students.length}</Text>
 
             <Text style={[styles.headLine]}>Team : {getTeamName(props.practice.Team.Team_ID)}  </Text>
-            <Text style={[styles.headLine]}>Present : {precentage ? precentage.toFixed(2) : ''}%  </Text>
+            <Text style={[styles.headLine]}>Present : {precentage ? precentage.toFixed(2) : 0}%  </Text>
 
             <View style={{}}>
 
@@ -78,11 +87,13 @@ export default function PracticeDetailsComponent(props) {
                     <ScrollView style={[styles.scrollStyle]} >
                         {studentsList.length > 0 ? studentsList.map((stu, index) => {
                             return (
-                                <DataTable.Row onPress={() => { }} key={index}>
+                                <DataTable.Row  onPress={() => { }} key={index}>
                                     <DataTable.Cell>{stu.Name}</DataTable.Cell>
                                     <DataTable.Cell>{stu.Belt}</DataTable.Cell>
-                                    <DataTable.Cell>{stu.Practices.includes(props.practice._id) ?
-                                        <Image style={{ width: 12, height: 11 }} source={require('../../assets/check.png')} />
+                                    <DataTable.Cell>{stu.isDeleted ?
+                                        <Image style={{ width: 12, height: 15 }} source={require('../../assets/garbageIcon.png')} />
+                                        :stu.isChecked? 
+                                        <Image style={{ width: 11, height: 11 }} source={require('../../assets/check.png')} />
                                         :
                                         <Image style={{ width: 11, height: 11 }} source={require('../../assets/uncheck.png')} />
                                     }

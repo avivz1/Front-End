@@ -67,8 +67,6 @@ export default function EditPracticeComponent(props) {
         props.practice.Name = data
     }
 
-    const updateStudentList = (data) => {
-    }
 
     const onSubmit = (data) => {
         let obj = {
