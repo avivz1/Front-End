@@ -1,10 +1,10 @@
-import React, { useEffect, useContext, useRef } from 'react';
+import React, { useEffect, useContext, useRef,useState } from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, TextInput, Alert, TouchableOpacity, TouchableHighlight, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, Alert, TouchableOpacity, TouchableHighlight, BackHandler, ScrollView, Image } from 'react-native';
 import { Context } from '../../ContextAPI/Context';
 import { IP } from '../../IP_Address';
 import Overlay from 'react-native-modal-overlay';
-import { Card, FAB, Searchbar } from 'react-native-paper'
+import { Card, FAB, Searchbar ,RadioButton} from 'react-native-paper'
 import AddTeamComponent from './AddTeamComponent'
 import EditTeamComponent from './EditTeamComponent'
 import TeamCardComoponent from './TeamCardComponent'
@@ -29,25 +29,36 @@ export default function ViewTeamsComponent() {
     const [searchText, setSearchText] = React.useState('');
     const onChangeSearch = query => setSearchText(query)
 
+    const [isRadioBtnShow, setIsRadioBtnShow] = useState(false);
+    const [isRadioBtnON, setIsRadioBtnON] = useState(false);
+    const [isUserPressRemoveAll, setIsUserPressRemoveAll] = useState(false);
+    const [teamsCheckedStatus, setTeamsCheckedStatus] = useState([]);
+
     useEffect(() => {
         getAllTeams();
     }, [])
 
+    useEffect(() => {
+        if (teamsCheckedStatus.length == allTeams.length && !isUserPressRemoveAll) {
+            setIsRadioBtnON(true);
+        }
+    }, [teamsCheckedStatus])
+
     const switchStudentsAndDeleteTeam = (switchToTeam) => {
-            axios.post('http://' + IP + '/students/changestudentsteams/', { students: students, teamId: switchToTeam._id }).then(res => {
-                if (res.data) {
-                    Alert.alert('All Student of this team Was Moved to another team')
-                    axios.post('http://' + IP + '/teams/deleteteam' ,{teamId:pickedTeam._id,userId:userIdValue} ).then((res_=> {
-                        if (res_.data) {
-                            getAllTeams()
-                            Alert.alert('Team has been deleted');
-                        } else {
-                            Alert.alert('There was a problem. try again')
-                        }
-                    }))
-                }
-            })
-            setRemoveVisible(false);
+        axios.post('http://' + IP + '/students/changestudentsteams/', { students: students, teamId: switchToTeam._id }).then(res => {
+            if (res.data) {
+                Alert.alert('All Student of this team Was Moved to another team')
+                axios.post('http://' + IP + '/teams/deleteteam', { teamId: pickedTeam._id, userId: userIdValue }).then((res_ => {
+                    if (res_.data) {
+                        getAllTeams()
+                        Alert.alert('Team has been deleted');
+                    } else {
+                        Alert.alert('There was a problem. try again')
+                    }
+                }))
+            }
+        })
+        setRemoveVisible(false);
     }
 
     const getAllTeams = () => {
@@ -122,12 +133,12 @@ export default function ViewTeamsComponent() {
                                         [
                                             {
                                                 text: 'Delete Students', onPress: () => {
-                                                    axios.post('http://' + IP + '/students/deleteFewStudents', { students: res.data, userId:userIdValue }).then(res_DeleteFewStudents => {
+                                                    axios.post('http://' + IP + '/students/deleteFewStudents', { students: res.data, userId: userIdValue }).then(res_DeleteFewStudents => {
                                                         if (!res_DeleteFewStudents.data) {
                                                             Alert.alert('Failed. try again')
                                                         } else {
                                                             Alert.alert('All Student of this team Was Deleted')
-                                                            axios.post('http://' + IP + '/teams/deleteteam' , { teamId: team._id, userId: userIdValue }).then((res_DeleteTeam => {
+                                                            axios.post('http://' + IP + '/teams/deleteteam', { teamId: team._id, userId: userIdValue }).then((res_DeleteTeam => {
                                                                 if (res_DeleteTeam.data) {
                                                                     getAllTeams()
                                                                     Alert.alert('Team has been deleted');
@@ -147,7 +158,7 @@ export default function ViewTeamsComponent() {
                                             { text: 'Cancel' }
                                         ])
                                 } else {
-                                    axios.post('http://' + IP + '/teams/deleteteam',{ teamId: team._id, userId: userIdValue }).then(res2 => {
+                                    axios.post('http://' + IP + '/teams/deleteteam', { teamId: team._id, userId: userIdValue }).then(res2 => {
                                         if (res2.data) {
                                             getAllTeams()
                                             Alert.alert('Team has been deleted');
@@ -177,6 +188,72 @@ export default function ViewTeamsComponent() {
         }
     }
 
+    BackHandler.addEventListener('hardwareBackPress', () => {
+        if (isRadioBtnShow == true) {
+            setIsRadioBtnShow(false)
+            setIsRadioBtnON(false)
+            setIsUserPressRemoveAll(true);
+            return true;
+        } else if (isRadioBtnShow == false) {
+            BackHandler.exitApp();
+            // return false;
+        }
+    })
+
+    const onChildCardLongPress = () => {
+        setIsRadioBtnShow(true)
+        setIsRadioBtnON(false)
+    }
+
+    const checkOrUncheckTeam = (status, id) => {
+
+        setIsUserPressRemoveAll(false);
+        if (!status) {
+            setIsRadioBtnON(false);
+            let state = teamsCheckedStatus.filter(x => x != id)
+            setTeamsCheckedStatus(state)
+        } else {
+
+            if (!teamsCheckedStatus.includes(id)) {
+                setTeamsCheckedStatus(teamsCheckedStatus => [...teamsCheckedStatus, id]);
+            }
+
+
+        }
+
+    }
+
+    const onRadionBtnPresses = () => {
+
+        if (isRadioBtnON) {
+            let arr = allTeams.map(team => team._id);
+            setTeamsCheckedStatus(arr);
+        } else {
+            let arr2 = []
+            setTeamsCheckedStatus(arr2);
+        }
+
+        setIsRadioBtnON(!isRadioBtnON)
+        setIsUserPressRemoveAll(true)
+    }
+
+    const removeFewTeams = () => {
+        axios.post('http://' + IP + '/teams/removeFewTeams', { userID: userIdValue, teams: teamsCheckedStatus }).then(res => {
+          if (res.data==true) {
+            axios.post('http://' + IP + '/teams/getalluserteams', { userID: userIdValue }).then(res1 => {
+                setTeams(res1.data)
+                setIsRadioBtnShow(false)
+                setIsRadioBtnON(false)
+                setIsUserPressRemoveAll(false);
+                setTeamsCheckedStatus([])
+            })
+          }
+    
+        })
+      }
+
+
+
     return (
 
         <View style={[styles.container]}>
@@ -186,10 +263,20 @@ export default function ViewTeamsComponent() {
                 {detailsVisible && <TeamDetailsComponent team={pickedTeam ? pickedTeam : ''} />}
                 {addVisible && <AddTeamComponent onAddTeam={closeAddModal} />}
             </Overlay>
-                { removeVisible && <RemoveTeamDialog pickedTeam={pickedTeam} teams={allTeams} onRemoveOkPress={switchStudentsAndDeleteTeam} onRemoveCanclePress={closeRemoveModal} />} 
-            
+            {removeVisible && <RemoveTeamDialog pickedTeam={pickedTeam} teams={allTeams} onRemoveOkPress={switchStudentsAndDeleteTeam} onRemoveCanclePress={closeRemoveModal} />}
+
 
             <Searchbar placeholder='Search' onChangeText={onChangeSearch} value={searchText} />
+            {isRadioBtnShow &&
+                <RadioButton
+                    value="mainRadioBtn"
+                    status={isRadioBtnON ? 'checked' : 'unchecked'}
+                    onPress={() => onRadionBtnPresses()}
+                />
+            }
+            {isRadioBtnShow && <TouchableOpacity onPress={removeFewTeams}><Image style={{ width: 20, height: 30, margin: 7 }} source={require('../../assets/garbageIcon.png')} ></Image></TouchableOpacity>}
+
+
             <ScrollView>
                 <View style={[styles.container]}>
 
@@ -198,7 +285,7 @@ export default function ViewTeamsComponent() {
                             <View key={index}>
                                 {
                                     team.Name.includes(searchText) &&
-                                    <TeamCardComoponent key={index} callBack={TeamCardPress} team={team} />
+                                    <TeamCardComoponent checkUnCheckTeam={checkOrUncheckTeam} isUserRemoveAll={isUserPressRemoveAll} isRadioBtnON={isRadioBtnON} isRadioBtnShow={isRadioBtnShow} onLongPress={onChildCardLongPress} key={index} callBack={TeamCardPress} team={team} />
                                 }
                             </View>
                         )

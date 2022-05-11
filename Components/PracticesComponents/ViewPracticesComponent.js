@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, TextInput, Alert, ScrollView, BackHandler, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Alert, ScrollView, BackHandler, Image, TouchableOpacity } from 'react-native';
 import AddPracticeComponent from './AddPracticeComponent'
 import EditPracticeComponent from './EditPracticeComponent'
 import PracticeCardComponent from './PracticeCardComponent'
@@ -24,24 +24,20 @@ export default function ViewPracticesComponent() {
   const [studentsArr, setStudents] = useState([]);
   const [allTeams, setTeams] = useState([]);
   const [allPractices, setPractices] = useState(false);
-  const [pickedPractice, setPickedPractice] = useState({})
+  const [pickedPractice, setPickedPractice] = useState({});
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [editVisible, setEditVisible] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [deleteAllFlag, setDeleteAllFlag] = useState(false)
-  const [isRadioBtnShow, setIsRadioBtnShow] = useState(false)
-  const [isRadioBtnON, setIsRadioBtnON] = useState(false)
-  const [isUserPressRemoveAll, setIsUserPressRemoveAll] = useState(false)
-  const [practicesCheckedStatus, setPracticesCheckedStatus] = useState([])
+  const [isRadioBtnShow, setIsRadioBtnShow] = useState(false);
+  const [isRadioBtnON, setIsRadioBtnON] = useState(false);
+  const [isUserPressRemoveAll, setIsUserPressRemoveAll] = useState(false);
+  const [practicesCheckedStatus, setPracticesCheckedStatus] = useState([]);
 
-  const dispatch = useDispatch();
   const onChangeSearch = query => setSearchText(query)
 
 
   useEffect(() => {
-    dispatch({ type: "CLEAR" })
-
     getAllPractices()
     getAllStudents()
     getAllTeams()
@@ -91,6 +87,7 @@ export default function ViewPracticesComponent() {
       return false;
     }
   }
+
   const openAddModal = () => {
     setAddVisible(true);
   }
@@ -145,6 +142,7 @@ export default function ViewPracticesComponent() {
   }
 
   BackHandler.addEventListener('hardwareBackPress', () => {
+    console.log('index')
     if (isRadioBtnShow == true) {
       setIsRadioBtnShow(false)
       setIsRadioBtnON(false)

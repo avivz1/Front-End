@@ -6,11 +6,9 @@ import { useDispatch } from 'react-redux'
 
 export default function PracticeCardComponent(props) {
 
-    const [flag, setFlag] = useState(false)
-    const [isRadioBtnShow, setIsRadioBtnShow] = useState(false)
-    // const [removeAllFlag, setRemoveAllFlag] = useState(false)
-    const [checked, setChecked] = useState(false)
-    const dispatch = useDispatch();
+    const [flag, setFlag] = useState(false);
+    const [isRadioBtnShow, setIsRadioBtnShow] = useState(false);
+    const [checked, setChecked] = useState(false);
 
     useEffect(() => {
         setIsRadioBtnShow(props.isRadioBtnShow)
@@ -63,7 +61,6 @@ export default function PracticeCardComponent(props) {
                         onPress={() => {
                             setChecked(!checked);
                             onPressEvent()
-                            // dispatch({ type: "ADD", newItem: props.data._id })
                         }}
                     />
                 }
