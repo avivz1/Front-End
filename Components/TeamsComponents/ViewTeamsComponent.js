@@ -1,10 +1,10 @@
-import React, { useEffect, useContext, useRef,useState } from 'react';
+import React, { useEffect, useContext, useRef, useState } from 'react';
 import axios from 'axios';
 import { StyleSheet, Text, View, Button, TextInput, Alert, TouchableOpacity, TouchableHighlight, BackHandler, ScrollView, Image } from 'react-native';
 import { Context } from '../../ContextAPI/Context';
 import { IP } from '../../IP_Address';
 import Overlay from 'react-native-modal-overlay';
-import { Card, FAB, Searchbar ,RadioButton} from 'react-native-paper'
+import { Card, FAB, Searchbar, RadioButton } from 'react-native-paper'
 import AddTeamComponent from './AddTeamComponent'
 import EditTeamComponent from './EditTeamComponent'
 import TeamCardComoponent from './TeamCardComponent'
@@ -39,7 +39,7 @@ export default function ViewTeamsComponent() {
     }, [])
 
     useEffect(() => {
-        if (teamsCheckedStatus.length == allTeams.length && !isUserPressRemoveAll) {
+        if (teamsCheckedStatus.length > 0 && teamsCheckedStatus.length == allTeams.length && !isUserPressRemoveAll) {
             setIsRadioBtnON(true);
         }
     }, [teamsCheckedStatus])
@@ -113,8 +113,10 @@ export default function ViewTeamsComponent() {
 
     const TeamCardPress = (team, btnType) => {
         setPickedTeam(team);
-
         switch (btnType) {
+            case 'updateRequest':
+                getAllTeams();
+                break;
             case 'detailsBtn': setDetailsVisible(true)
                 break;
             case 'editBtn': setEditVisible(true)
@@ -236,21 +238,32 @@ export default function ViewTeamsComponent() {
         setIsRadioBtnON(!isRadioBtnON)
         setIsUserPressRemoveAll(true)
     }
+    // text: 'Yes', onPress: () => {
 
     const removeFewTeams = () => {
-        axios.post('http://' + IP + '/teams/removeFewTeams', { userID: userIdValue, teams: teamsCheckedStatus }).then(res => {
-          if (res.data==true) {
-            axios.post('http://' + IP + '/teams/getalluserteams', { userID: userIdValue }).then(res1 => {
-                setTeams(res1.data)
-                setIsRadioBtnShow(false)
-                setIsRadioBtnON(false)
-                setIsUserPressRemoveAll(false);
-                setTeamsCheckedStatus([])
-            })
-          }
-    
-        })
-      }
+        if (teamsCheckedStatus.length > 0) {
+            Alert.alert('Warning', 'Are you sure you want to delete those Teams ?(all Attached Students will be deleted!)' + '\n',
+                [{ text: 'Cancel' }, {
+                    text: 'Yes', onPress: () => {
+                        axios.post('http://' + IP + '/teams/removeFewTeams', { userID: userIdValue, teams: teamsCheckedStatus }).then(res => {
+                            if (res.data == true) {
+                                axios.post('http://' + IP + '/teams/getalluserteams', { userID: userIdValue }).then(res1 => {
+                                    setTeams(res1.data)
+                                    setIsRadioBtnShow(false)
+                                    setIsRadioBtnON(false)
+                                    setIsUserPressRemoveAll(false);
+                                    setTeamsCheckedStatus([])
+                                })
+                            }
+
+                        })
+
+                    }
+                }]
+            )
+        }
+
+    }
 
 
 

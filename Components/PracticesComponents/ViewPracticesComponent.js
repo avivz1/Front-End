@@ -44,7 +44,7 @@ export default function ViewPracticesComponent() {
   }, [])
 
   useEffect(() => {
-    if (practicesCheckedStatus.length == allPractices.length && !isUserPressRemoveAll) {
+    if (practicesCheckedStatus.length > 0 && practicesCheckedStatus.length == allPractices.length && !isUserPressRemoveAll) {
       setIsRadioBtnON(true);
     }
   }, [practicesCheckedStatus])
@@ -76,7 +76,7 @@ export default function ViewPracticesComponent() {
 
   const getAllPractices = () => {
     axios.post('http://' + IP + '/practices/getallpractices', { userID: userIdValue }).then(res => {
-        setPractices(res.data)
+      setPractices(res.data)
     })
   }
 
@@ -142,7 +142,6 @@ export default function ViewPracticesComponent() {
   }
 
   BackHandler.addEventListener('hardwareBackPress', () => {
-    console.log('index')
     if (isRadioBtnShow == true) {
       setIsRadioBtnShow(false)
       setIsRadioBtnON(false)
@@ -194,13 +193,13 @@ export default function ViewPracticesComponent() {
   const removeFewPractices = () => {
 
     axios.post('http://' + IP + '/practices/removeFewPractices', { userID: userIdValue, practices: practicesCheckedStatus }).then(res => {
-      if (res.data==true) {
+      if (res.data == true) {
         axios.post('http://' + IP + '/practices/getallpractices', { userID: userIdValue }).then(res1 => {
-            setPractices(res1.data)
-            setIsRadioBtnShow(false)
-            setIsRadioBtnON(false)
-            setIsUserPressRemoveAll(false);
-            setPracticesCheckedStatus([])
+          setPractices(res1.data)
+          setIsRadioBtnShow(false)
+          setIsRadioBtnON(false)
+          setIsUserPressRemoveAll(false);
+          setPracticesCheckedStatus([])
         })
       }
 
@@ -225,7 +224,7 @@ export default function ViewPracticesComponent() {
           onPress={() => onRadionBtnPresses()}
         />
       }
-      {isRadioBtnShow && <TouchableOpacity onPress={removeFewPractices}><Image style={{ width: 20, height: 30, margin: 7 }}  source={require('../../assets/garbageIcon.png')} ></Image></TouchableOpacity>}
+      {isRadioBtnShow && <TouchableOpacity onPress={removeFewPractices}><Image style={{ width: 20, height: 30, margin: 7 }} source={require('../../assets/garbageIcon.png')} ></Image></TouchableOpacity>}
 
       <ScrollView>
         <View style={[styles.container]}>

@@ -20,7 +20,7 @@ export default function HomeComponent() {
   const [userIdValue] = userId;
   const [excelData, setExcelData] = useState([])
 
-  
+
   const [teamsPieData, setTeamsPieData] = useState([])
   const [practicePieData, setPracticePieData] = useState([])
   const [barChartData, setBarChartData] = useState([])
@@ -51,7 +51,8 @@ export default function HomeComponent() {
     fillShadowGradientOpacity: 1,
     fillShadowGradientFrom: '#2f4261',
     labelColor: () => 'black',
-    color: () => 'rgb(13, 0, 255, 1)',
+    // color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+    color: () => 'rgb(13, 0, 255)',
     barRadius: 60,
     barPercentage: 0.2,
     useShadowColorFromDataset: false, // optional
@@ -79,18 +80,14 @@ export default function HomeComponent() {
     { label: "City", key: "city" },
   ];
 
-
-
-  useEffect(async () => {
-    dataForBackup();
-
+  const getTotalDivisionByMonth = () => {
     axios.post('http://' + IP + '/practices/getTotalDivisionByMonth', { userId: userIdValue }).then(res => {
       if (res.data) {
         setBarChartData(res.data)
       }
     })
-
-
+  }
+  const getdistributionbyTeam = () => {
     axios.post('http://' + IP + '/teams/getdistributionbyTeam', { userId: userIdValue }).then(res => {
       let arr = [];
       if (res.data.length > 0) {
@@ -107,7 +104,8 @@ export default function HomeComponent() {
         setTeamsPieData(arr)
       }
     })
-
+  }
+  const getTotalDivision = () => {
     axios.post('http://' + IP + '/practices/getTotalDivision', { userId: userIdValue }).then(res => {
       let arr1 = [];
 
@@ -135,7 +133,14 @@ export default function HomeComponent() {
       }
 
     })
+  }
 
+
+  useEffect( () => {
+    dataForBackup();
+    getTotalDivisionByMonth();
+    getdistributionbyTeam();
+    getTotalDivision();
 
   }, [])
 
@@ -258,10 +263,10 @@ export default function HomeComponent() {
 
   }
 
-  const isLoading = ()=>{
-    if(barChartData.length<=0 || teamsPieData.length<=0 || practicePieData.length<=0){
+  const isLoading = () => {
+    if (barChartData.length <= 0 || teamsPieData.length <= 0 || practicePieData.length <= 0) {
       return true;
-    }else{
+    } else {
       return false
     }
   }
@@ -270,80 +275,80 @@ export default function HomeComponent() {
 
     <View style={styles.container}>
 
-      {isLoading() && <ActivityIndicator  type={'large'} animating={true} color={Colors.red800} />}
+      {isLoading() && <ActivityIndicator type={'large'} animating={true} color={Colors.red800} />}
 
       {!isLoading() &&
-      
-      <ScrollView>
 
-        <Text style={{ fontSize: 30, padding: 15 }}>Student By Team</Text>
-        {teamsPieData.length > 0 ?
-          <PieChart
-            data={teamsPieData}
-            width={screenWidth}
-            height={220}
-            chartConfig={chartConfig}
-            accessor={"population"}
-            backgroundColor={"transparent"}
-            paddingLeft={"15"}
-            center={[10, 10]}
-            absolute
-          />
-          :
-          <Text>No Data</Text>
+        <ScrollView>
 
-        }
-        <Text style={{ fontSize: 30, padding: 15 }}>Student By Practices</Text>
+          <Text style={{ fontSize: 30, padding: 15 }}>Student By Team</Text>
+          {teamsPieData.length > 0 ?
+            <PieChart
+              data={teamsPieData}
+              width={screenWidth}
+              height={220}
+              chartConfig={chartConfig}
+              accessor={"population"}
+              backgroundColor={"transparent"}
+              paddingLeft={"15"}
+              center={[10, 10]}
+              absolute
+            />
+            :
+            <Text>No Data</Text>
 
-        {practicePieData.length > 0 ?
-          <PieChart
-            data={practicePieData}
-            width={screenWidth}
-            height={220}
-            chartConfig={chartConfig}
-            accessor={"population"}
-            backgroundColor={"transparent"}
-            paddingLeft={"15"}
-            center={[10, 10]}
+          }
+          <Text style={{ fontSize: 30, padding: 15 }}>Student By Practices</Text>
 
-            absolute
-          />
-          :
-          <Text >No Data</Text>
-        }
-        <Text style={{ fontSize: 26, padding: 15 }}>Student Practices By Month (%)</Text>
+          {practicePieData.length > 0 ?
+            <PieChart
+              data={practicePieData}
+              width={screenWidth}
+              height={220}
+              chartConfig={chartConfig}
+              accessor={"population"}
+              backgroundColor={"transparent"}
+              paddingLeft={"15"}
+              center={[10, 10]}
 
-        {dataBarPie ?
-          <BarChart
-            style={{ padding: 30 }}
-            data={dataBarPie}
-            width={screenWidth}
-            flatColor={true}
-            showValuesOnTopOfBars={true}
-            height={250}
-            decimalPlaces={2}
-            yAxisLabel="%"
-            xLabelsOffset={5}
-            chartConfig={configBar}
-            verticalLabelRotation={30}
-            absolute={true}
-            withHorizontalLabels={false}
-            showBarTops={false}
-            center={[0, 0]}
-            fromZero
+              absolute
+            />
+            :
+            <Text >No Data</Text>
+          }
+          <Text style={{ fontSize: 26, padding: 15 }}>Student Practices By Month (%)</Text>
 
-          />
-          :
-          <Text>No Data</Text>
+          {dataBarPie ?
+            <BarChart
+              style={{ padding: 30 }}
+              data={dataBarPie}
+              width={screenWidth}
+              flatColor={true}
+              showValuesOnTopOfBars={true}
+              height={250}
+              decimalPlaces={2}
+              yAxisLabel="%"
+              xLabelsOffset={5}
+              chartConfig={configBar}
+              verticalLabelRotation={30}
+              absolute={true}
+              withHorizontalLabels={false}
+              showBarTops={false}
+              center={[0, 0]}
+              fromZero
 
-        }
+            />
+            :
+            <Text>No Data</Text>
+
+          }
 
 
-        <Button style={styles.center} onPress={addData} title='Add Data' />
-        {excelData &&
-          <Button style={''} onPress={checkPermission} title='Export Db To Excel' />}
-      </ScrollView>
+          {excelData &&
+            <Button style={''} onPress={checkPermission} title='Export Db To Excel' />}
+        </ScrollView>
       }
+      <Button style={styles.center} onPress={addData} title='Add Data' />
 
     </View>
 

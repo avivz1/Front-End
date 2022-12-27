@@ -9,8 +9,8 @@ export default function LoginComponent({ navigation }) {
 
     const { userId } = React.useContext(Context);
     const [userIdValue, setUserId] = userId;
-    const [email, setEmail] = React.useState("");
-    const [password, setPassword] = React.useState("");
+    const [email, setEmail] = React.useState('a');
+    const [password, setPassword] = React.useState("1");
 
     const onSignUpPress = () => {
         navigation.navigate('SignUp');

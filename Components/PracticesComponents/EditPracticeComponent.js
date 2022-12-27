@@ -22,12 +22,16 @@ export default function EditPracticeComponent(props) {
     const [isPickerShow, setIsPickerShow] = useState(false);
     const [pickedStudents, setPickedStudents] = useState([])
     const [checkedStudents, setCheckedStudents] = useState('')
+    const [practiceName,setPracticeName] = useState('')
+    const [errorSubmit,setErrorSubmit] = useState(false)
     const [date, setDate] = useState(new Date(props.practice.Date));
     const [teamName, setTeamName] = useState('')
     const dispatch = useDispatch()
     const selectorArr = useSelector((s) => s.StudentSelected)
 
     useEffect(() => {
+
+        setPracticeName(props.practice.Name)
         dispatch({ type: "CLEAR" })
         if (props.practice.Team.Name == null || props.practice.Team.Name == '') {
             let team = props.allTeams.filter(t => t._id == props.practice.Team.Team_ID)
@@ -63,16 +67,30 @@ export default function EditPracticeComponent(props) {
         }
     };
 
-    const setPracticeName = (data) => {
-        props.practice.Name = data
-    }
+    // const setPracticeName = (data) => {
+    //     props.practice.Name = data
+    // }
 
+    // const setNewDate = (date)=>{
+    //     //10 - the length of a valid date
+    //     if(date.length==10){
+    //         setDate(date)
+    //     }
+    // }
 
     const onSubmit = (data) => {
+        console.log('------------Submit------------------')
+
+        if(practiceName=='' || practiceName==null ||practiceName.length ==0){
+            setErrorSubmit(true)
+        }else{
+
+
         let obj = {
             userid: userIdValue,
             _date: date,
-            name: props.practice.Name,
+            // name: props.practice.Name,
+            name: practiceName,
             teamID: props.practice.Team.Team_ID,
             _id: props.practice._id
         }
@@ -91,11 +109,15 @@ export default function EditPracticeComponent(props) {
         })
     }
 
+    }
+
 
     return (
         <View style={styles.container}>
-            <TextInput style={styles.input} onChangeText={setPracticeName} defaultValue={props.practice.Name} placeholder='Practice Name'></TextInput>
-            <TextInput type="date" onChangeText={setDate} value={date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()} placeholder='Date'></TextInput>
+            <TextInput style={styles.input} onChangeText={(data)=>{setPracticeName(data)}} defaultValue={props.practice.Name} placeholder='Practice Name'></TextInput>
+            {errorSubmit && <Text>This is required.</Text>}
+
+            <Text style={{float:'left',textAlign:'right',margin:3}} type="date"  placeholder='Date'> {date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()} </Text>
 
             <Button title='calendar' icon='calendar' onPress={showPicker} />
 

@@ -1,6 +1,6 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, TextInput, Alert, TouchableOpacity, TouchableHighlight, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, Alert, TouchableOpacity, TouchableHighlight,Image,BackHandler, ScrollView } from 'react-native';
 import { Context } from '../../ContextAPI/Context';
 import ViewCardStudentComp from './StudentCardComponent';
 import { IP } from '../../IP_Address';
@@ -8,7 +8,7 @@ import Overlay from 'react-native-modal-overlay';
 import EditStudentComponent from './EditStudentComponent';
 import StudentDetailsComponent from './StudentDetailsComponent'
 import AddStudentComponent from './AddStudentComponent'
-import { FAB, Searchbar } from 'react-native-paper'
+import { FAB, Searchbar,RadioButton } from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker';
 
 
@@ -20,20 +20,33 @@ export default function ViewStudentsComponent() {
     const [teamsNameMap, setMap] = teamsMap
 
 
-    const [pickedImage, setPickedImage] = React.useState();
-    const [studentsArr, setStudents] = React.useState([]);
-    const [allTeams, setTeams] = React.useState([]);
-    const [detailsVisible, setDetailsVisible] = React.useState(false);
-    const [editVisible, setEditVisible] = React.useState(false);
-    const [addVisible, setAddVisible] = React.useState(false);
-    const [pickedStudent, setPickedStudent] = React.useState({});
-    const [searchText, setSearchText] = React.useState('');
+    const [pickedImage, setPickedImage] = useState();
+    const [studentsArr, setStudents] = useState([]);
+    const [allTeams, setTeams] = useState([]);
+    const [detailsVisible, setDetailsVisible] = useState(false);
+    const [editVisible, setEditVisible] = useState(false);
+    const [addVisible, setAddVisible] = useState(false);
+    const [pickedStudent, setPickedStudent] = useState({});
+    const [searchText, setSearchText] = useState('');
     const onChangeSearch = query => setSearchText(query)
+
+    const [isRadioBtnShow, setIsRadioBtnShow] = useState(false);
+    const [isRadioBtnON, setIsRadioBtnON] = useState(false);
+    const [isUserPressRemoveAll, setIsUserPressRemoveAll] = useState(false);
+    const [studentsCheckedStatus, setStudentsCheckedStatus] = useState([]);
 
     useEffect(() => {
         getAllStudents();
         getAllTeams();
     }, [])
+
+    useEffect(() => {
+  
+        if (studentsCheckedStatus.length>0 &&studentsCheckedStatus.length == studentsArr.length && !isUserPressRemoveAll) {
+            setIsRadioBtnON(true);
+        }
+    }, [studentsCheckedStatus])
+
 
     const getAllStudents = () => {
         axios.post('http://' + IP + '/students/getallstudentsbyuserid', { userid: userIdValue }).then(res => {
@@ -46,7 +59,7 @@ export default function ViewStudentsComponent() {
 
     const addOrUpdateStudentPhoto = () => {
         axios.post('http://' + IP + '/students/addorupdatestudentphoto ', { userID: userIdValue, studentId: pickedStudent._id, photo: pickedImage }).then(res => {
-    })
+        })
     }
 
     const getAllTeams = () => {
@@ -94,8 +107,8 @@ export default function ViewStudentsComponent() {
             quality: 1,
         });
 
-        if (!result.cancelled) {
-            setPickedImage(result.uri);
+        if (!result.canceled) {
+            setPickedImage(result.assets[0].uri);
             addOrUpdateStudentPhoto()
         }
     };
@@ -126,14 +139,14 @@ export default function ViewStudentsComponent() {
 
         });
 
-        setPickedImage(image.uri);
+        setPickedImage(image.assets[0].uri);
         addOrUpdateStudentPhoto()
     };
 
     const StudentCardPress = (stu, btnType) => {
         setPickedStudent(stu);
         switch (btnType) {
-            case 'updateRequest' :
+            case 'updateRequest':
                 getAllStudents();
                 break;
             case 'pictureBtn': Alert.alert('a', 'b', [
@@ -166,6 +179,62 @@ export default function ViewStudentsComponent() {
 
     }
 
+    const onChildCardLongPress = () => {
+        setIsRadioBtnShow(true)
+    }
+
+
+    const checkOrUncheckStudent = (status, id) => {
+        setIsUserPressRemoveAll(false);
+        if (!status) {
+            setIsRadioBtnON(false);
+            let state = studentsCheckedStatus.filter(x => x != id)
+            setStudentsCheckedStatus(state)
+        } else {
+
+            if (!studentsCheckedStatus.includes(id)) {
+                setStudentsCheckedStatus(studentsCheckedStatus => [...studentsCheckedStatus, id]);
+            }
+        }
+    }
+
+    const onRadionBtnPresses = () => {
+        if (isRadioBtnON) {
+            let arr = studentsArr.map(stu => stu._id);
+            setStudentsCheckedStatus(arr);
+        } else {
+            setStudentsCheckedStatus([]);
+        }
+        setIsRadioBtnON(!isRadioBtnON)
+        setIsUserPressRemoveAll(true)
+    }
+
+    const removeFewStudents = ()=>{
+        axios.post('http://' + IP + '/students/deletefewstudents', { userId: userIdValue, students: studentsCheckedStatus }).then(res => {
+            if (res.data == true) {
+              axios.post('http://' + IP + '/students/getallstudentsbyuserid', { userid: userIdValue }).then(res1 => {
+                setStudents(res1.data)
+                setIsRadioBtnShow(false)
+                setIsRadioBtnON(false)
+                setIsUserPressRemoveAll(false);
+                setStudentsCheckedStatus([])
+              })
+            }
+      
+          })    }
+
+    BackHandler.addEventListener('hardwareBackPress', () => {
+        if (isRadioBtnShow == true) {
+          setIsRadioBtnShow(false)
+          setIsRadioBtnON(false)
+          setIsUserPressRemoveAll(true);
+          return true;
+        } else if (isRadioBtnShow == false) {
+          BackHandler.exitApp();
+          // return false;
+        }
+      })
+
     return (
 
         <View style={[styles.container]}>
@@ -179,6 +248,15 @@ export default function ViewStudentsComponent() {
             {/* {isRadioBtnShow && <Button title='Change Team' style={{ width: '10%', height: 30, margin:7}} onPress={changeTeamToFewStudents} />} */}
 
             <Searchbar placeholder='Search' onChangeText={onChangeSearch} value={searchText} />
+            {isRadioBtnShow &&
+                <RadioButton
+                    value="mainRadioBtn"
+                    status={isRadioBtnON ? 'checked' : 'unchecked'}
+                    onPress={() => onRadionBtnPresses()}
+                />
+            }
+            {isRadioBtnShow && <TouchableOpacity onPress={removeFewStudents}><Image style={{ width: 20, height: 30, margin: 7 }} source={require('../../assets/garbageIcon.png')} ></Image></TouchableOpacity>}
+
             <ScrollView>
                 <View style={[styles.container]}>
 
@@ -187,7 +265,7 @@ export default function ViewStudentsComponent() {
                             <View key={index}>
                                 {
                                     stu.Name.includes(searchText) &&
-                                    <ViewCardStudentComp key={index} callBack={StudentCardPress} data={stu} />
+                                    <ViewCardStudentComp checkUnCheckStudent={checkOrUncheckStudent} isUserRemoveAll={isUserPressRemoveAll} isRadioBtnON={isRadioBtnON} isRadioBtnShow={isRadioBtnShow} key={index} onLongPress={onChildCardLongPress} callBack={StudentCardPress} data={stu} />
                                 }
                             </View>
                         )

@@ -21,14 +21,12 @@ export default function PracticeDetailsComponent(props) {
 
 
 
-
-
     useEffect(() => {
         getAttendancePrecent()
         getStudentsFullDetails()
         let x = props.practice.Date.split('T')
         props.practice.Date = x[0];
-    }, []);
+    },[]);
 
 
 
@@ -49,7 +47,6 @@ export default function PracticeDetailsComponent(props) {
         // let stuArr = props.practice.Students.filter(s => s.Name == null)
         axios.post('http://' + IP + '/practices/getstudentlistforpratice', {userId:userIdValue,practiceId:props.practice._id, students: props.practice.Students }).then(res => {
             if (res.data != false) {
-                console.log(res.data)
                 setStudentsList(res.data)
   
             }
