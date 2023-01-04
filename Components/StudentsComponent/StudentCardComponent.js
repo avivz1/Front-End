@@ -14,12 +14,9 @@ export default function StudentCardComponent(props) {
     const [isRadioBtnShow, setIsRadioBtnShow] = useState(false);
     const [checked, setChecked] = useState(false);
 
-    const setSelectedFlag = () => {
-        setFlag(!flag)
-    }
 
     useEffect(() => {
-        if (props.data.Image != undefined || props.data.Image != null) {
+        if (props.data.Image != undefined && props.data.Image != null && props.data.Image != '') {
             setPickedImage(props.data.Image)
         } else {
             setPickedImage('https://gsmauditors.com/wp-content/uploads/2016/05/istockphoto-1133765772-612x612-1.jpg')
@@ -43,6 +40,7 @@ export default function StudentCardComponent(props) {
     const addOrUpdateStudentPhoto = (image) => {
         axios.post('http://' + IP + '/students/addorupdatestudentphoto ', { studentId: props.data._id, photo: image }).then(res => {
             if (res.data == true) {
+                // props.data.Image=image;
                 Alert.alert('updated')
             } else {
                 Alert.alert('was problem')
@@ -53,8 +51,8 @@ export default function StudentCardComponent(props) {
     const pictureHandler = () => {
         Alert.alert('A', 'v', [
             { text: 'Cancel', style: 'cancel' },
+            { text: 'Gallery', onPress: () => { pickImage() } },
             { text: 'Take a Picture', onPress: () => { takeImageHandler() } },
-            { text: 'Gallery', onPress: () => { pickImage() } }
         ])
 
     }
@@ -71,7 +69,7 @@ export default function StudentCardComponent(props) {
         if (!result.canceled) {
             addOrUpdateStudentPhoto(result.assets[0].uri)
             setPickedImage(result.assets[0].uri);
-            props.callBack('updateRequest');
+            props.callBack(props.data,'updateRequest');
         }
     };
 
@@ -102,8 +100,8 @@ export default function StudentCardComponent(props) {
         });
         if (image.canceled != true) {
             addOrUpdateStudentPhoto(image.assets[0].uri)
+            props.callBack(props.data,'updateRequest')
             setPickedImage(image.assets[0].uri);
-            props.callBack('updateRequest')
         }
     };
 

@@ -62,7 +62,7 @@ export default function HomeComponent() {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"],
     datasets: [
       {
-        data: barChartData ? barChartData : [],
+        data: barChartData,
         color: (opacity = 1) => `rgba(200, 0, 0, ${opacity})`, // optional
       }
     ],
@@ -264,7 +264,7 @@ export default function HomeComponent() {
   }
 
   const isLoading = () => {
-    if (barChartData.length <= 0 || teamsPieData.length <= 0 || practicePieData.length <= 0) {
+    if (barChartData.length <= 0 && teamsPieData.length <= 0 && practicePieData.length <= 0) {
       return true;
     } else {
       return false
@@ -318,7 +318,7 @@ export default function HomeComponent() {
           }
           <Text style={{ fontSize: 26, padding: 15 }}>Student Practices By Month (%)</Text>
 
-          {dataBarPie ?
+          {dataBarPie.datasets[0].data?
             <BarChart
               style={{ padding: 30 }}
               data={dataBarPie}
@@ -340,7 +340,7 @@ export default function HomeComponent() {
             />
             :
             <Text>No Data</Text>
-
+            
           }
 
 

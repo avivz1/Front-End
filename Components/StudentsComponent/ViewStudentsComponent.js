@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, TextInput, Alert, TouchableOpacity, TouchableHighlight,Image,BackHandler, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, Alert, TouchableOpacity, TouchableHighlight, Image, BackHandler, ScrollView } from 'react-native';
 import { Context } from '../../ContextAPI/Context';
 import ViewCardStudentComp from './StudentCardComponent';
 import { IP } from '../../IP_Address';
@@ -8,7 +8,7 @@ import Overlay from 'react-native-modal-overlay';
 import EditStudentComponent from './EditStudentComponent';
 import StudentDetailsComponent from './StudentDetailsComponent'
 import AddStudentComponent from './AddStudentComponent'
-import { FAB, Searchbar,RadioButton } from 'react-native-paper'
+import { FAB, Searchbar, RadioButton } from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker';
 
 
@@ -20,7 +20,7 @@ export default function ViewStudentsComponent() {
     const [teamsNameMap, setMap] = teamsMap
 
 
-    const [pickedImage, setPickedImage] = useState();
+    // const [pickedImage, setPickedImage] = useState();
     const [studentsArr, setStudents] = useState([]);
     const [allTeams, setTeams] = useState([]);
     const [detailsVisible, setDetailsVisible] = useState(false);
@@ -40,9 +40,11 @@ export default function ViewStudentsComponent() {
         getAllTeams();
     }, [])
 
+
+
     useEffect(() => {
-  
-        if (studentsCheckedStatus.length>0 &&studentsCheckedStatus.length == studentsArr.length && !isUserPressRemoveAll) {
+
+        if (studentsCheckedStatus.length > 0 && studentsCheckedStatus.length == studentsArr.length && !isUserPressRemoveAll) {
             setIsRadioBtnON(true);
         }
     }, [studentsCheckedStatus])
@@ -51,16 +53,17 @@ export default function ViewStudentsComponent() {
     const getAllStudents = () => {
         axios.post('http://' + IP + '/students/getallstudentsbyuserid', { userid: userIdValue }).then(res => {
             if (res.data) {
+                setStudents([])
                 setStudents(res.data)
             }
         })
 
     }
 
-    const addOrUpdateStudentPhoto = () => {
-        axios.post('http://' + IP + '/students/addorupdatestudentphoto ', { userID: userIdValue, studentId: pickedStudent._id, photo: pickedImage }).then(res => {
-        })
-    }
+    // const addOrUpdateStudentPhoto = () => {
+    //     axios.post('http://' + IP + '/students/addorupdatestudentphoto ', { userID: userIdValue, studentId: pickedStudent._id, photo: pickedImage }).then(res => {
+    //     })
+    // }
 
     const getAllTeams = () => {
         axios.post('http://' + IP + '/teams/getalluserteams', { userID: userIdValue }).then(res => {
@@ -93,55 +96,56 @@ export default function ViewStudentsComponent() {
         setEditVisible(false);
 
     }
+
     const closeAddModal = () => {
         getAllStudents();
         setAddVisible(false);
 
     }
 
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
+    // const pickImage = async () => {
+    //     let result = await ImagePicker.launchImageLibraryAsync({
+    //         mediaTypes: ImagePicker.MediaTypeOptions.All,
+    //         allowsEditing: true,
+    //         aspect: [4, 3],
+    //         quality: 1,
+    //     });
 
-        if (!result.canceled) {
-            setPickedImage(result.assets[0].uri);
-            addOrUpdateStudentPhoto()
-        }
-    };
+    //     if (!result.canceled) {
+    //         setPickedImage(result.assets[0].uri);
+    //         addOrUpdateStudentPhoto()
+    //     }
+    // };
 
-    const verifyPermissions = async () => {
-        const result = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        // const result = await Permissions.askAsync(Permissions.CAMERA);
-        if (result.status !== 'granted') {
-            Alert.alert(
-                'Insufficient permissions!',
-                'You need to grant camera permissions to use this app.',
-                [{ text: 'Okay' }]
-            );
-            return false;
-        }
-        return true;
-    };
+    // const verifyPermissions = async () => {
+    //     const result = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    //     // const result = await Permissions.askAsync(Permissions.CAMERA);
+    //     if (result.status !== 'granted') {
+    //         Alert.alert(
+    //             'Insufficient permissions!',
+    //             'You need to grant camera permissions to use this app.',
+    //             [{ text: 'Okay' }]
+    //         );
+    //         return false;
+    //     }
+    //     return true;
+    // };
 
-    const takeImageHandler = async () => {
-        const hasPermission = await verifyPermissions();
-        if (!hasPermission) {
-            return;
-        }
-        const image = await ImagePicker.launchCameraAsync({
-            allowsEditing: true,
-            aspect: [16, 14],
-            quality: 0.5,
+    // const takeImageHandler = async () => {
+    //     const hasPermission = await verifyPermissions();
+    //     if (!hasPermission) {
+    //         return;
+    //     }
+    //     const image = await ImagePicker.launchCameraAsync({
+    //         allowsEditing: true,
+    //         aspect: [16, 14],
+    //         quality: 0.5,
 
-        });
+    //     });
 
-        setPickedImage(image.assets[0].uri);
-        addOrUpdateStudentPhoto()
-    };
+    //     setPickedImage(image.assets[0].uri);
+    //     addOrUpdateStudentPhoto()
+    // };
 
     const StudentCardPress = (stu, btnType) => {
         setPickedStudent(stu);
@@ -149,12 +153,12 @@ export default function ViewStudentsComponent() {
             case 'updateRequest':
                 getAllStudents();
                 break;
-            case 'pictureBtn': Alert.alert('a', 'b', [
-                { text: 'Cancel', style: 'cancel' },
-                { text: 'Take a Picture', onPress: () => { takeImageHandler() } },
-                { text: 'Gallery', onPress: () => { pickImage() } }
-            ])
-                break;
+            // case 'pictureBtn': Alert.alert('a', 'b', [
+            //     { text: 'Cancel', style: 'cancel' },
+            //     { text: 'Take a Picture', onPress: () => { takeImageHandler() } },
+            //     { text: 'Gallery', onPress: () => { pickImage() } }
+            // ])
+            //     break;
             case 'detailsBtn': setDetailsVisible(true)
                 break;
             case 'editBtn': setEditVisible(true)
@@ -209,31 +213,32 @@ export default function ViewStudentsComponent() {
         setIsUserPressRemoveAll(true)
     }
 
-    const removeFewStudents = ()=>{
+    const removeFewStudents = () => {
         axios.post('http://' + IP + '/students/deletefewstudents', { userId: userIdValue, students: studentsCheckedStatus }).then(res => {
             if (res.data == true) {
-              axios.post('http://' + IP + '/students/getallstudentsbyuserid', { userid: userIdValue }).then(res1 => {
-                setStudents(res1.data)
-                setIsRadioBtnShow(false)
-                setIsRadioBtnON(false)
-                setIsUserPressRemoveAll(false);
-                setStudentsCheckedStatus([])
-              })
+                axios.post('http://' + IP + '/students/getallstudentsbyuserid', { userid: userIdValue }).then(res1 => {
+                    setStudents(res1.data)
+                    setIsRadioBtnShow(false)
+                    setIsRadioBtnON(false)
+                    setIsUserPressRemoveAll(false);
+                    setStudentsCheckedStatus([])
+                })
             }
-      
-          })    }
+
+        })
+    }
 
     BackHandler.addEventListener('hardwareBackPress', () => {
         if (isRadioBtnShow == true) {
-          setIsRadioBtnShow(false)
-          setIsRadioBtnON(false)
-          setIsUserPressRemoveAll(true);
-          return true;
+            setIsRadioBtnShow(false)
+            setIsRadioBtnON(false)
+            setIsUserPressRemoveAll(true);
+            return true;
         } else if (isRadioBtnShow == false) {
-          BackHandler.exitApp();
-          // return false;
+            BackHandler.exitApp();
+            // return false;
         }
-      })
+    })
 
     return (
 
@@ -261,6 +266,7 @@ export default function ViewStudentsComponent() {
                 <View style={[styles.container]}>
 
                     {studentsArr.length > 0 ? studentsArr.map((stu, index) => {
+
                         return (
                             <View key={index}>
                                 {

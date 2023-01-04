@@ -162,6 +162,7 @@ export default function ViewTeamsComponent() {
                                 } else {
                                     axios.post('http://' + IP + '/teams/deleteteam', { teamId: team._id, userId: userIdValue }).then(res2 => {
                                         if (res2.data) {
+                                            setTeams([])
                                             getAllTeams()
                                             Alert.alert('Team has been deleted');
                                         } else {
@@ -238,7 +239,6 @@ export default function ViewTeamsComponent() {
         setIsRadioBtnON(!isRadioBtnON)
         setIsUserPressRemoveAll(true)
     }
-    // text: 'Yes', onPress: () => {
 
     const removeFewTeams = () => {
         if (teamsCheckedStatus.length > 0) {

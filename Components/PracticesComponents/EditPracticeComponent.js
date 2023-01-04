@@ -79,8 +79,6 @@ export default function EditPracticeComponent(props) {
     // }
 
     const onSubmit = (data) => {
-        console.log('------------Submit------------------')
-
         if(practiceName=='' || practiceName==null ||practiceName.length ==0){
             setErrorSubmit(true)
         }else{

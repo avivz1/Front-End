@@ -17,13 +17,10 @@ export default function TeamCardComponent(props) {
 
     /*-----------------------------------useEffect's section--------------------------------------------*/
     useEffect(() => {
-        
-        if (props.team.Image != undefined && props.team.Image != null) {
-            console.log('TeamCardComp--- image from props')
+        if (props.team.Image != undefined && props.team.Image != null && props.team.Image != '') {
             setPickedImage(props.team.Image)
         } else {
-            console.log('TeamCardComp--- image from defaultImage')
-            setPickedImage(defaultImage);
+            // setPickedImage(defaultImage);
         }
     }, [])
 
@@ -97,8 +94,8 @@ export default function TeamCardComponent(props) {
     const pictureHandler = () => {
         Alert.alert('A', 'v', [
             { text: 'Cancel', style: 'cancel' },
+            { text: 'Gallery', onPress: () => { pickImage() } },
             { text: 'Take a Picture', onPress: () => { takeImageHandler() } },
-            { text: 'Gallery', onPress: () => { pickImage() } }
         ])
 
     }
@@ -115,7 +112,6 @@ export default function TeamCardComponent(props) {
 
         });
         if (image.canceled != true) {
-            console.log(image)
             addOrUpdateStudentPhoto(image.assets[0].uri)
             setPickedImage(image.assets[0].uri);
             props.callBack('updateRequest')
@@ -151,7 +147,16 @@ export default function TeamCardComponent(props) {
                         }}
                     />
                 }
-                <Image style={{ width: 150, height: 50 }} resizeMode='cover' source={{uri:pickedImage}} />
+                {/* {pickedImage != undefined ?
+                    pickedImage.length>2?<Image style={{ width: 150, height: 50 }} resizeMode='cover' source={{uri:pickedImage}} />
+                    :
+                    <Image style={{ width: 150, height: 50 }} resizeMode='cover' source={defaultImage} />
+                    
+                } */}
+
+                <Image style={{ width: 150, height: 50 }} resizeMode='cover' source={pickedImage?{uri:pickedImage}:defaultImage} />
+                {/* {pickedImage!=undefined  && <Image style={{ width: 150, height: 50 }} resizeMode='cover' source={{uri:pickedImage}} />} */}
+                {/* {!pickedImage.isNaN() && <Image style={{ width: 150, height: 50 }} resizeMode='cover' source={defaultImage} />} */}
                 {/* {!props.isRadioBtnShow &&<Image style={{ width: 70, height: 70 }} resizeMode='cover' source={require('../../assets/teaml.png')} />} */}
                 {/* {!props.isRadioBtnShow && <Image style={{ width: 150, height: 50 }} resizeMode='cover'   source={{ uri: pickedImage ? pickedImage : 'https://gsmauditors.com/wp-content/uploads/2016/05/istockphoto-1133765772-612x612-1.jpg'}} />} */}
 
