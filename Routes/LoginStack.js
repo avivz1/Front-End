@@ -12,12 +12,14 @@ const screens = {
        screen: LoginComponent
    },
    SignUp : {
-    screen : SignUpComponent
+    screen : SignUpComponent,
+
     },
     Home : {
         screen : HomeStack,
         navigationOptions:{
             headerShown: false,
+            gestureEnabled: true,
         }
    }
 }

@@ -1,63 +1,69 @@
-import { StyleSheet, Text, View, Button, TextInput, ViewComponent,ScrollView,Image, Platform, Alert } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, ViewComponent, ScrollView, Image, Platform, Alert } from 'react-native';
 import React, { useState, useEffect } from 'react'
 import { inline } from 'react-native-web/dist/cjs/exports/StyleSheet/compiler';
 import { block } from 'react-native-reanimated';
 import { DataTable, FAB } from 'react-native-paper'
+import { Context } from '../../ContextAPI/Context';
+import axios from 'axios';
+import { IP } from '../../IP_Address';
+
+
 
 
 
 
 export default function TeamDetailsComponent(props) {
-    const [teamName,setTeamName] = useState(props.team.Name)
-    const [teamType,setTeamType] = useState(props.team.Type)
-    const [teamCity,setTeamCity] = useState(props.team.City)
-    const [studentsList,setStudentsList] = useState([])
- 
 
-    useEffect(()=>{
-        let obj ={
-            Name:'aviv',
-            Belt:'red',
-            isDeleted:false,
-            isChecked:true,
-        }
-        let arr=[]
-        arr.push(obj)
-        setStudentsList(arr)
-    },[]);
+    const { userId } = React.useContext(Context);
+    const [userIdValue] = userId;
+
+    const [teamName, setTeamName] = useState(props.team.Name)
+    const [teamType, setTeamType] = useState(props.team.Type)
+    const [teamCity, setTeamCity] = useState(props.team.City)
+    const [createdDate, setCreatedDate] = useState(props.team.CreatedDate.split('T')[0])
+    const [teamId, setTeamId] = useState(props.team._id)
+    const [studentsList, setStudentsList] = useState([])
+
+
+    useEffect(() => {
+        getStudentsByTeam()
+    }, []);
+
+    const getStudentsByTeam = () => {
+        axios.post('http://' + IP + '/students/getstudentsbyteamid', { teamId: teamId, userId: userIdValue }).then(res => {
+            if (res.data.length > 0) {
+                setStudentsList(res.data)
+            }
+        })
+    }
 
 
     return (
 
-        <View style={[styles.mainView]} >
+        <View style={[styles.container]}>
             <Text style={[styles.text]}>Name : {teamName}</Text>
             <Text style={[styles.text]}>Type : {teamType}</Text>
             <Text style={[styles.text]}>City : {teamCity}</Text>
+            <Text style={[styles.text]}>Created Date : {createdDate}</Text>
+            <Text style={[styles.text]}>Num of Students  : {studentsList.length}</Text>
 
 
-            <View style={[styles.container]}>
+            <View style={{flex:0}}>
 
-                <DataTable style={{ width: '100%', paddingTop: 30 }} >
+                <DataTable style={{ overflow: 'scroll',padding:20 }}>
                     <DataTable.Header style={{ backgroundColor: '#cc99ff', fontWeight: 'bold' }}>
                         <DataTable.Title style={{ fontWeight: 'bold' }}>Name</DataTable.Title>
                         <DataTable.Title style={{ backgroundColor: '#cc99ff', fontWeight: 'bold' }}>Belt</DataTable.Title>
-                        <DataTable.Title style={{ backgroundColor: '#cc99ff', fontWeight: 'bold' }}>present</DataTable.Title>
+                        <DataTable.Title style={{ backgroundColor: '#cc99ff', fontWeight: 'bold' }}>Age</DataTable.Title>
                     </DataTable.Header>
 
-                    <ScrollView style={[styles.scrollStyle]} >
+                    <ScrollView style={{ height: '60%', width: '100%', }} >
                         {studentsList.length > 0 ? studentsList.map((stu, index) => {
                             return (
-                                <DataTable.Row  onPress={() => { }} key={index}>
+                                <DataTable.Row onPress={() => { }} key={index}>
                                     <DataTable.Cell>{stu.Name}</DataTable.Cell>
                                     <DataTable.Cell>{stu.Belt}</DataTable.Cell>
-                                    <DataTable.Cell>{stu.isDeleted ?
-                                        <Image style={{ width: 12, height: 15 }} source={require('../../assets/garbageIcon.png')} />
-                                        :stu.isChecked? 
-                                        <Image style={{ width: 11, height: 11 }} source={require('../../assets/check.png')} />
-                                        :
-                                        <Image style={{ width: 11, height: 11 }} source={require('../../assets/uncheck.png')} />
-                                    }
-                                    </DataTable.Cell>
+                                    <DataTable.Cell>{stu.Age}</DataTable.Cell>
                                 </DataTable.Row>
                             )
                         })
@@ -69,7 +75,7 @@ export default function TeamDetailsComponent(props) {
                     </ScrollView>
                 </DataTable>
             </View>
-        </View>
+        </View >
     )
 }
 
@@ -81,35 +87,42 @@ const styles = StyleSheet.create({
     //     flex: 1,
 
     // },
-    mainView : {
-        alignItems:'center',
-        textAlign:'center',
-        height:'100%',
-        width:'100%',
-        margin:2,
-        padding:2,
-        
+    mainView: {
+        alignItems: 'center',
+        textAlign: 'center',
+        height: '80%',
+        width: '100%',
+        margin: 2,
+        padding: 2,
+        flex: 0,
+
     },
-    text:{
-        margin:2,
-        padding:2,
-        fontWeight:'bold',
+    text: {
+        margin: 2,
+        padding: 2,
+        fontWeight: 'bold',
     },
 
     container: {
+        display:'flex',
+        alignSelf: 'center',
+        height: '70%',
+        width: '100%',
         flex: 0,
+
+    },
+
+    container1: {
         paddingTop: 10,
         backgroundColor: '#ffffff',
-        height: '90%',
+        height: '100%',
         width: '100%',
         alignContent: 'center',
+        overflow: 'scroll'
     },
 
     scrollStyle: {
-        width: '100%',
-        height: '70%',
-        // backgroundColor: '#33ccff',
-
+        height: 300,
     },
 
     headLine: {
@@ -118,3 +131,4 @@ const styles = StyleSheet.create({
     }
 
 });
+

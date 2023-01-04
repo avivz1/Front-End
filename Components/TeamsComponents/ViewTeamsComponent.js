@@ -272,8 +272,8 @@ export default function ViewTeamsComponent() {
         <View style={[styles.container]}>
 
             <Overlay visible={isVisible() ? true : false} onClose={onCloseModal} closeOnTouchOutside>
-                {editVisible && <EditTeamComponent onTeamUpdate={closeEditModal} team={pickedTeam ? pickedTeam : ''} />}
-                {detailsVisible && <TeamDetailsComponent team={pickedTeam ? pickedTeam : ''} />}
+                {editVisible && <EditTeamComponent onTeamUpdate={closeEditModal} team={pickedTeam ? pickedTeam : undefined} />}
+                {detailsVisible && <TeamDetailsComponent team={pickedTeam ? pickedTeam : undefined} />}
                 {addVisible && <AddTeamComponent onAddTeam={closeAddModal} />}
             </Overlay>
             {removeVisible && <RemoveTeamDialog pickedTeam={pickedTeam} teams={allTeams} onRemoveOkPress={switchStudentsAndDeleteTeam} onRemoveCanclePress={closeRemoveModal} />}

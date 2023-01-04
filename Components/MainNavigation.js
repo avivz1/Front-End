@@ -1,12 +1,10 @@
 import { BottomNavigation } from 'react-native-paper'
 import React, { useEffect } from 'react';
-import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
-import { Context } from '../ContextAPI/Context';
-import { IP } from '../IP_Address';
 import HomeComponent from './HomeComponent'
 import StudentsComponent from './StudentsComponent/ViewStudentsComponent'
 import TeamsComponent from './TeamsComponents/ViewTeamsComponent'
 import PracticesComponent from './PracticesComponents/ViewPracticesComponent'
+
 
 export default function MainNavigation() {
 
@@ -25,12 +23,14 @@ export default function MainNavigation() {
 
     const renderScene = ({ route, jumpTo }) => {
         switch (route.key) {
-            case 'Home': return <HomeRoute jumpTo={jumpTo} />;
+            case 'Home': return <HomeRoute  jumpTo={jumpTo} />;
             case 'Students': return <StudentsRoute jumpTo={jumpTo} />;
             case 'Teams': return <TeamsRoute jumpTo={jumpTo} />;
             case 'Practices': return <PracticesRoute jumpTo={jumpTo} />;
         }
     }
+
+    
 
 
     return (
