@@ -45,6 +45,7 @@ export default function PracticeDetailsComponent(props) {
         // })
 
         // let stuArr = props.practice.Students.filter(s => s.Name == null)
+      
         axios.post('http://' + IP + '/practices/getstudentlistforpratice', {userId:userIdValue,practiceId:props.practice._id, students: props.practice.Students }).then(res => {
             if (res.data != false) {
                 setStudentsList(res.data)
@@ -77,8 +78,7 @@ export default function PracticeDetailsComponent(props) {
                 <DataTable style={{ width: '100%', paddingTop: 30 }} >
                     <DataTable.Header style={{ backgroundColor: '#cc99ff', fontWeight: 'bold' }}>
                         <DataTable.Title style={{ fontWeight: 'bold' }}>Name</DataTable.Title>
-                        <DataTable.Title style={{ backgroundColor: '#cc99ff', fontWeight: 'bold' }}>Belt</DataTable.Title>
-                        <DataTable.Title style={{ backgroundColor: '#cc99ff', fontWeight: 'bold' }}>present</DataTable.Title>
+                        <DataTable.Title style={{ backgroundColor: '#cc99ff', fontWeight: 'bold' }}>Status</DataTable.Title>
                     </DataTable.Header>
 
                     <ScrollView style={[styles.scrollStyle]} >
@@ -86,7 +86,6 @@ export default function PracticeDetailsComponent(props) {
                             return (
                                 <DataTable.Row  onPress={() => { }} key={index}>
                                     <DataTable.Cell>{stu.Name}</DataTable.Cell>
-                                    <DataTable.Cell>{stu.Belt}</DataTable.Cell>
                                     <DataTable.Cell>{stu.isDeleted ?
                                         <Image style={{ width: 12, height: 15 }} source={require('../../assets/garbageIcon.png')} />
                                         :stu.isChecked? 

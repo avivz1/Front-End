@@ -88,7 +88,11 @@ export default function ViewStudentsComponent() {
     }
 
     const onAddPress = () => {
-        setAddVisible(true)
+        if(!allTeams.length>0){
+            setAddVisible(true)
+        }else{
+            Alert.alert('must have a team before creating student')
+        }
     }
 
     const closeEditModal = () => {

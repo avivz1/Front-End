@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, Dimensions, TextInput, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Button, Dimensions, TextInput, ScrollView,Alert } from 'react-native';
 import { Context } from '../ContextAPI/Context';
 import { IP } from '../IP_Address';
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
@@ -147,7 +147,7 @@ export default function HomeComponent() {
   const addData = () => {
     axios.post('http://' + IP + '/login/adddata', { userId: userIdValue }).then(res => {
       if (res.data) {
-        Alert.alert('data added')
+        // Alert.alert('data added')
       } else {
         Alert.alert('there was a problem')
       }
