@@ -34,7 +34,7 @@ export default function MainNavigation() {
 
 
     return (
-        <BottomNavigation
+        <BottomNavigation 
             navigationState={{ index, routes }}
             onIndexChange={setIndex}
             renderScene={renderScene} />

@@ -112,7 +112,8 @@ export default function ViewStudentComponent(props) {
             <Text>Belt : {props.student.Belt}</Text>
             <Text>Age : {props.student.Age}</Text>
             <Text>Team : {getTeamName(props.student.Team_ID)}  </Text>
-            <Text>Precentage By Month :{presentMonthPrecentage ? presentMonthPrecentage : 0}%  </Text>
+            <Text>Precentage By Month :{presentMonthPrecentage ? presentMonthPrecentage.toFixed(2) : 0}%  </Text>
+            <Text>City : {props.student.City}</Text>
 
             {/* <Text>{JSON.stringify(practicesList)}</Text> */}
             <Calendar

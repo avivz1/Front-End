@@ -7,9 +7,9 @@ import DropDownPicker from 'react-native-dropdown-picker';
 
 export default function AddStudentsComponent(props) {
 
-    const [pickdBelt,setPickedBelt] = useState('')
+    const [pickdBelt, setPickedBelt] = useState('')
     const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(null);
+    const [value, setValue] = useState(props.data?props.data:null);
     const [items, setItems] = useState([
         { label: 'White', value: 'white', icon: () => <Image source={require('../assets/white.png')} style={[styles.iconStyle]} /> },
         { label: 'Yellow', value: 'yellow', icon: () => <Image source={require('../assets/yellow.png')} style={[styles.iconStyle]} /> },
@@ -20,11 +20,7 @@ export default function AddStudentsComponent(props) {
         { label: 'Black', value: 'black', icon: () => <Image source={require('../assets/black.png')} style={[styles.iconStyle]} /> },
     ]);
 
-    useEffect(()=>{
-        // props.callback(pickdBelt)
-    },[])
-
-    const setBelt = (beltColor)=>{
+    const setBelt = (beltColor) => {
         setPickedBelt(beltColor)
         props.callback(beltColor)
     }
@@ -33,6 +29,7 @@ export default function AddStudentsComponent(props) {
         <View>
 
             <DropDownPicker
+                placeholder='Select Belt'
                 open={open}
                 value={value}
                 items={items}

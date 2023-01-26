@@ -75,8 +75,8 @@ export default function ViewStudentsComponent() {
             }
         })
     }
-
-
+    
+    
     const onCloseModal = () => {
         if (detailsVisible) {
             setDetailsVisible(false)
@@ -86,9 +86,9 @@ export default function ViewStudentsComponent() {
             setAddVisible(false)
         }
     }
-
+    
     const onAddPress = () => {
-        if(!allTeams.length>0){
+        if(allTeams.length>0){
             setAddVisible(true)
         }else{
             Alert.alert('must have a team before creating student')

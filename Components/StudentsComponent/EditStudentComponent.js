@@ -4,18 +4,38 @@ import { useForm, Controller } from "react-hook-form";
 import { Picker } from '@react-native-picker/picker';
 import { IP } from "../../IP_Address";
 import axios from 'axios';
+import { SelectList } from 'react-native-dropdown-select-list'
+import citiesFile from '../../Utils/Cities1.json'
+import BeltsPickerComponent from '../../Utils/BeltsPickerComponent'
+
 
 
 
 export default function EditStudentsComponent(props) {
 
     const [index, setIndex] = React.useState(0);
-    const { control, handleSubmit, formState: { errors } } = useForm();
+    // const { control, handleSubmit, formState: { errors } } = useForm();
+    const [allCities, setAllCities] = React.useState([])
+    const [selectedCity, setSelectedCity] = React.useState(props.student ? props.student.City : '');
+    const [errorsArr, setErrorsArr] = React.useState([])
+    const [stuBelt, setStuBelt] = React.useState(props.student ? props.student.Belt : '')
+    const [stuName, setStuName] = React.useState(props.student ? props.student.Name : '')
+    const [stuAge, setStuAge] = React.useState(props.student ? props.student.Age.toString() : '')
 
 
     useEffect(() => {
         let index = props.teams.findIndex(team => team._id == props.student.Team_ID);
         setIndex(index);
+
+        let arr = []
+        citiesFile.forEach((city) => {
+            let obj = {
+                key: city.semel,
+                value: city.name
+            }
+            arr.push(obj)
+        })
+        setAllCities(arr)
     }, [])
 
 
@@ -23,14 +43,48 @@ export default function EditStudentsComponent(props) {
         setIndex(index)
     }
 
-    const onSubmit = (data) => {
+    const onBeltPicked = (belt) => {
+        setStuBelt(belt)
+    }
+
+    const isInputOk = () => {
+        let arr = []
+        if (stuName == '' || stuName == undefined) {
+            arr.push('stuName')
+        }
+        if (stuAge == '' || stuAge == undefined) {
+            arr.push('stuAge')
+        }
+        if (stuBelt == '' || stuBelt == undefined) {
+            arr.push('stuBelt')
+        }
+        if (selectedCity == '' || selectedCity == undefined) {
+            arr.push('stuCity')
+        }
+        if (arr.length == 0) {
+            setErrorsArr([])
+            return true;
+        } else {
+            setErrorsArr(arr)
+            return false;
+        }
+    }
+
+    const onSubmit = () => {
+
+        let input = isInputOk()
+        if (!input) {
+            return;
+        }
+
+
         axios.post('http://' + IP + '/students/editstudent', {
-            name: data.stuName == '' || data.stuName == undefined ? props.student.Name : data.stuName,
-            belt: data.stuBelt == '' || data.stuBelt == undefined ? props.student.Belt : data.stuBelt,
-            age: data.stuAge == '' || data.stuAge == undefined ? props.student.Age : data.stuAge,
-            city: data.stuCity == '' || data.stuCity == undefined ? props.student.City : data.stuCity,
-            studentId: props.student._id != '' && props.student._id != undefined ? props.student._id : '',
-            Team_ID: props.teams ? props.teams[index]._id : props.student.Team_ID
+            name: stuName,
+            belt: stuBelt,
+            age: stuAge,
+            city: selectedCity,
+            studentId: props.student._id,
+            Team_ID: props.student.Team_ID
 
 
         }).then(res => {
@@ -45,24 +99,47 @@ export default function EditStudentsComponent(props) {
 
     return (
 
-        <View styles={[styles.container]}>
+        <View style={[styles.container]}>
+
             <Text>{props.student.Name}</Text>
+
             <Picker
-                style={{ width: 300 }}
                 selectedValue={props.teams[index].Name}
                 onValueChange={onChangeIndex}>
                 {props.teams.map((team, index) => {
                     return (<Picker.Item key={index} label={team.Name} value={team.Name}></Picker.Item>)
                 })
-                    // (<Picker.Item key={1000000000} label={pickerErrorMsg} value={'error'}></Picker.Item>)
                 }
-
             </Picker>
 
 
-            <View>
-                <Text>Student Name : </Text>
-                <Controller
+            <Text>Student Name : </Text>
+            <TextInput keyboardType='ascii-capable' style={[styles.inputText]} value={stuName} placeholder='Enter Name' onChangeText={(name) => setStuName(name)} />
+            {(errorsArr.length > 0 && errorsArr.includes('stuName')) && <Text>This is required.</Text>}
+
+            <Text>Student Age : </Text>
+            <TextInput keyboardType='numeric' style={[styles.inputText]} value={stuAge} placeholder='Enter age' onChangeText={(age) => setStuAge(age)} />
+            {(errorsArr.length > 0 && errorsArr.includes('stuAge')) && <Text>This is required.</Text>}
+
+            <SelectList
+                defaultOption={{ key: props.student.City, value: props.student.City }}
+                placeholder='Select City'
+                setSelected={(cityName) => setSelectedCity(cityName)}
+                data={allCities}
+                save="value"
+            />
+            {(errorsArr.length > 0 && errorsArr.includes('stuCity')) && <Text>This is required.</Text>}
+
+
+            <Text>Student Belt : </Text>
+            <BeltsPickerComponent callback={onBeltPicked} data={props.student.Belt} />
+            {(errorsArr.length > 0 && errorsArr.includes('stuBelt')) && <Text>This is required.</Text>}
+
+
+
+
+
+            {/* <Controller
                     control={control}
                     name="stuName"
                     rules={{
@@ -78,11 +155,14 @@ export default function EditStudentsComponent(props) {
 
                         />
                     )}
-                />
+                /> */}
 
-                {errors.stuName && <Text>This is required.</Text>}
+            {/* {errors.stuName && <Text>This is required.</Text>} */}
 
 
+
+
+            {/* 
                 <Text>Student Age : </Text>
                 <Controller
                     control={control}
@@ -102,9 +182,9 @@ export default function EditStudentsComponent(props) {
                         />
                     )}
                 />
-                {errors.stuAge && <Text>This is required.</Text>}
+                {errors.stuAge && <Text>This is required.</Text>} */}
 
-
+            {/* 
                 <Text>Student Belt : </Text>
                 <Controller
                     control={control}
@@ -124,30 +204,18 @@ export default function EditStudentsComponent(props) {
                 {errors.stuBelt && <Text>This is required.</Text>}
 
                 <Text>Student City : </Text>
-                <Controller
-                    control={control}
-                    name="stuCity"
-                    rules={{
-                        required: false,
-                    }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            style={styles.input}
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            defaultValue={props.student ? props.student.City : ''}
-                        //placeholder={allTeams.length>0?allTeams[index].City:'No Cities'}
 
-                        />
-                    )}
-                />
-                {errors.stuCity && <Text>This is required.</Text>}
+                <SelectList
+                    placeholder='Select City'
+                    setSelected={(cityName) => setSelectedCity(cityName)}
+                    data={allCities}
+                    save="value"
+                /> */}
 
 
 
-                <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+            <Button title="Submit" onPress={onSubmit} />
 
-            </View>
 
         </View>
 
@@ -164,12 +232,13 @@ export default function EditStudentsComponent(props) {
 const styles = StyleSheet.create({
     container: {
         alignSelf: 'center',
-        flex: 1,
-        height: '40%',
-        width: '100%',
+        flex: 0,
+        height: '70%',
+        width: '70%',
         backgroundColor: '#fff',
         fontSize: 10,
     },
+
     input: {
         margin: 15,
         height: 40,
@@ -177,6 +246,11 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         fontSize: 15,
     },
+    inputText: {
+        borderWidth: 1,
+    },
+
+
     editForm: {
         margin: 10,
         alignItems: 'center',

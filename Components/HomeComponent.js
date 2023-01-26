@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, Dimensions, TextInput, ScrollView,Alert } from 'react-native';
+import { StyleSheet, Text, View, Button, Dimensions, TextInput, ScrollView, Alert } from 'react-native';
 import { Context } from '../ContextAPI/Context';
 import { IP } from '../IP_Address';
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
@@ -24,10 +24,20 @@ export default function HomeComponent() {
   const [teamsPieData, setTeamsPieData] = useState([])
   const [practicePieData, setPracticePieData] = useState([])
   const [barChartData, setBarChartData] = useState([])
-  const redColors = ['rgb(100, 100, 100)', 'rgb(100, 100, 200)', 'rgb(200, 0, 0)', 'rgb(255, 100, 66)', 'rgb(255, 155, 66)', 'rgb(255, 66, 66)']
-  const greenColors = ['rgb(150, 250, 100)', 'rgb(100, 240, 40)', 'rgb(66, 255, 113)', 'rgb(255, 255, 66)', 'rgb(66, 255, 208)', 'rgb(113, 255, 66)']
-  const blueColors = ['rgb(66, 255, 255)', 'rgb(66, 208, 255)', 'rgb(66, 161, 255)', 'rgb(66, 113, 255)', 'rgb(66, 66, 255)', 'rgb(113, 66, 255)', 'rgb(100, 100, 200)', 'rgb(150, 120, 230)']
+  const [beltsPieData, setBeltsPieData] = useState([])
+  const redColors = ['rgb(179, 0, 0)', 'rgb(230, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 51, 51)', 'rgb(255, 102, 102)', 'rgb(255, 153, 153)']
+  const greenColors = ['rgb(150, 250, 130)', 'rgb(120, 240, 60)', 'rgb(66, 255, 80)', 'rgb(200, 255, 90)', 'rgb(100, 255, 208)', 'rgb(113, 255, 100)']
+  const blueColors = ['rgb(0, 0, 80)', 'rgb(0, 0, 153)', 'rgb(0, 0, 255)', 'rgb(128, 128, 255)', 'rgb(204, 204, 255)']
   const screenWidth = Dimensions.get("window").width;
+
+  useEffect(() => {
+    getBeltsAverage()
+    dataForBackup();
+    getTotalDivisionByMonth();
+    getdistributionbyTeam();
+    getTotalDivision();
+
+  }, [])
 
   const chartConfig = {
     backgroundGradientFrom: "#1E2923",
@@ -68,17 +78,28 @@ export default function HomeComponent() {
     ],
   };
 
-  const headers = [
-    { label: "Name", key: "name" },
-    { label: "Team_ID", key: "teamId" },
-    { label: "User_ID", key: "userId" },
-    { label: "Created_Date", key: "createdDate" },
-    { label: "Age", key: "age" },
-    { label: "Belt", key: "belt" },
-    { label: "Image", key: "image" },
-    { label: "Practices", key: "practices" },
-    { label: "City", key: "city" },
-  ];
+
+  const getBeltsAverage = () => {
+    axios.post('http://' + IP + '/students/getBeltsAverage', { userId: userIdValue }).then(response => {
+      if(response.data.length>0){
+        let arr = []
+        response.data.forEach((colorObj, i) => {
+          if (colorObj[1]!=0) {
+            let obj = {
+              name: '% '+colorObj[0],
+              population: Math.trunc(colorObj[1]),
+              // color:greenColors[Math.floor(Math.random()*6)],
+              color:colorObj[0],
+              legendFontSize: 15,
+              legendFontColor: "#7F7F7F",
+            }
+            arr.push(obj)
+          }
+        });
+        setBeltsPieData(arr)
+      }
+    })
+  }
 
   const getTotalDivisionByMonth = () => {
     axios.post('http://' + IP + '/practices/getTotalDivisionByMonth', { userId: userIdValue }).then(res => {
@@ -87,15 +108,16 @@ export default function HomeComponent() {
       }
     })
   }
+
   const getdistributionbyTeam = () => {
     axios.post('http://' + IP + '/teams/getdistributionbyTeam', { userId: userIdValue }).then(res => {
       let arr = [];
       if (res.data.length > 0) {
         res.data.forEach((data, i) => {
           let obj = {
-            name: data.name,
-            population: data.studQuantity,
-            color: blueColors[i],
+            name: "%  " +data.name,
+            population: Math.trunc(data.studQuantity),
+            color: blueColors[Math.floor(Math.random()*5)],
             legendFontSize: 15,
             legendFontColor: "#7F7F7F",
           }
@@ -105,6 +127,7 @@ export default function HomeComponent() {
       }
     })
   }
+
   const getTotalDivision = () => {
     axios.post('http://' + IP + '/practices/getTotalDivision', { userId: userIdValue }).then(res => {
       let arr1 = [];
@@ -116,14 +139,14 @@ export default function HomeComponent() {
         let obj = {
           name: '%  Present',
           population: ((res.data.present / res.data.total) * 100),
-          color: redColors[0],
+          color: redColors[Math.floor(Math.random()*6)],
           legendFontSize: 15,
           legendFontColor: "#7F7F7F",
         }
         let obj1 = {
           name: '%  Not Present',
           population: ((res.data.notPresent / res.data.total) * 100),
-          color: redColors[1],
+          color: redColors[Math.floor(Math.random()*6)],
           legendFontSize: 15,
           legendFontColor: "#7F7F7F",
         }
@@ -135,15 +158,6 @@ export default function HomeComponent() {
     })
   }
 
-
-  useEffect( () => {
-    dataForBackup();
-    getTotalDivisionByMonth();
-    getdistributionbyTeam();
-    getTotalDivision();
-
-  }, [])
-
   const addData = () => {
     axios.post('http://' + IP + '/login/adddata', { userId: userIdValue }).then(res => {
       if (res.data) {
@@ -154,8 +168,6 @@ export default function HomeComponent() {
     })
   }
 
-  // Function to check the platform
-  // If Platform is Android then check for permissions.
   const checkPermission = async () => {
 
     if (Platform.OS === 'ios') {
@@ -185,7 +197,6 @@ export default function HomeComponent() {
     }
   };
 
-
   const dataForBackup = () => {
     axios.post('http://' + IP + '/login/backupdb', { userId: userIdValue }).then(res => {
       if (res.data != false) {
@@ -193,8 +204,6 @@ export default function HomeComponent() {
       }
     })
   }
-
-
 
   const tryExcel = async (data) => {
     let dataSheet1 = excelData[0].map(practice => {
@@ -299,7 +308,6 @@ export default function HomeComponent() {
 
           }
           <Text style={{ fontSize: 30, padding: 15 }}>Student By Practices</Text>
-
           {practicePieData.length > 0 ?
             <PieChart
               data={practicePieData}
@@ -316,9 +324,26 @@ export default function HomeComponent() {
             :
             <Text >No Data</Text>
           }
-          <Text style={{ fontSize: 26, padding: 15 }}>Student Practices By Month (%)</Text>
+          <Text style={{ fontSize: 30, padding: 15 }}>Belts Averages</Text>
+          {beltsPieData.length > 0 ?
+            <PieChart
+              data={beltsPieData}
+              width={screenWidth}
+              height={220}
+              chartConfig={chartConfig}
+              accessor={"population"}
+              backgroundColor={"transparent"}
+              paddingLeft={"15"}
+              center={[10, 10]}
 
-          {dataBarPie.datasets[0].data?
+              absolute
+            />
+            :
+            <Text >No Data</Text>
+          }
+
+          <Text style={{ fontSize: 26, padding: 15 }}>Student Practices By Month (%)</Text>
+          {dataBarPie.datasets[0].data ?
             <BarChart
               style={{ padding: 30 }}
               data={dataBarPie}
@@ -340,7 +365,7 @@ export default function HomeComponent() {
             />
             :
             <Text>No Data</Text>
-            
+
           }
 
 

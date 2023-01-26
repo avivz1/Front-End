@@ -20,9 +20,9 @@ export default function AddPracticeComponent(props) {
     const [userIdValue] = userId;
     const [index, setIndex] = React.useState(0);
     const [pickedTeam, setPickedTeam] = React.useState('');
-    const [practiceName, setPracticeName] = useState('')
-    const [isPickerShow, setIsPickerShow] = useState(false);
     const [date, setDate] = useState(new Date());
+    const [practiceName, setPracticeName] = useState(props.teams[0].Name +' - ' +date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear())
+    const [isPickerShow, setIsPickerShow] = useState(false);
     const [pickedStudents, setPickedStudents] = useState('')
     const [checkedStudents, setCheckedStudents] = useState('')
     const [error, setError] = useState(false)
@@ -95,7 +95,8 @@ export default function AddPracticeComponent(props) {
     return (
         <View style={styles.container}>
 
-            <TextInput style={styles.input} onChangeText={setPracticeName} placeholder='Practice Name'></TextInput>
+            <TextInput style={styles.input} onChangeText={setPracticeName} value={practiceName}></TextInput>
+
             <TextInput type="date" onChangeText={setDate} value={date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()} placeholder='Date'></TextInput>
 
             <Button title='calendar' icon='calendar' onPress={showPicker} />
