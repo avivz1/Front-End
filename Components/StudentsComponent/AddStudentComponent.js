@@ -79,7 +79,7 @@ export default function AddStudentsComponent(props) {
 
         if (isNaN(stuAge)) {
             Alert.alert('Age is not a Number! try again')
-        } else if (props.teams.length > 0) {
+        } else {
             axios.post('http://' + IP + '/students/addstudent', {
                 userid: userIdValue,
                 teamID: pickedTeam ? pickedTeam._id : props.teams[index],
@@ -95,9 +95,7 @@ export default function AddStudentsComponent(props) {
                     Alert.alert("Somthing went wrong. Try again")
                 }
             })
-        } else {
-            Alert.alert('You Must Have a team before creating a student')
-            props.onAddClostModal()
+
 
         }
     }

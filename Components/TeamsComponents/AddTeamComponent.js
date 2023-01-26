@@ -5,26 +5,67 @@ import { Context } from '../../ContextAPI/Context';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 import { IP } from '../../IP_Address';
+import citiesFile from '../../Utils/Cities1.json'
+import { SelectList } from 'react-native-dropdown-select-list'
 
 
 export default function AddTeamComponent2(props) {
 
     const { userId } = React.useContext(Context);
     const [userIdValue] = userId;
-    const { control, handleSubmit, formState: { errors }, reset } = useForm()
+    const [errorsArr, setErrorsArr] = React.useState([])
+    const [allCities, setAllCities] = React.useState([])
+    const [selectedCity, setSelectedCity] = React.useState('');
+    const [teamName, setTeamName] = React.useState('')
+    const [teamType, setTeamType] = React.useState('')
+
+
+    // const { control, handleSubmit, formState: { errors }, reset } = useForm()
 
 
     useEffect(() => {
-
+        let arr = []
+        citiesFile.forEach((city) => {
+            let obj = {
+                key: city.semel,
+                value: city.name
+            }
+            arr.push(obj)
+        })
+        setAllCities(arr)
     }, [])
 
+    const isInputOk = () => {
+        let arr = []
+        if (teamName == '' || teamName == undefined) {
+            arr.push('teamName')
+        }
+        if (teamType == '' || teamType == undefined) {
+            arr.push('teamType')
+        }
+        if (selectedCity == '' || selectedCity == undefined) {
+            arr.push('teamCity')
+        }
+        if (arr.length == 0) {
+            setErrorsArr([])
+            return true;
+        } else {
+            setErrorsArr(arr)
+            return false;
+        }
+    }
 
-    const onSubmit = (data) => {
+    const onSubmit = () => {
+        let input = isInputOk()
+        if (!input) {
+            return;
+        }
+
         axios.post('http://' + IP + '/teams/addteam', {
-            name: data.teamName == '' || data.teamName == undefined ? '' : data.teamName,
-            type: data.teamType == '' || data.teamType == undefined ? '' : data.teamType,
-            city: data.teamCity == '' || data.teamCity == undefined ? '' : data.teamCity,
-            userID: userIdValue =='' || undefined ? '':userIdValue
+            name: teamName,
+            type: teamType,
+            city: selectedCity,
+            userID: userIdValue
         }).then(res => {
             if (res.data == true) {
                 Alert.alert('Team Added')
@@ -37,68 +78,31 @@ export default function AddTeamComponent2(props) {
 
     return (
         <View styles={[styles.container]}>
-            <Text>Add Team</Text>
+            <Text style={{ fontStyle: 'bold' }}>Add Team</Text>
 
 
             <View>
                 <Text>Team Name : </Text>
-                <Controller
-                    control={control}
-                    name="teamName"
-                    rules={{
-                        required: true,
-                    }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            style={styles.input}
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            defaultValue={''}
-                        />
-                    )}
-                />
-
-                {errors.teamName && <Text>This is required.</Text>}
+                <TextInput keyboardType='ascii-capable' placeholder='Enter Name' onChangeText={(name) => setTeamName(name)} />
+                {(errorsArr.length > 0 && errorsArr.includes('teamName')) && <Text>This is required.</Text>}
 
 
                 <Text>Team Type : </Text>
-                <Controller
-                    control={control}
-                    name="teamType"
-                    rules={{
-                        required: true,
-                    }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            style={styles.input}
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            defaultValue={''}
-                        />
-                    )}
-                />
-                {errors.teamType && <Text>This is required.</Text>}
+                <TextInput keyboardType='numeric' placeholder='Enter Type' onChangeText={(type) => setTeamType(type)} />
+                {(errorsArr.length > 0 && errorsArr.includes('teamType')) && <Text>This is required.</Text>}
 
 
                 <Text>Team City : </Text>
-                <Controller
-                    control={control}
-                    name="teamCity"
-                    rules={{
-                        required: true,
-                    }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            style={styles.input}
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            defaultValue={''}
-                        />
-                    )}
+                <SelectList
+                    placeholder='Select City'
+                    setSelected={(cityName) => setSelectedCity(cityName)}
+                    data={allCities}
+                    save="value"
                 />
-                {errors.teamCity && <Text>This is required.</Text>}
+                {(errorsArr.length > 0 && errorsArr.includes('teamCity')) && <Text>This is required.</Text>}
 
-                <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+
+                <Button title="Submit" onPress={onSubmit} />
 
             </View>
 
