@@ -78,7 +78,7 @@ export default function AddTeamComponent2(props) {
 
     return (
         <View styles={[styles.container]}>
-            <Text style={{ fontStyle: 'bold' }}>Add Team</Text>
+            <Text style={{ fontWeight: 'bold' }}>Add Team</Text>
 
 
             <View>

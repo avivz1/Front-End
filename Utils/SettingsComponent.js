@@ -10,9 +10,9 @@ export default function SettingsComponent(props) {
   
 
     return (
-        <View>
+        <View style={{margin:20}}>
 
-            <Text>Settings</Text>
+            <Text style={{fontWeight:'bold',fontSize:22}}>Profile</Text>
 
         </View>
     )
