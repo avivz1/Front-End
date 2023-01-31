@@ -54,7 +54,7 @@ export default function AddPracticeComponent(props) {
         setIsPickerShow(false);
 
         if (value != undefined) {
-            // console.log(value.getDate())
+            // (value.getDate())
             setDate(value);
             setPracticeName(pickedTeam?pickedTeam:props.teams[0].Name+' - ' +value.getDate() + '/' + (value.getMonth() + 1) + '/' + value.getFullYear())
         }

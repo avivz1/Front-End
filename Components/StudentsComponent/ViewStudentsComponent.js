@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, TextInput, Alert, TouchableOpacity, TouchableHighlight, Image, BackHandler, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Alert, TouchableOpacity, TouchableHighlight, Image, BackHandler, ScrollView } from 'react-native';
 import { Context } from '../../ContextAPI/Context';
 import ViewCardStudentComp from './StudentCardComponent';
 import { IP } from '../../IP_Address';
@@ -59,11 +59,6 @@ export default function ViewStudentsComponent() {
         })
 
     }
-
-    // const addOrUpdateStudentPhoto = () => {
-    //     axios.post('http://' + IP + '/students/addorupdatestudentphoto ', { userID: userIdValue, studentId: pickedStudent._id, photo: pickedImage }).then(res => {
-    //     })
-    // }
 
     const getAllTeams = () => {
         axios.post('http://' + IP + '/teams/getalluserteams', { userID: userIdValue }).then(res => {
