@@ -21,7 +21,6 @@ export default function SettingsComponent() {
         axios.post('http://' + IP + '/login/getuserdetails', { userId: userIdValue }).then(res => {
             if (res.data) {
                 setUserDetails(res.data)
-                console.log(res.data)
             }
         })
     }
@@ -29,7 +28,7 @@ export default function SettingsComponent() {
     return (
         <View style={{ margin: 20 }}>
 
-            <Text style={{ fontWeight: 'bold', fontSize: 22 }}>Profile</Text>
+            <Text style={{ fontSize: 22 }}>Profile</Text>
 
             <Text>Email</Text>
             <TextInput value={userDetails.Email} placeholder={'Email'} ></TextInput>
@@ -37,6 +36,3 @@ export default function SettingsComponent() {
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-});

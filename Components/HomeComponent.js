@@ -33,7 +33,6 @@ export default function HomeComponent() {
 
   useEffect(() => {
     getBeltsAverage()
-    // dataForBackup();
     getTotalDivisionByMonth();
     getdistributionbyTeam();
     getTotalDivision();
@@ -270,10 +269,10 @@ export default function HomeComponent() {
           }
 
 
-          <Button style={''} onPress={toExcel} title='Export Db To Excel' />
+          <Button onPress={toExcel} title='Export Db To Excel' />
         </ScrollView>
       }
-      <Button style={styles.center} onPress={addData} title='Add Data' />
+      <Button onPress={addData} title='Add Data' />
 
     </View>
 
