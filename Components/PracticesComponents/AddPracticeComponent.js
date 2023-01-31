@@ -21,7 +21,7 @@ export default function AddPracticeComponent(props) {
     const [index, setIndex] = React.useState(0);
     const [pickedTeam, setPickedTeam] = React.useState('');
     const [date, setDate] = useState(new Date());
-    const [practiceName, setPracticeName] = useState(props.teams[0].Name +' - ' +date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear())
+    const [practiceName, setPracticeName] = useState()
     const [isPickerShow, setIsPickerShow] = useState(false);
     const [pickedStudents, setPickedStudents] = useState('')
     const [checkedStudents, setCheckedStudents] = useState('')
@@ -34,12 +34,13 @@ export default function AddPracticeComponent(props) {
     useEffect(() => {
         dispatch({ type: "CLEAR" })
         if (props.teams.length > 0) {
+            setPracticeName(props.teams[0].Name +' - ' +date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear())
             if (props.students.length > 0) {
                 let stus = props.students.filter(s => s.Team_ID == props.teams[index]._id);
                 setPickedStudents(stus)
             }
         } else {
-            Alert.alert('No Team Found! you must have atlist 1 team')
+            Alert.alert('You must create a team first')
             props.onAddPractice()
         }
     }, [])
@@ -49,10 +50,13 @@ export default function AddPracticeComponent(props) {
         setIsPickerShow(true);
     };
 
-    const onChange = (event, value) => {
+    const onChangeDate = (event, value) => {
         setIsPickerShow(false);
+
         if (value != undefined) {
+            // console.log(value.getDate())
             setDate(value);
+            setPracticeName(pickedTeam?pickedTeam:props.teams[0].Name+' - ' +value.getDate() + '/' + (value.getMonth() + 1) + '/' + value.getFullYear())
         }
     };
 
@@ -107,7 +111,7 @@ export default function AddPracticeComponent(props) {
                     mode={'date'}
                     display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                     is24Hour={true}
-                    onChange={onChange}
+                    onChange={onChangeDate}
                 />
             )}
 

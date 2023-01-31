@@ -1,37 +1,74 @@
-import { useState, useEffect,useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { StyleSheet, Text, View, Button, TextInput, Alert } from 'react-native';
 import axios from 'axios'
 import { IP } from '../IP_Address';
 import { Context } from '../ContextAPI/Context';
+import DataToExcel from '../Services/DataToExcel'
 
 
 
 export default function SettingsComponent() {
 
-    const [userDetails, setUserDetails] = useState('')
+    // const [userDetails, setUserDetails] = useState('')
+    const { excelProcess } = DataToExcel;
     const { userId } = useContext(Context);
     const [userIdValue, setUserId] = userId;
+    const [userPassword, setUserPassword] = useState('')
+    const [userEmail, setUserEmail] = useState('')
+    const [userSecurityQ, setUserSecurityQ] = useState('')
+    const [userSecurityA, setUserSecurityA] = useState('')
 
 
     useEffect(() => {
         getUserDetails()
-    },[])
+    }, [])
 
     const getUserDetails = () => {
         axios.post('http://' + IP + '/login/getuserdetails', { userId: userIdValue }).then(res => {
             if (res.data) {
-                setUserDetails(res.data)
+                setUserEmail(res.data.Email)
+                setUserPassword(res.data.Password)
             }
         })
+    }
+    const toExcel = () => {
+        excelProcess(userIdValue)
+    }
+
+    const resetDB = ()=>{
+        axios.post('http://'+IP+'/login/resetdb').then(res=>{
+            console.log('reset db')
+            console.log(res.data)
+        })
+    }
+
+    const submit = () => {
+        console.log(userEmail, userPassword, userSecurityA, userSecurityQ)
     }
 
     return (
         <View style={{ margin: 20 }}>
 
-            <Text style={{ fontSize: 22 }}>Profile</Text>
+            <Text style={{fontWeight:'bold', fontSize: 22 }}>Profile</Text>
 
             <Text>Email</Text>
-            <TextInput value={userDetails.Email} placeholder={'Email'} ></TextInput>
+            <TextInput value={userEmail} placeholder={'Email'} onChange={(mail) => setUserEmail(mail)} ></TextInput>
+
+            <Text>Password</Text>
+            <TextInput value={userPassword} placeholder={'Password'} onChange={(pass) => setUserPassword(pass)} ></TextInput>
+
+            <Text>Security Question</Text>
+            <TextInput value={userSecurityQ} placeholder={'Security Question'} onChange={(secQ) => setUserSecurityQ(secQ)} ></TextInput>
+
+            <Text>Security Answer</Text>
+            <TextInput value={userSecurityA} placeholder={'Security Answer'} onChange={(secA) => setUserSecurityA(secA)} ></TextInput>
+
+            <Button title='Submit' onPress={submit} />
+
+            <Button onPress={toExcel} title='Export Db To Excel' />
+
+            <Button onPress={resetDB} title='Reset DB'/>
+
 
         </View>
     )

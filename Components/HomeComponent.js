@@ -4,10 +4,6 @@ import { StyleSheet, Text, View, Button, Dimensions, TextInput, ScrollView, Aler
 import { Context } from '../ContextAPI/Context';
 import { IP } from '../IP_Address';
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
-// import XLSX from 'xlsx'
-// import * as FileSystem from 'expo-file-system';
-// import { PermissionsAndroid } from 'react-native';
-// import * as IntentLauncher from 'expo-intent-launcher';
 import { ActivityIndicator, Colors } from 'react-native-paper';
 import DataToExcel from '../Services/DataToExcel'
 
@@ -277,7 +273,6 @@ export default function HomeComponent() {
           }
 
 
-          <Button onPress={toExcel} title='Export Db To Excel' />
         </ScrollView>
       }
       <Button onPress={addData} title='Add Data' />
