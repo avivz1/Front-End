@@ -6,7 +6,7 @@ import { IP } from "../../IP_Address";
 import axios from 'axios';
 import { SelectList } from 'react-native-dropdown-select-list'
 import citiesFile from '../../Utils/Cities1.json'
-import BeltsPickerComponent from '../../Utils/BeltsPickerComponent'
+import BeltsPickerComponent from '../../Components/BeltsPickerComponent'
 
 
 

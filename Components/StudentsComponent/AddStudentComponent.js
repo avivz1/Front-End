@@ -5,7 +5,7 @@ import { Context } from '../../ContextAPI/Context';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 import { IP } from '../../IP_Address';
-import BeltsPickerComponent from '../../Utils/BeltsPickerComponent'
+import BeltsPickerComponent from '../../Components/BeltsPickerComponent'
 import citiesFile from '../../Utils/Cities1.json'
 import { SelectList } from 'react-native-dropdown-select-list'
 

@@ -1,8 +1,8 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import MainNavigation from '../Components/MainNavigation';
-import SettingsComp from '../Utils/SettingsComponent'
-import LogoutComp from '../Utils/LogoutComponent'
+import SettingsComp from '../Components/SettingsComponent'
+import LogoutComp from '../Components/LogoutComponent'
 
 const Drawer = createDrawerNavigator();
 

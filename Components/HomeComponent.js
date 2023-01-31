@@ -111,19 +111,27 @@ export default function HomeComponent() {
 
   const getdistributionbyTeam = () => {
     axios.post('http://' + IP + '/teams/getdistributionbyTeam', { userId: userIdValue }).then(res => {
+      let isOnlyOneTeamWithoutStudents = res.data.length == 1 && res.data[0].studQuantity == 0
       let arr = [];
-      if (res.data.length > 0) {
-        res.data.forEach((data, i) => {
-          let obj = {
-            name: "%  " + data.name,
-            population: Math.trunc(data.studQuantity),
-            color: blueColors[Math.floor(Math.random() * 5)],
-            legendFontSize: 15,
-            legendFontColor: "#7F7F7F",
-          }
-          arr.push(obj)
-        });
-        setTeamsPieData(arr)
+
+      if (isOnlyOneTeamWithoutStudents) {
+        setTeamsPieData([])
+
+      } else {
+
+        if (res.data.length > 0) {
+          res.data.forEach((data) => {
+            let obj = {
+              name: "%  " + data.name,
+              population: Math.trunc(data.studQuantity),
+              color: blueColors[Math.floor(Math.random() * 5)],
+              legendFontSize: 15,
+              legendFontColor: "#7F7F7F",
+            }
+            arr.push(obj)
+          });
+          setTeamsPieData(arr)
+        }
       }
     })
   }
