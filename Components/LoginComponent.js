@@ -10,28 +10,46 @@ export default function LoginComponent({ navigation }) {
     const { userId } = React.useContext(Context);
     const [userIdValue, setUserId] = userId;
     const [email, setEmail] = React.useState('a');
-    const [password, setPassword] = React.useState("1");
+    const [password, setPassword] = React.useState('1');
+    const [errorsArr, setErrorsArr] = React.useState([])
+
 
     const onSignUpPress = () => {
         navigation.navigate('SignUp');
     }
     const onLoginPress = () => {
-        if (!email) {
-            alert('Please fill Email');
+        let status = isInputOk();
+        if (!status) {
+            return;
+        } else {
+
+            axios.post('http://' + IP + '/login', { inputEmail: email, inputPassword: password }).then((res) => {
+                if (res.data) {
+                    setUserId(res.data)
+                    navigation.replace('Home')
+                } else {
+                    alert('User is not exists');
+                }
+            })
         }
-        if (!password) {
-            alert('Please fill Password');
-        }
-        axios.post('http://' + IP + '/login', { inputEmail: email, inputPassword: password }).then((res) => {
-            if (res.data) {
-                setUserId(res.data)
-                navigation.replace('Home')
-            } else {
-                alert('User is not exists');
-            }
-        })
     }
 
+    const isInputOk = () => {
+        let arr = []
+        if (email == '' || email == undefined) {
+            arr.push('email')
+        }
+        if (password == '' || password == undefined) {
+            arr.push('password')
+        }
+        if (arr.length == 0) {
+            setErrorsArr([])
+            return true;
+        } else {
+            setErrorsArr(arr)
+            return false;
+        }
+    }
 
     return (
         <View style={styles.container}>
@@ -47,6 +65,8 @@ export default function LoginComponent({ navigation }) {
                     onChangeText={(email) => setEmail(email)}
                 />
             </View>
+            {(errorsArr.length > 0 && errorsArr.includes('email')) && <Text>This is required.</Text>}
+
 
             <View style={styles.inputView}>
                 <TextInput
@@ -57,6 +77,7 @@ export default function LoginComponent({ navigation }) {
                     onChangeText={(password) => setPassword(password)}
                 />
             </View>
+            {(errorsArr.length > 0 && errorsArr.includes('password')) && <Text>This is required.</Text>}
 
             <Button style={styles.loginText} title='Login' onPress={onLoginPress} />
 
