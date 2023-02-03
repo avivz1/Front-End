@@ -49,15 +49,14 @@ export default function SettingsComponent() {
     };
 
     const handleDeleteDb = () => {
+        //token
         //need to validate the input password
-        console.log(inputPassword)
-        axios.post('http://' + IP + '/login/resetdb').then(res => {
+        axios.post('http://' + IP + '/login/resetdb',{password:inputPassword,userId:userIdValue}).then(res => {
             if(res.data){
                 Alert.alert('Success')
             }else{
                 Alert.alert('Somthing went wrong. try again')
             }
-            console.log('reset db')
         })
         setVisible(false)
     };
