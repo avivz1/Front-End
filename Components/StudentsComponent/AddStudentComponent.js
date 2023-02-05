@@ -21,9 +21,12 @@ export default function AddStudentsComponent(props) {
     const [stuBelt, setStuBelt] = React.useState('')
     const [stuName, setStuName] = React.useState('')
     const [stuAge, setStuAge] = React.useState('')
+    const [studentPhone, setStudentPhone] = React.useState('');
     const [errorsArr, setErrorsArr] = React.useState([])
     const [allCities, setAllCities] = React.useState([])
     const [selectedCity, setSelectedCity] = React.useState('');
+    const [emergencyName, setEmergencyName] = React.useState('');
+    const [emergencyPhone, setEmergencyPhone] = React.useState('');
 
 
     useEffect(() => {
@@ -52,6 +55,15 @@ export default function AddStudentsComponent(props) {
         let arr = []
         if (stuName == '' || stuName == undefined) {
             arr.push('stuName')
+        }
+        if (studentPhone == '' || studentPhone == undefined) {
+            arr.push('stuPhone')
+        }
+        if (emergencyName == '' || emergencyName == undefined) {
+            arr.push('emergencyName')
+        }
+        if (emergencyPhone == '' || emergencyPhone == undefined) {
+            arr.push('emergencyPhone')
         }
         if (stuAge == '' || stuAge == undefined) {
             arr.push('stuAge')
@@ -87,14 +99,16 @@ export default function AddStudentsComponent(props) {
                 belt: stuBelt,
                 city: selectedCity,
                 age: stuAge,
+                phoneNum: studentPhone,
+                emergencyContact:{Name:emergencyName,Phone:emergencyPhone}
             }).then(res => {
-                if (res.data) {
-                    Alert.alert('Student Was Added')
-                    props.onAddClostModal()
-                } else {
-                    Alert.alert("Somthing went wrong. Try again")
-                }
-            })
+                    if (res.data) {
+                        Alert.alert('Student Was Added')
+                        props.onAddClostModal()
+                    } else {
+                        Alert.alert("Somthing went wrong. Try again")
+                    }
+                })
 
 
         }
@@ -121,6 +135,18 @@ export default function AddStudentsComponent(props) {
             <Text>Student Age : </Text>
             <TextInput keyboardType='numeric' style={[styles.inputText]} placeholder='Enter age' onChangeText={(age) => setStuAge(age)} />
             {(errorsArr.length > 0 && errorsArr.includes('stuAge')) && <Text>This is required.</Text>}
+
+            <Text>Student Phone : </Text>
+            <TextInput keyboardType='numeric' style={[styles.inputText]} placeholder='Enter student phone' onChangeText={(sPhone) => setStudentPhone(sPhone)} />
+            {(errorsArr.length > 0 && errorsArr.includes('stuPhone')) && <Text>This is required.</Text>}
+
+            <Text>Emergency Contact Name : </Text>
+            <TextInput keyboardType='ascii-capable' style={[styles.inputText]} placeholder='Enter emergency name' onChangeText={(eName) => setEmergencyName(eName)} />
+            {(errorsArr.length > 0 && errorsArr.includes('emergencyName')) && <Text>This is required.</Text>}
+
+            <Text>Emergency Contact Number : </Text>
+            <TextInput keyboardType='numeric' style={[styles.inputText]} placeholder='Enter emergency phone' onChangeText={(ePhone) => setEmergencyPhone(ePhone)} />
+            {(errorsArr.length > 0 && errorsArr.includes('emergencyPhone')) && <Text>This is required.</Text>}
 
 
             <SelectList

@@ -1,18 +1,15 @@
-import { StyleSheet, Text, View, ScrollView, TextInput, Image, ImageBackground, Dimensions, ViewComponent, Platform, Alert } from 'react-native';
-import React, { useState, useEffect } from 'react'
+import { StyleSheet, Text, View, ScrollView, Image, Dimensions } from 'react-native';
+import { useContext, useState, useEffect } from 'react'
 import { Context } from '../../ContextAPI/Context';
 import axios from 'axios';
 import { IP } from '../../IP_Address';
-import { DataTable, FAB } from 'react-native-paper'
-// import { ImageBackground } from 'react-native-web';
-
-
+import { DataTable } from 'react-native-paper'
 
 
 
 export default function PracticeDetailsComponent(props) {
 
-    const { teamsMap, userId } = React.useContext(Context);
+    const { teamsMap, userId } = useContext(Context);
     const [teamsNameMap, setMap] = teamsMap
     const [precentage, setPrecentage] = useState('')
     const [userIdValue] = userId;
@@ -26,7 +23,7 @@ export default function PracticeDetailsComponent(props) {
         getStudentsFullDetails()
         let x = props.practice.Date.split('T')
         props.practice.Date = x[0];
-    },[]);
+    }, []);
 
 
 
@@ -36,20 +33,10 @@ export default function PracticeDetailsComponent(props) {
     }
 
     const getStudentsFullDetails = () => {
-        // let stuArr = props.practice.Students.filter(s => s.Name == null)
-        // axios.post('http://' + IP + '/students/getFewStudents', { students: stuArr }).then(res => {
-        //     if (res.data != false) {
-        //         setStudentsList(res.data)
-  
-        //     }
-        // })
-
-        // let stuArr = props.practice.Students.filter(s => s.Name == null)
-      
-        axios.post('http://' + IP + '/practices/getstudentlistforpratice', {userId:userIdValue,practiceId:props.practice._id, students: props.practice.Students }).then(res => {
+        axios.post('http://' + IP + '/practices/getstudentlistforpratice', { userId: userIdValue, practiceId: props.practice._id, students: props.practice.Students }).then(res => {
             if (res.data != false) {
                 setStudentsList(res.data)
-  
+
             }
         })
     }
@@ -88,10 +75,10 @@ export default function PracticeDetailsComponent(props) {
                                     <DataTable.Cell>{stu.Name}</DataTable.Cell>
                                     <DataTable.Cell>{stu.isDeleted ?
                                         <Image style={{ width: 12, height: 15 }} source={require('../../assets/garbageIcon.png')} />
-                                        :stu.isChecked? 
-                                        <Image style={{ width: 11, height: 11 }} source={require('../../assets/check.png')} />
-                                        :
-                                        <Image style={{ width: 11, height: 11 }} source={require('../../assets/uncheck.png')} />
+                                        : stu.isChecked ?
+                                            <Image style={{ width: 11, height: 11 }} source={require('../../assets/check.png')} />
+                                            :
+                                            <Image style={{ width: 11, height: 11 }} source={require('../../assets/uncheck.png')} />
                                     }
                                     </DataTable.Cell>
                                 </DataTable.Row>

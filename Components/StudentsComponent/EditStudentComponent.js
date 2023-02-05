@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Button, TextInput, Alert } from 'react-native';
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Picker } from '@react-native-picker/picker';
 import { IP } from "../../IP_Address";
@@ -13,14 +13,17 @@ import BeltsPickerComponent from '../../Components/BeltsPickerComponent'
 
 export default function EditStudentsComponent(props) {
 
-    const [index, setIndex] = React.useState(0);
+    const [index, setIndex] = useState(0);
     // const { control, handleSubmit, formState: { errors } } = useForm();
-    const [allCities, setAllCities] = React.useState([])
-    const [selectedCity, setSelectedCity] = React.useState(props.student ? props.student.City : '');
-    const [errorsArr, setErrorsArr] = React.useState([])
-    const [stuBelt, setStuBelt] = React.useState(props.student ? props.student.Belt : '')
-    const [stuName, setStuName] = React.useState(props.student ? props.student.Name : '')
-    const [stuAge, setStuAge] = React.useState(props.student ? props.student.Age.toString() : '')
+    const [allCities, setAllCities] = useState([])
+    const [selectedCity, setSelectedCity] = useState(props.student ? props.student.City : '');
+    const [errorsArr, setErrorsArr] = useState([])
+    const [stuBelt, setStuBelt] = useState(props.student ? props.student.Belt : '')
+    const [stuName, setStuName] = useState(props.student ? props.student.Name : '')
+    const [stuAge, setStuAge] = useState(props.student ? props.student.Age.toString() : '')
+    const [emergencyName, setEmergencyName] = useState(props.student ? props.student.EmergencyContact.Name : '');
+    const [emergencyPhone, setEmergencyPhone] = useState(props.student ? props.student.EmergencyContact.Phone.toString() : '');
+    const [studentPhone, setStudentPhone] = useState(props.student ? props.student.Phone.toString() : '');
 
 
     useEffect(() => {
@@ -52,6 +55,15 @@ export default function EditStudentsComponent(props) {
         if (stuName == '' || stuName == undefined) {
             arr.push('stuName')
         }
+        if (studentPhone == '' || studentPhone == undefined) {
+            arr.push('stuPhone')
+        }
+        if (emergencyName == '' || emergencyName == undefined) {
+            arr.push('emergencyName')
+        }
+        if (emergencyPhone == '' || emergencyPhone == undefined) {
+            arr.push('emergencyPhone')
+        }
         if (stuAge == '' || stuAge == undefined) {
             arr.push('stuAge')
         }
@@ -77,14 +89,15 @@ export default function EditStudentsComponent(props) {
             return;
         }
 
-
         axios.post('http://' + IP + '/students/editstudent', {
             name: stuName,
             belt: stuBelt,
             age: stuAge,
             city: selectedCity,
             studentId: props.student._id,
-            Team_ID: props.student.Team_ID
+            Team_ID: props.student.Team_ID,
+            phoneNum: studentPhone,
+            emergencyContact: { Name: emergencyName, Phone: emergencyPhone }
 
 
         }).then(res => {
@@ -120,6 +133,19 @@ export default function EditStudentsComponent(props) {
             <Text>Student Age : </Text>
             <TextInput keyboardType='numeric' style={[styles.inputText]} value={stuAge} placeholder='Enter age' onChangeText={(age) => setStuAge(age)} />
             {(errorsArr.length > 0 && errorsArr.includes('stuAge')) && <Text>This is required.</Text>}
+
+            <Text>Student Phone : </Text>
+            <TextInput keyboardType='numeric' style={[styles.inputText]} value={studentPhone} placeholder='Enter student phone' onChangeText={(sPhone) => setStudentPhone(sPhone)} />
+            {(errorsArr.length > 0 && errorsArr.includes('stuPhone')) && <Text>This is required.</Text>}
+
+            <Text>Emergency Contact Name : </Text>
+            <TextInput keyboardType='ascii-capable' style={[styles.inputText]} value={emergencyName} placeholder='Enter emergency name' onChangeText={(eName) => setEmergencyName(eName)} />
+            {(errorsArr.length > 0 && errorsArr.includes('emergencyName')) && <Text>This is required.</Text>}
+
+            <Text>Emergency Contact Number : </Text>
+            <TextInput keyboardType='numeric' style={[styles.inputText]} value={emergencyPhone} placeholder='Enter emergency phone' onChangeText={(ePhone) => setEmergencyPhone(ePhone)} />
+            {(errorsArr.length > 0 && errorsArr.includes('emergencyPhone')) && <Text>This is required.</Text>}
+
 
             <SelectList
                 defaultOption={{ key: props.student.City, value: props.student.City }}

@@ -49,10 +49,10 @@ export default function StudentCardComponent(props) {
     }
 
     const pictureHandler = () => {
-        Alert.alert('A', 'v', [
+        Alert.alert('Take a Picture','', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Gallery', onPress: () => { pickImage() } },
-            { text: 'Take a Picture', onPress: () => { takeImageHandler() } },
+            { text: 'Camera', onPress: () => { takeImageHandler() } },
         ])
 
     }
@@ -69,7 +69,7 @@ export default function StudentCardComponent(props) {
         if (!result.canceled) {
             addOrUpdateStudentPhoto(result.assets[0].uri)
             setPickedImage(result.assets[0].uri);
-            props.callBack(props.data,'updateRequest');
+            props.callBack(props.data, 'updateRequest');
         }
     };
 
@@ -100,7 +100,7 @@ export default function StudentCardComponent(props) {
         });
         if (image.canceled != true) {
             addOrUpdateStudentPhoto(image.assets[0].uri)
-            props.callBack(props.data,'updateRequest')
+            props.callBack(props.data, 'updateRequest')
             setPickedImage(image.assets[0].uri);
         }
     };
@@ -144,7 +144,7 @@ export default function StudentCardComponent(props) {
                     />
                 }
                 {/* require('../../assets/practicephoto.png') */}
-                {!props.isRadioBtnShow && <Image style={{ width: 150, height: 50 }} resizeMode='cover' source={{ uri: pickedImage ? pickedImage : 'https://gsmauditors.com/wp-content/uploads/2016/05/istockphoto-1133765772-612x612-1.jpg'}} />}
+                {!props.isRadioBtnShow && <Image style={{ width: 150, height: 50 }} resizeMode='cover' source={{ uri: pickedImage ? pickedImage : 'https://gsmauditors.com/wp-content/uploads/2016/05/istockphoto-1133765772-612x612-1.jpg' }} />}
 
                 {getBtnsState() &&
                     <View>
@@ -165,7 +165,7 @@ export default function StudentCardComponent(props) {
 
 }
 const styles = StyleSheet.create({
-    
+
     title: {
         textAlign: 'right'
     },
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
         width: '50%',
         height: '50%',
     },
-   
+
     mainCardWithoutBtns: {
         margin: 10,
         height: 120,

@@ -92,10 +92,10 @@ export default function TeamCardComponent(props) {
     };
 
     const pictureHandler = () => {
-        Alert.alert('A', 'v', [
+        Alert.alert('Take a Picture','', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Gallery', onPress: () => { pickImage() } },
-            { text: 'Take a Picture', onPress: () => { takeImageHandler() } },
+            { text: 'Camera', onPress: () => { takeImageHandler() } },
         ])
 
     }
