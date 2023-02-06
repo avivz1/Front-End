@@ -10,9 +10,10 @@ export default function AboutUsComponent() {
 
 
     return (
-        <View>
+        <View style={{margin:30}}>
             <Text>
-                This is us This is Our Mail
+                Thank you for download and use our app.
+                to contact us send mail to - bla@gmail.com
             </Text>
 
         </View>

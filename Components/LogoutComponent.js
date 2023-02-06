@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 
 
 
-export default function LogoutComponent(props) {
+export default function LogoutComponent() {
 
 
 
