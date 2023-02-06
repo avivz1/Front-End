@@ -30,6 +30,8 @@ export default function SettingsComponent() {
             if (res.data) {
                 setUserEmail(res.data.Email)
                 setUserPassword(res.data.Password)
+                setUserSecurityA(res.data.SecurityAnswer)
+                setUserSecurityQ(res.data.SecurityQuestion)
             }
         })
     }
