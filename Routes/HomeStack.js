@@ -2,7 +2,6 @@ import { createDrawerNavigator,DrawerContentScrollView,DrawerItemList,DrawerItem
 import { NavigationContainer } from '@react-navigation/native';
 import MainNavigation from '../Components/MainNavigation';
 import SettingsComp from '../Components/SettingsComponent'
-import LogoutComp from '../Components/LogoutComponent'
 import AboutUsComp from '../Components/AboutUsComponent'
 
 const Drawer = createDrawerNavigator();

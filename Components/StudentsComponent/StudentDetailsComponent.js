@@ -177,7 +177,7 @@ export default function StudentDetailsComponent(props) {
 
         <View style={{ height: '80%' }}>
             <Text>Name : {props.student.Name}</Text>
-            <TouchableOpacity onPress={openDialer(props.student.Phone)}>
+            <TouchableOpacity onPress={()=>openDialer(props.student.Phone)}>
             <Text>Phone :{props.student.Phone}</Text>
             </TouchableOpacity>
             <Text>Belt : {props.student.Belt}</Text>
@@ -186,7 +186,7 @@ export default function StudentDetailsComponent(props) {
             <Text>Precentage By Month :{presentMonthPrecentage ? presentMonthPrecentage.toFixed(2) : 0}%  </Text>
             <Text>City : {props.student.City}</Text>
             <Text> Emergency Contact :</Text>
-            <TouchableOpacity onPress={openDialer(props.student.EmergencyContact.Phone)}>
+            <TouchableOpacity onPress={()=>openDialer(props.student.EmergencyContact.Phone)}>
                 <Text>Emergency Phone :{props.student.EmergencyContact.Phone}</Text>
             </TouchableOpacity>
             <ScrollView style={{ height: '50%' }}>
