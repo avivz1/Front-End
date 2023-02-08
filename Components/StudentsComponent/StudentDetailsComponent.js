@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button, TextInput, ViewComponent, Platform, ScrollView, Alert, Linking } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, ViewComponent, Platform, ScrollView, Alert, Linking,TouchableOpacity } from 'react-native';
 import { useContext, useState, useEffect } from 'react'
 import { Context } from '../../ContextAPI/Context';
 import axios from 'axios';
@@ -25,6 +25,7 @@ export default function StudentDetailsComponent(props) {
 
     useEffect(() => {
         getStudentPracticesDetails()
+        getAllActivities()
     }, []);
 
     useEffect(() => {
@@ -55,11 +56,9 @@ export default function StudentDetailsComponent(props) {
         }
         if (arr.length == 0) {
             setActivityInputErrors([])
-            console.log(true)
             return true;
         } else {
             setActivityInputErrors(arr)
-            console.log(false)
             return false;
         }
     }
@@ -84,12 +83,7 @@ export default function StudentDetailsComponent(props) {
     const deleteActivity = (act) => {
         axios.post('http://' + IP + '/students/deleteactivity', { activity: act, userId: userIdValue, stuId: props.student._id }).then(res => {
             if (res.data) {
-                // let updateActivities = activities.filter(activity => activity._id != act._id)
-
                 getAllActivities()
-
-                // setActivities(updateActivities)
-                //delete data from activities state
             } else {
                 Alert.alert('Error')
             }
@@ -143,7 +137,7 @@ export default function StudentDetailsComponent(props) {
         let obj = {}
         attendanceArray.forEach(details => {
             if (details.was && details) {
-                obj[details.date] = { selected: true, marked: true, selectedColor: 'blue' }
+                obj[details.date] = { selected: true, marked: true, selectedColor: 'blue' }//dotColor
             } else {
                 obj[details.date] = { selected: true, marked: true, selectedColor: 'red' }
             }
@@ -174,9 +168,8 @@ export default function StudentDetailsComponent(props) {
         ])
     }
 
-
-    const openDialer = () => {
-        Linking.openURL(`tel:0${props.student.EmergencyContact.Phone}`);
+    const openDialer = (phone) => {
+        Linking.openURL(`tel:${phone}`);
     }
 
 
@@ -184,15 +177,18 @@ export default function StudentDetailsComponent(props) {
 
         <View style={{ height: '80%' }}>
             <Text>Name : {props.student.Name}</Text>
-            <Text>Phone :0{props.student.Phone}</Text>
+            <TouchableOpacity onPress={openDialer(props.student.Phone)}>
+            <Text>Phone :{props.student.Phone}</Text>
+            </TouchableOpacity>
             <Text>Belt : {props.student.Belt}</Text>
             <Text>Age : {props.student.Age}</Text>
             <Text>Team : {getTeamName(props.student.Team_ID)}  </Text>
             <Text>Precentage By Month :{presentMonthPrecentage ? presentMonthPrecentage.toFixed(2) : 0}%  </Text>
             <Text>City : {props.student.City}</Text>
-            {/* <Text>Emergency Contact : {props.student.EmergencyContact.Name + '  ' + props.student.EmergencyContact.Phone}</Text> */}
             <Text> Emergency Contact :</Text>
-            <Button title='Dial Emergency' onPress={openDialer} />
+            <TouchableOpacity onPress={openDialer(props.student.EmergencyContact.Phone)}>
+                <Text>Emergency Phone :{props.student.EmergencyContact.Phone}</Text>
+            </TouchableOpacity>
             <ScrollView style={{ height: '50%' }}>
                 <Calendar
                     onMonthChange={monthChange}
@@ -208,7 +204,7 @@ export default function StudentDetailsComponent(props) {
                     </DataTable.Header>
 
                     <ScrollView>
-                        {activities.length > 0 ? activities.map((act, index) => {
+                        {activities.length > 0 ? activities.map((act) => {
                             return (
                                 <DataTable.Row key={act._id} onLongPress={() => onRowLongPress(act)} onPress={() => { }}>
                                     <DataTable.Cell>{act.Event}</DataTable.Cell>
@@ -218,7 +214,7 @@ export default function StudentDetailsComponent(props) {
                             )
                         })
                             :
-                            <Text>No Activities</Text>
+                            <Text onPress={()=>{}}>No Activities</Text>
                         }
                     </ScrollView>
 
@@ -256,6 +252,6 @@ const styles = StyleSheet.create({
     },
     mainHeadLines: {
         fontWeight: 'bold',
-        margin:10
+        margin: 10
     }
 });

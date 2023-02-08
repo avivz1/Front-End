@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext,useRef } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import { StyleSheet, Text, View, Button, TextInput, Alert } from 'react-native';
 import axios from 'axios'
 import { IP } from '../IP_Address';
@@ -10,7 +10,7 @@ import Dialog from "react-native-dialog";
 
 export default function SettingsComponent() {
 
-    // const [userDetails, setUserDetails] = useState('')
+
     const { excelProcess } = DataToExcel;
     const { userId } = useContext(Context);
     const [userIdValue, setUserId] = userId;
@@ -19,7 +19,8 @@ export default function SettingsComponent() {
     const [userSecurityQ, setUserSecurityQ] = useState('')
     const [userSecurityA, setUserSecurityA] = useState('')
     const [visible, setVisible] = useState(false);
-    const [inputPassword,setInputPassword] = useState('')
+    const [inputPassword, setInputPassword] = useState('')
+    const [errorsArr,setErrorsArr] = useState([])
 
     useEffect(() => {
         getUserDetails()
@@ -40,8 +41,6 @@ export default function SettingsComponent() {
         excelProcess(userIdValue)
     }
 
-
-
     const showDialog = () => {
         setVisible(true);
     };
@@ -53,18 +52,59 @@ export default function SettingsComponent() {
     const handleDeleteDb = () => {
         //token
         //need to validate the input password
-        axios.post('http://' + IP + '/login/resetdb',{password:inputPassword,userId:userIdValue}).then(res => {
-            if(res.data){
+        axios.post('http://' + IP + '/login/resetdb', { password: inputPassword, userId: userIdValue }).then(res => {
+            if (res.data) {
                 Alert.alert('Success')
-            }else{
+            } else {
                 Alert.alert('Somthing went wrong. try again')
             }
         })
         setVisible(false)
     };
 
+    const isInputOk = () => {
+        let arr = []
+        if (userEmail == '' || userEmail == undefined) {
+            arr.push('email')
+        }
+        if (userPassword == '' || userPassword == undefined) {
+            arr.push('password')
+        }
+        if (userSecurityA == '' || userSecurityA == undefined) {
+            arr.push('securityA')
+        }
+        if (userSecurityQ == '' || userSecurityQ == undefined) {
+            arr.push('securityQ')
+        }
+    
+        if (arr.length == 0) {
+            setErrorsArr([])
+            return true;
+        } else {
+            setErrorsArr(arr)
+            return false;
+        }
+    }
+
+    
+
     const submit = () => {
-        console.log('submit')
+        let isValid = isInputOk()
+        if(isValid){
+            axios.post('http://' + IP + '/users/updateuserdetails',{
+                userId:userIdValue,
+                email:userEmail,
+                password:userPassword,
+                securityQuestion:userSecurityQ,
+                securityAnswer:userSecurityA
+            }).then(res=>{
+                if(res.data){
+                    Alert.alert('Success')
+                }else{
+                    Alert.alert('Somthing went wrong')
+                }
+            })
+        }
     }
 
     return (
@@ -73,19 +113,22 @@ export default function SettingsComponent() {
             <Text style={{ fontWeight: 'bold', fontSize: 22 }}>Profile</Text>
 
             <Text>Email</Text>
-            <TextInput value={userEmail} placeholder={'Email'} onChange={(mail) => setUserEmail(mail)} ></TextInput>
+            <TextInput value={userEmail} placeholder={'Email'} onChangeText={(mail) => setUserEmail(mail)} ></TextInput>
+            {(errorsArr.includes('email')) && <Text>This is required.</Text>}
 
             <Text>Password</Text>
-            <TextInput value={userPassword} placeholder={'Password'} onChange={(pass) => setUserPassword(pass)} ></TextInput>
+            <TextInput value={userPassword} placeholder={'Password'} onChangeText={(pass) => setUserPassword(pass)} ></TextInput>
+            {(errorsArr.includes('password')) && <Text>This is required.</Text>}
 
             <Text>Security Question</Text>
-            <TextInput value={userSecurityQ} placeholder={'Security Question'} onChange={(secQ) => setUserSecurityQ(secQ)} ></TextInput>
+            <TextInput value={userSecurityQ} placeholder={'Security Question'} onChangeText={(secQ) => setUserSecurityQ(secQ)} ></TextInput>
+            {(errorsArr.includes('securityQ')) && <Text>This is required.</Text>}
 
             <Text>Security Answer</Text>
-            <TextInput value={userSecurityA} placeholder={'Security Answer'} onChange={(secA) => setUserSecurityA(secA)} ></TextInput>
+            <TextInput value={userSecurityA} placeholder={'Security Answer'} onChangeText={(secA) => setUserSecurityA(secA)} ></TextInput>
+            {(errorsArr.includes('securityA')) && <Text>This is required.</Text>}
 
-            <Button title='Submit' onPress={submit} />
-
+            <Button title='Submit Data' onPress={submit}/>
             <Button onPress={toExcel} title='Export Db To Excel' />
 
             <Button onPress={showDialog} title='Reset DB' />
@@ -96,7 +139,7 @@ export default function SettingsComponent() {
                     Do you want to delete all of your data? You cannot undo this action.
                 </Dialog.Description>
                 <Dialog.Button label="Cancel" onPress={handleCancel} />
-                <Dialog.Input label='Enter Password' onChangeText={(pass)=>setInputPassword(pass)}/>
+                <Dialog.Input label='Enter Password' onChangeText={(pass) => setInputPassword(pass)} />
                 <Dialog.Button label="Delete" onPress={handleDeleteDb} />
             </Dialog.Container>
 

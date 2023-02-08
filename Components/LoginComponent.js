@@ -1,22 +1,23 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
-import { StyleSheet, Text, View, Image, TextInput, Button, Alert } from "react-native";
+import React, { useState,useContext } from "react";
+import { StyleSheet, Text, View, Image, TextInput, Button, Alert ,TouchableOpacity} from "react-native";
 import axios from 'axios';
 import { Context } from '../ContextAPI/Context';
 import { IP } from '../IP_Address';
 
 export default function LoginComponent({ navigation }) {
 
-    const { userId } = React.useContext(Context);
+    const { userId } = useContext(Context);
     const [userIdValue, setUserId] = userId;
-    const [email, setEmail] = React.useState('a');
-    const [password, setPassword] = React.useState('1');
-    const [errorsArr, setErrorsArr] = React.useState([])
+    const [email, setEmail] = useState('a');
+    const [password, setPassword] = useState('1');
+    const [errorsArr, setErrorsArr] = useState([])
 
 
     const onSignUpPress = () => {
         navigation.navigate('SignUp');
     }
+
     const onLoginPress = () => {
         let status = isInputOk();
         if (!status) {
@@ -51,6 +52,10 @@ export default function LoginComponent({ navigation }) {
         }
     }
 
+    const handeleForgotPassword = () => {
+        console.log('forget')
+    }
+
     return (
         <View style={styles.container}>
             <Image style={styles.image} />
@@ -83,7 +88,9 @@ export default function LoginComponent({ navigation }) {
 
 
             <Button style={styles.signUp_button} title='Sign up' onPress={onSignUpPress} />
-
+            <TouchableOpacity onPress={handeleForgotPassword}>
+                <Text>Forgot Password? </Text>
+            </TouchableOpacity>
         </View>
     );
 }
