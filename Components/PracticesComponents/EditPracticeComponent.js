@@ -24,14 +24,14 @@ export default function EditPracticeComponent(props) {
     // const [checkedStudents, setCheckedStudents] = useState('')
     const [practiceName, setPracticeName] = useState('')
     const [errorSubmit, setErrorSubmit] = useState(false)
-    const [date, setDate] = useState(new Date(props.practice.Date));
+    const [date, setDate] = useState(new Date(props.practice.Date.split('T')[0]));
     const [teamName, setTeamName] = useState('')
     const dispatch = useDispatch()
     const selectorArr = useSelector((s) => s.StudentSelected)
     const practiceNameRef = useRef();
 
     useEffect(() => {
-        // setPracticeName(props.practice.Name)
+        setPracticeName(props.practice.Name)
         dispatch({ type: "CLEAR" })
         if (props.practice.Team.Name == null || props.practice.Team.Name == '') {
             let team = props.allTeams.filter(t => t._id == props.practice.Team.Team_ID)
@@ -43,8 +43,6 @@ export default function EditPracticeComponent(props) {
             getStudentsList()
         }
     }, [])
-
-
 
     const getStudentsList = () => {
         axios.post('http://' + IP + '/practices/getstudentlistforpratice', { practiceId: props.practice._id, students: props.practice.Students, userId: userIdValue }).then((res => {
@@ -67,10 +65,8 @@ export default function EditPracticeComponent(props) {
         }
     };
 
-    // props.data.split('-').reverse().join('-'
     const handelPracticeName = (fullDate) => {
         let fullName = teamName + ' - ' + fullDate.getDate() + '/' +0+ (fullDate.getMonth() + 1) + '/' + fullDate.getFullYear()
-        console.log(fullName)
         practiceNameRef.current.setNativeProps({text: fullName});
         setPracticeName(fullName)
     }

@@ -5,6 +5,7 @@ import { IP } from '../IP_Address';
 import { Context } from '../ContextAPI/Context';
 import DataToExcel from '../Services/DataToExcel'
 import Dialog from "react-native-dialog";
+import textValidation from '../Services/TextValidation'
 
 
 
@@ -20,7 +21,8 @@ export default function SettingsComponent() {
     const [userSecurityA, setUserSecurityA] = useState('')
     const [visible, setVisible] = useState(false);
     const [inputPassword, setInputPassword] = useState('')
-    const [errorsArr,setErrorsArr] = useState([])
+    const [errorsArr, setErrorsArr] = useState([])
+    const { isInputOk } = textValidation;
 
     useEffect(() => {
         getUserDetails()
@@ -62,48 +64,51 @@ export default function SettingsComponent() {
         setVisible(false)
     };
 
-    const isInputOk = () => {
-        let arr = []
-        if (userEmail == '' || userEmail == undefined) {
-            arr.push('email')
-        }
-        if (userPassword == '' || userPassword == undefined) {
-            arr.push('password')
-        }
-        if (userSecurityA == '' || userSecurityA == undefined) {
-            arr.push('securityA')
-        }
-        if (userSecurityQ == '' || userSecurityQ == undefined) {
-            arr.push('securityQ')
-        }
-    
-        if (arr.length == 0) {
-            setErrorsArr([])
-            return true;
-        } else {
-            setErrorsArr(arr)
-            return false;
-        }
-    }
+    // const isInputOk = () => {
+    //     let arr = []
+    //     if (userEmail == '' || userEmail == undefined) {
+    //         arr.push('email')
+    //     }
+    //     if (userPassword == '' || userPassword == undefined) {
+    //         arr.push('password')
+    //     }
+    //     if (userSecurityA == '' || userSecurityA == undefined) {
+    //         arr.push('securityA')
+    //     }
+    //     if (userSecurityQ == '' || userSecurityQ == undefined) {
+    //         arr.push('securityQ')
+    //     }
 
-    
+    //     if (arr.length == 0) {
+    //         setErrorsArr([])
+    //         return true;
+    //     } else {
+    //         setErrorsArr(arr)
+    //         return false;
+    //     }
+    // }
+
+
 
     const submit = () => {
-        let isValid = isInputOk()
-        if(isValid){
-            axios.post('http://' + IP + '/users/updateuserdetails',{
-                userId:userIdValue,
-                email:userEmail,
-                password:userPassword,
-                securityQuestion:userSecurityQ,
-                securityAnswer:userSecurityA
-            }).then(res=>{
-                if(res.data){
+        let input = isInputOk([{email:userEmail},{password:userPassword},{securityA:userSecurityA},{securityQ:userSecurityQ}])
+        if (input.status) {
+            axios.post('http://' + IP + '/users/updateuserdetails', {
+                userId: userIdValue,
+                email: userEmail,
+                password: userPassword,
+                securityQuestion: userSecurityQ,
+                securityAnswer: userSecurityA
+            }).then(res => {
+                if (res.data) {
                     Alert.alert('Success')
-                }else{
+                } else {
                     Alert.alert('Somthing went wrong')
                 }
             })
+        }else{
+            setErrorsArr(input.data)
+            return;
         }
     }
 
@@ -128,7 +133,7 @@ export default function SettingsComponent() {
             <TextInput value={userSecurityA} placeholder={'Security Answer'} onChangeText={(secA) => setUserSecurityA(secA)} ></TextInput>
             {(errorsArr.includes('securityA')) && <Text>This is required.</Text>}
 
-            <Button title='Submit Data' onPress={submit}/>
+            <Button title='Submit Data' onPress={submit} />
             <Button onPress={toExcel} title='Export Db To Excel' />
 
             <Button onPress={showDialog} title='Reset DB' />

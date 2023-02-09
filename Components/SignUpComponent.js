@@ -4,6 +4,7 @@ import axios from 'axios';
 import { StyleSheet, Text, View, Button, TextInput, Alert } from 'react-native';
 import { IP } from '../IP_Address';
 import { Context } from '../ContextAPI/Context';
+import textValidation from '../Services/TextValidation.js'
 
 
 
@@ -19,10 +20,12 @@ export default function SignUp({ navigation }) {
     const [securityQ, setSecurityQ] = useState('')
     const [securityA, setSecurityA] = useState('')
     const [errorsArr, setErrorsArr] = useState([])
+    const { isInputOk } = textValidation;
 
     const onSingUpPress = function () {
-        let status = isInputOk();
-        if (!status) {
+        let input = isInputOk([{email:email},{password:password},{passwordConfirm:passwordConfirm},{securityA:securityA},{securityQ:securityQ}]);
+        if (!input.status) {
+            setErrorsArr(input.data)
             return;
         }
         if (password == passwordConfirm) {
@@ -42,31 +45,31 @@ export default function SignUp({ navigation }) {
         }
     }
 
-    const isInputOk = () => {
-        let arr = []
-        if (email == '' || email == undefined) {
-            arr.push('email')
-        }
-        if (password == '' || password == undefined) {
-            arr.push('password')
-        }
-        if (passwordConfirm == '' || passwordConfirm == undefined) {
-            arr.push('passwordConfirm')
-        }
-        if (securityQ == '' || securityQ == undefined) {
-            arr.push('securityQ')
-        }
-        if (securityA == '' || securityA == undefined) {
-            arr.push('securityA')
-        }
-        if (arr.length == 0) {
-            setErrorsArr([])
-            return true;
-        } else {
-            setErrorsArr(arr)
-            return false;
-        }
-    }
+    // const isInputOk = () => {
+    //     let arr = []
+    //     if (email == '' || email == undefined) {
+    //         arr.push('email')
+    //     }
+    //     if (password == '' || password == undefined) {
+    //         arr.push('password')
+    //     }
+    //     if (passwordConfirm == '' || passwordConfirm == undefined) {
+    //         arr.push('passwordConfirm')
+    //     }
+    //     if (securityQ == '' || securityQ == undefined) {
+    //         arr.push('securityQ')
+    //     }
+    //     if (securityA == '' || securityA == undefined) {
+    //         arr.push('securityA')
+    //     }
+    //     if (arr.length == 0) {
+    //         setErrorsArr([])
+    //         return true;
+    //     } else {
+    //         setErrorsArr(arr)
+    //         return false;
+    //     }
+    // }
 
     return (
         <View style={styles.container}>

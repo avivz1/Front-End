@@ -5,8 +5,9 @@ import { Context } from '../../ContextAPI/Context';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 import { IP } from '../../IP_Address';
-import citiesFile from '../../Utils/Cities1.json'
+import citiesFile from '../../Utils/citisListUpdated.json'
 import { SelectList } from 'react-native-dropdown-select-list'
+import textValidation from '../../Services/TextValidation.js'
 
 
 export default function AddTeamComponent2(props) {
@@ -14,50 +15,36 @@ export default function AddTeamComponent2(props) {
     const { userId } = React.useContext(Context);
     const [userIdValue] = userId;
     const [errorsArr, setErrorsArr] = React.useState([])
-    const [allCities, setAllCities] = React.useState([])
+    const [allCities, setAllCities] = React.useState(citiesFile)
     const [selectedCity, setSelectedCity] = React.useState('');
     const [teamName, setTeamName] = React.useState('')
     const [teamType, setTeamType] = React.useState('')
+    const { isInputOk } = textValidation;
 
-
-    // const { control, handleSubmit, formState: { errors }, reset } = useForm()
-
-
-    useEffect(() => {
-        let arr = []
-        citiesFile.forEach((city) => {
-            let obj = {
-                key: city.semel,
-                value: city.name
-            }
-            arr.push(obj)
-        })
-        setAllCities(arr)
-    }, [])
-
-    const isInputOk = () => {
-        let arr = []
-        if (teamName == '' || teamName == undefined) {
-            arr.push('teamName')
-        }
-        if (teamType == '' || teamType == undefined) {
-            arr.push('teamType')
-        }
-        if (selectedCity == '' || selectedCity == undefined) {
-            arr.push('teamCity')
-        }
-        if (arr.length == 0) {
-            setErrorsArr([])
-            return true;
-        } else {
-            setErrorsArr(arr)
-            return false;
-        }
-    }
+    // const isInputOk = () => {
+    //     let arr = []
+    //     if (teamName == '' || teamName == undefined) {
+    //         arr.push('teamName')
+    //     }
+    //     if (teamType == '' || teamType == undefined) {
+    //         arr.push('teamType')
+    //     }
+    //     if (selectedCity == '' || selectedCity == undefined) {
+    //         arr.push('teamCity')
+    //     }
+    //     if (arr.length == 0) {
+    //         setErrorsArr([])
+    //         return true;
+    //     } else {
+    //         setErrorsArr(arr)
+    //         return false;
+    //     }
+    // }
 
     const onSubmit = () => {
-        let input = isInputOk()
-        if (!input) {
+        let input = isInputOk([{teamName:teamName},{teamType:teamType},{teamCity:selectedCity}])
+        if (!input.status) {
+            setErrorsArr(input.data)
             return;
         }
 

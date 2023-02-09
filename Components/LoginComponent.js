@@ -4,23 +4,24 @@ import { StyleSheet, Text, View, Image, TextInput, Button, Alert, TouchableOpaci
 import axios from 'axios';
 import { Context } from '../ContextAPI/Context';
 import { IP } from '../IP_Address';
-
+import textValidation from '../Services/TextValidation'
 export default function LoginComponent({ navigation }) {
-
+    
     const { userId } = useContext(Context);
     const [userIdValue, setUserId] = userId;
     const [email, setEmail] = useState('a');
     const [password, setPassword] = useState('1');
     const [errorsArr, setErrorsArr] = useState([])
-
-
+    const { isInputOk } = textValidation;
+    
     const onSignUpPress = () => {
         navigation.navigate('SignUp');
     }
 
     const onLoginPress = () => {
-        let status = isInputOk();
-        if (!status) {
+        let input = isInputOk([{email:email},{password:password}]);
+        if (!input.status) {
+            setErrorsArr(input.data)
             return;
         } else {
 
@@ -35,22 +36,22 @@ export default function LoginComponent({ navigation }) {
         }
     }
 
-    const isInputOk = () => {
-        let arr = []
-        if (email == '' || email == undefined) {
-            arr.push('email')
-        }
-        if (password == '' || password == undefined) {
-            arr.push('password')
-        }
-        if (arr.length == 0) {
-            setErrorsArr([])
-            return true;
-        } else {
-            setErrorsArr(arr)
-            return false;
-        }
-    }
+    // const isInputOk = () => {
+    //     let arr = []
+    //     if (email == '' || email == undefined) {
+    //         arr.push('email')
+    //     }
+    //     if (password == '' || password == undefined) {
+    //         arr.push('password')
+    //     }
+    //     if (arr.length == 0) {
+    //         setErrorsArr([])
+    //         return true;
+    //     } else {
+    //         setErrorsArr(arr)
+    //         return false;
+    //     }
+    // }
 
     const handeleForgotPassword = () => {
         // setForgotPasswordFlag(true)

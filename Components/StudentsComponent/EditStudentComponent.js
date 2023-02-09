@@ -5,8 +5,9 @@ import { Picker } from '@react-native-picker/picker';
 import { IP } from "../../IP_Address";
 import axios from 'axios';
 import { SelectList } from 'react-native-dropdown-select-list'
-import citiesFile from '../../Utils/Cities1.json'
+import citiesFile from '../../Utils/citisListUpdated.json'
 import BeltsPickerComponent from '../../Components/BeltsPickerComponent'
+import textValidation from '../../Services/TextValidation.js'
 
 
 
@@ -14,8 +15,7 @@ import BeltsPickerComponent from '../../Components/BeltsPickerComponent'
 export default function EditStudentsComponent(props) {
 
     const [index, setIndex] = useState(0);
-    // const { control, handleSubmit, formState: { errors } } = useForm();
-    const [allCities, setAllCities] = useState([])
+    const [allCities, setAllCities] = useState(citiesFile)
     const [selectedCity, setSelectedCity] = useState(props.student ? props.student.City : '');
     const [errorsArr, setErrorsArr] = useState([])
     const [stuBelt, setStuBelt] = useState(props.student ? props.student.Belt : '')
@@ -24,25 +24,16 @@ export default function EditStudentsComponent(props) {
     const [emergencyName, setEmergencyName] = useState(props.student ? props.student.EmergencyContact.Name : '');
     const [emergencyPhone, setEmergencyPhone] = useState(props.student ? props.student.EmergencyContact.Phone.toString() : '');
     const [studentPhone, setStudentPhone] = useState(props.student ? props.student.Phone.toString() : '');
-
+    const { isInputOk } = textValidation;
 
     useEffect(() => {
         let index = props.teams.findIndex(team => team._id == props.student.Team_ID);
         setIndex(index);
-
-        let arr = []
-        citiesFile.forEach((city) => {
-            let obj = {
-                key: city.semel,
-                value: city.name
-            }
-            arr.push(obj)
-        })
-        setAllCities(arr)
     }, [])
 
 
     const onChangeIndex = (pickedTeam, index) => {
+        console.log(pickedTeam)
         setIndex(index)
     }
 
@@ -50,42 +41,43 @@ export default function EditStudentsComponent(props) {
         setStuBelt(belt)
     }
 
-    const isInputOk = () => {
-        let arr = []
-        if (stuName == '' || stuName == undefined) {
-            arr.push('stuName')
-        }
-        if (studentPhone == '' || studentPhone == undefined) {
-            arr.push('stuPhone')
-        }
-        if (emergencyName == '' || emergencyName == undefined) {
-            arr.push('emergencyName')
-        }
-        if (emergencyPhone == '' || emergencyPhone == undefined) {
-            arr.push('emergencyPhone')
-        }
-        if (stuAge == '' || stuAge == undefined) {
-            arr.push('stuAge')
-        }
-        if (stuBelt == '' || stuBelt == undefined) {
-            arr.push('stuBelt')
-        }
-        if (selectedCity == '' || selectedCity == undefined) {
-            arr.push('stuCity')
-        }
-        if (arr.length == 0) {
-            setErrorsArr([])
-            return true;
-        } else {
-            setErrorsArr(arr)
-            return false;
-        }
-    }
+    // const isInputOk = () => {
+    //     let arr = []
+    //     if (stuName == '' || stuName == undefined) {
+    //         arr.push('stuName')
+    //     }
+    //     if (studentPhone == '' || studentPhone == undefined) {
+    //         arr.push('stuPhone')
+    //     }
+    //     if (emergencyName == '' || emergencyName == undefined) {
+    //         arr.push('emergencyName')
+    //     }
+    //     if (emergencyPhone == '' || emergencyPhone == undefined) {
+    //         arr.push('emergencyPhone')
+    //     }
+    //     if (stuAge == '' || stuAge == undefined) {
+    //         arr.push('stuAge')
+    //     }
+    //     if (stuBelt == '' || stuBelt == undefined) {
+    //         arr.push('stuBelt')
+    //     }
+    //     if (selectedCity == '' || selectedCity == undefined) {
+    //         arr.push('stuCity')
+    //     }
+    //     if (arr.length == 0) {
+    //         setErrorsArr([])
+    //         return true;
+    //     } else {
+    //         setErrorsArr(arr)
+    //         return false;
+    //     }
+    // }
 
     const onSubmit = () => {
-
-        let input = isInputOk()
-        if (!input) {
+        console.log()
+        let input = isInputOk([{stuCity:selectedCity},{stuBelt:stuBelt},{stuAge:stuAge},{emergencyName:emergencyName},{emergencyPhone:emergencyPhone},{stuPhone:studentPhone},{stuName:stuName}])
+        if (!input.status) {
+            setErrorsArr(input.data)
             return;
         }
 
@@ -95,7 +87,7 @@ export default function EditStudentsComponent(props) {
             age: stuAge,
             city: selectedCity,
             studentId: props.student._id,
-            Team_ID: props.student.Team_ID,
+            Team_ID: props.teams ? props.teams[index]._id : props.student.Team_ID,
             phoneNum: studentPhone,
             emergencyContact: { Name: emergencyName, Phone: emergencyPhone }
 

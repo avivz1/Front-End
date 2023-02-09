@@ -33,7 +33,9 @@ export default function AddPracticeComponent(props) {
     useEffect(() => {
         dispatch({ type: "CLEAR" })
         if (props.teams.length > 0) {
-            setPracticeName(props.teams[0].Name +' - ' +date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear())
+            let day = date.getDate() > 9 ? date.getDate() : '0' + date.getDate();
+            let month = date.getMonth() + 1 > 9 ? date.getMonth() + 1 : '0' + (date.getMonth() + 1);
+            setPracticeName(props.teams[0].Name + ' - ' + day + '/' + month + '/' + date.getFullYear())
             if (props.students.length > 0) {
                 let stus = props.students.filter(s => s.Team_ID == props.teams[index]._id);
                 setPickedStudents(stus)
@@ -55,7 +57,10 @@ export default function AddPracticeComponent(props) {
         if (value != undefined) {
             // (value.getDate())
             setDate(value);
-            setPracticeName(pickedTeam?pickedTeam:props.teams[0].Name+' - ' +value.getDate() + '/' +0+ (value.getMonth() + 1) + '/' + value.getFullYear())
+            let day = value.getDate() > 9 ? value.getDate() : '0' + value.getDate();
+            let month = value.getMonth() + 1 > 9 ? value.getMonth() + 1 : '0' + (value.getMonth() + 1);
+            // setPracticeName(props.teams[0].Name + ' - ' + day + '/' + month + '/' + date.getFullYear())
+            setPracticeName(pickedTeam ? pickedTeam : props.teams[0].Name + ' - ' + day + '/' + month + '/' + value.getFullYear())
         }
     };
 
@@ -64,7 +69,10 @@ export default function AddPracticeComponent(props) {
         let stus = props.students.filter(s => s.Team_ID == props.teams[index]._id);
         setPickedStudents(stus)
         setPickedTeam(picked)
-        setPracticeName(picked.Name+' - ' +date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear())
+        let day = date.getDate() > 9 ? date.getDate() : '0' + date.getDate();
+        let month = date.getMonth() + 1 > 9 ? date.getMonth() + 1 : '0' + (date.getMonth() + 1);
+        setPracticeName(picked.Name + ' - ' + day + '/' + month + '/' + date.getFullYear())
+        // setPracticeName(picked.Name + ' - ' + date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear())
 
     }
 
@@ -90,7 +98,7 @@ export default function AddPracticeComponent(props) {
                     props.onAddPractice()
                 }
             })
-        }else{
+        } else {
             setError(true)
         }
 

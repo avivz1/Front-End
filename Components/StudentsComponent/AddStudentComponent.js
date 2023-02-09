@@ -6,9 +6,9 @@ import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 import { IP } from '../../IP_Address';
 import BeltsPickerComponent from '../../Components/BeltsPickerComponent'
-import citiesFile from '../../Utils/Cities1.json'
 import { SelectList } from 'react-native-dropdown-select-list'
-
+import citiesFile from '../../Utils/citisListUpdated.json'
+import textValidation from '../../Services/TextValidation.js'
 
 
 
@@ -23,23 +23,11 @@ export default function AddStudentsComponent(props) {
     const [stuAge, setStuAge] = React.useState('')
     const [studentPhone, setStudentPhone] = React.useState('');
     const [errorsArr, setErrorsArr] = React.useState([])
-    const [allCities, setAllCities] = React.useState([])
+    const [allCities, setAllCities] = React.useState(citiesFile)
     const [selectedCity, setSelectedCity] = React.useState('');
     const [emergencyName, setEmergencyName] = React.useState('');
     const [emergencyPhone, setEmergencyPhone] = React.useState('');
-
-
-    useEffect(() => {
-        let arr = []
-        citiesFile.forEach((city) => {
-            let obj = {
-                key: city.semel,
-                value: city.name
-            }
-            arr.push(obj)
-        })
-        setAllCities(arr)
-    }, [])
+    const { isInputOk } = textValidation;
 
 
     const setChoosenTeam = (picked, index) => {
@@ -51,44 +39,44 @@ export default function AddStudentsComponent(props) {
         setStuBelt(belt)
     }
 
-    const isInputOk = () => {
-        let arr = []
-        if (stuName == '' || stuName == undefined) {
-            arr.push('stuName')
-        }
-        if (studentPhone == '' || studentPhone == undefined) {
-            arr.push('stuPhone')
-        }
-        if (emergencyName == '' || emergencyName == undefined) {
-            arr.push('emergencyName')
-        }
-        if (emergencyPhone == '' || emergencyPhone == undefined) {
-            arr.push('emergencyPhone')
-        }
-        if (stuAge == '' || stuAge == undefined) {
-            arr.push('stuAge')
-        }
-        if (stuBelt == '' || stuBelt == undefined) {
-            arr.push('stuBelt')
-        }
-        if (selectedCity == '' || selectedCity == undefined) {
-            arr.push('stuCity')
-        }
-        if (arr.length == 0) {
-            setErrorsArr([])
-            return true;
-        } else {
-            setErrorsArr(arr)
-            return false;
-        }
-    }
+    // const isInputOk = () => {
+    //     let arr = []
+    //     if (stuName == '' || stuName == undefined) {
+    //         arr.push('stuName')
+    //     }
+    //     if (studentPhone == '' || studentPhone == undefined) {
+    //         arr.push('stuPhone')
+    //     }
+    //     if (emergencyName == '' || emergencyName == undefined) {
+    //         arr.push('emergencyName')
+    //     }
+    //     if (emergencyPhone == '' || emergencyPhone == undefined) {
+    //         arr.push('emergencyPhone')
+    //     }
+    //     if (stuAge == '' || stuAge == undefined) {
+    //         arr.push('stuAge')
+    //     }
+    //     if (stuBelt == '' || stuBelt == undefined) {
+    //         arr.push('stuBelt')
+    //     }
+    //     if (selectedCity == '' || selectedCity == undefined) {
+    //         arr.push('stuCity')
+    //     }
+    //     if (arr.length == 0) {
+    //         setErrorsArr([])
+    //         return true;
+    //     } else {
+    //         setErrorsArr(arr)
+    //         return false;
+    //     }
+    // }
 
     const onSubmit = () => {
-        let input = isInputOk()
-        if (!input) {
+        let input = isInputOk([{ stuName: stuName }, { stuAge: stuAge }, { stuBelt: stuBelt }, { stuPhone: studentPhone }, { stuCity: selectedCity }, { emergencyName: emergencyName }, { emergencyPhone: emergencyPhone }])
+        if (!input.status) {
+            setErrorsArr(input.data)
             return;
         }
-
         if (isNaN(stuAge)) {
             Alert.alert('Age is not a Number! try again')
         } else {
@@ -100,15 +88,15 @@ export default function AddStudentsComponent(props) {
                 city: selectedCity,
                 age: stuAge,
                 phoneNum: studentPhone,
-                emergencyContact:{Name:emergencyName,Phone:emergencyPhone}
+                emergencyContact: { Name: emergencyName, Phone: emergencyPhone }
             }).then(res => {
-                    if (res.data) {
-                        Alert.alert('Student Was Added')
-                        props.onAddClostModal()
-                    } else {
-                        Alert.alert("Somthing went wrong. Try again")
-                    }
-                })
+                if (res.data) {
+                    Alert.alert('Student Was Added')
+                    props.onAddClostModal()
+                } else {
+                    Alert.alert("Somthing went wrong. Try again")
+                }
+            })
 
 
         }
