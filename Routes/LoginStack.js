@@ -3,25 +3,29 @@ import { createAppContainer } from 'react-navigation'
 import LoginComponent from '../Components/LoginComponent'
 import SignUpComponent from '../Components/SignUpComponent'
 import HomeStack from './HomeStack';
+import ForgotPasswordComponent from '../Components/ForgotPasswordComponent'
 
 
 
 
 const screens = {
-   Login : {
-       screen: LoginComponent
-   },
-   SignUp : {
-    screen : SignUpComponent,
+    Login: {
+        screen: LoginComponent
+    },
+    SignUp: {
+        screen: SignUpComponent,
 
     },
-    Home : {
-        screen : HomeStack,
-        navigationOptions:{
+    ForgotPassword: {
+        screen: ForgotPasswordComponent
+    },
+    Home: {
+        screen: HomeStack,
+        navigationOptions: {
             headerShown: false,
             gestureEnabled: true,
         }
-   }
+    }
 }
 
 const LoginStack = createStackNavigator(screens);

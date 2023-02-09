@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState,useContext } from "react";
-import { StyleSheet, Text, View, Image, TextInput, Button, Alert ,TouchableOpacity} from "react-native";
+import React, { useState, useContext } from "react";
+import { StyleSheet, Text, View, Image, TextInput, Button, Alert, TouchableOpacity } from "react-native";
 import axios from 'axios';
 import { Context } from '../ContextAPI/Context';
 import { IP } from '../IP_Address';
@@ -53,7 +53,9 @@ export default function LoginComponent({ navigation }) {
     }
 
     const handeleForgotPassword = () => {
-        console.log('forget')
+        // setForgotPasswordFlag(true)
+        navigation.navigate('ForgotPassword');
+
     }
 
     return (

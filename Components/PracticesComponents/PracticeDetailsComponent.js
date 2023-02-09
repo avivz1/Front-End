@@ -23,6 +23,7 @@ export default function PracticeDetailsComponent(props) {
         getStudentsFullDetails()
         let x = props.practice.Date.split('T')
         props.practice.Date = x[0];
+        props.practice.Date = props.practice.Date.split('-').reverse().join('-')
     }, []);
 
 
@@ -71,7 +72,7 @@ export default function PracticeDetailsComponent(props) {
                     <ScrollView style={[styles.scrollStyle]} >
                         {studentsList.length > 0 ? studentsList.map((stu, index) => {
                             return (
-                                <DataTable.Row  onPress={() => { }} key={index}>
+                                <DataTable.Row onPress={() => { }} key={index}>
                                     <DataTable.Cell>{stu.Name}</DataTable.Cell>
                                     <DataTable.Cell>{stu.isDeleted ?
                                         <Image style={{ width: 12, height: 15 }} source={require('../../assets/garbageIcon.png')} />

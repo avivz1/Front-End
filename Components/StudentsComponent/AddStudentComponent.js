@@ -181,7 +181,7 @@ export default function AddStudentsComponent(props) {
 const styles = StyleSheet.create({
     container: {
         flex: 0,
-        height: '80%',
+        height: '90%',
         width: '100%',
         backgroundColor: '#fff',
         fontSize: 10,

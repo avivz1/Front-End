@@ -157,7 +157,6 @@ export default function ViewPracticesComponent() {
     setIsRadioBtnShow(true)
   }
 
-
   const checkOrUncheckPractice = (status, id) => {
 
     setIsUserPressRemoveAll(false);

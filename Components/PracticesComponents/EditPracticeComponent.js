@@ -16,22 +16,22 @@ import { useDispatch, useSelector } from 'react-redux'
 
 export default function EditPracticeComponent(props) {
     const { userId, teamsMap } = React.useContext(Context);
-    const [teamsNameMap, setMap] = teamsMap
+    // const [teamsNameMap, setMap] = teamsMap
     const [userIdValue] = userId;
 
     const [isPickerShow, setIsPickerShow] = useState(false);
     const [pickedStudents, setPickedStudents] = useState([])
-    const [checkedStudents, setCheckedStudents] = useState('')
-    const [practiceName,setPracticeName] = useState('')
-    const [errorSubmit,setErrorSubmit] = useState(false)
+    // const [checkedStudents, setCheckedStudents] = useState('')
+    const [practiceName, setPracticeName] = useState('')
+    const [errorSubmit, setErrorSubmit] = useState(false)
     const [date, setDate] = useState(new Date(props.practice.Date));
     const [teamName, setTeamName] = useState('')
     const dispatch = useDispatch()
     const selectorArr = useSelector((s) => s.StudentSelected)
+    const practiceNameRef = useRef();
 
     useEffect(() => {
-
-        setPracticeName(props.practice.Name)
+        // setPracticeName(props.practice.Name)
         dispatch({ type: "CLEAR" })
         if (props.practice.Team.Name == null || props.practice.Team.Name == '') {
             let team = props.allTeams.filter(t => t._id == props.practice.Team.Team_ID)
@@ -39,12 +39,11 @@ export default function EditPracticeComponent(props) {
         } else {
             setTeamName(props.practice.Team.Name)
         }
-
         if (props.practice.Students.length > 0) {
             getStudentsList()
         }
-
     }, [])
+
 
 
     const getStudentsList = () => {
@@ -64,58 +63,53 @@ export default function EditPracticeComponent(props) {
         setIsPickerShow(false);
         if (value != undefined) {
             setDate(value);
+            handelPracticeName(value)
         }
     };
 
-    // const setPracticeName = (data) => {
-    //     props.practice.Name = data
-    // }
-
-    // const setNewDate = (date)=>{
-    //     //10 - the length of a valid date
-    //     if(date.length==10){
-    //         setDate(date)
-    //     }
-    // }
-
-    const onSubmit = (data) => {
-        if(practiceName=='' || practiceName==null ||practiceName.length ==0){
-            setErrorSubmit(true)
-        }else{
-
-
-        let obj = {
-            userid: userIdValue,
-            _date: date,
-            // name: props.practice.Name,
-            name: practiceName,
-            teamID: props.practice.Team.Team_ID,
-            _id: props.practice._id
-        }
-        
-        axios.post('http://' + IP + '/practices/updatepractice', {
-            practice: obj,
-            allStudents: pickedStudents,
-            chosenStudents: selectorArr.arr
-        }).then(res => {
-            if (res.data) {
-                props.onPracticeUpdate()
-            } else {
-                Alert.alert('there was a problem try again')
-                props.onPracticeUpdate()
-            }
-        })
+    // props.data.split('-').reverse().join('-'
+    const handelPracticeName = (fullDate) => {
+        let fullName = teamName + ' - ' + fullDate.getDate() + '/' +0+ (fullDate.getMonth() + 1) + '/' + fullDate.getFullYear()
+        console.log(fullName)
+        practiceNameRef.current.setNativeProps({text: fullName});
+        setPracticeName(fullName)
     }
+
+    const onSubmit = () => {
+        if (practiceName == '' || practiceName == null || practiceName.length == 0) {
+            setErrorSubmit(true)
+        } else {
+            let obj = {
+                userid: userIdValue,
+                _date: date,
+                name: practiceName,
+                teamID: props.practice.Team.Team_ID,
+                _id: props.practice._id
+            }
+
+            axios.post('http://' + IP + '/practices/updatepractice', {
+                practice: obj,
+                allStudents: pickedStudents,
+                chosenStudents: selectorArr.arr
+            }).then(res => {
+                if (res.data) {
+                    props.onPracticeUpdate()
+                } else {
+                    Alert.alert('there was a problem try again')
+                    props.onPracticeUpdate()
+                }
+            })
+        }
 
     }
 
 
     return (
         <View style={styles.container}>
-            <TextInput style={styles.input} onChangeText={(data)=>{setPracticeName(data)}} defaultValue={props.practice.Name} placeholder='Practice Name'></TextInput>
+            <TextInput ref={practiceNameRef} style={styles.input} onChangeText={(data) => { setPracticeName(data) }} defaultValue={props.practice.Name} placeholder='Practice Name'></TextInput>
             {errorSubmit && <Text>This is required.</Text>}
 
-            <Text style={{float:'left',textAlign:'right',margin:3}} type="date"  placeholder='Date'> {date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()} </Text>
+            <Text style={{ float: 'left', textAlign: 'right', margin: 3 }} type="date" placeholder='Date'> {date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()} </Text>
 
             <Button title='calendar' icon='calendar' onPress={showPicker} />
 

@@ -11,19 +11,13 @@ import DataToExcel from '../Services/DataToExcel'
 
 export default function HomeComponent() {
 
-  const { excelProcess } = DataToExcel;
   const { userId, teamsMap } = React.useContext(Context);
   const [userIdValue] = userId;
-  const [teamsNameMap, setMap] = teamsMap
-  // const [excelData, setExcelData] = useState([])
-
-
   const [teamsPieData, setTeamsPieData] = useState([])
   const [practicePieData, setPracticePieData] = useState([])
   const [barChartData, setBarChartData] = useState([])
   const [beltsPieData, setBeltsPieData] = useState([])
   const redColors = ['rgb(179, 0, 0)', 'rgb(230, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 51, 51)', 'rgb(255, 102, 102)', 'rgb(255, 153, 153)']
-  // const greenColors = ['rgb(150, 250, 130)', 'rgb(120, 240, 60)', 'rgb(66, 255, 80)', 'rgb(200, 255, 90)', 'rgb(100, 255, 208)', 'rgb(113, 255, 100)']
   const blueColors = ['rgb(0, 0, 80)', 'rgb(0, 0, 153)', 'rgb(0, 0, 255)', 'rgb(128, 128, 255)', 'rgb(204, 204, 255)']
   const screenWidth = Dimensions.get("window").width;
 
@@ -162,20 +156,6 @@ export default function HomeComponent() {
     })
   }
 
-  const addData = () => {
-    axios.post('http://' + IP + '/login/adddata', { userId: userIdValue }).then(res => {
-      if (res.data) {
-        // Alert.alert('data added')
-      } else {
-        Alert.alert('there was a problem')
-      }
-    })
-  }
-
-  const toExcel = () => {
-    excelProcess(userIdValue)
-  }
-
   const isLoading = () => {
     if (barChartData.length <= 0 && teamsPieData.length <= 0 && practicePieData.length <= 0) {
       return true;
@@ -275,7 +255,6 @@ export default function HomeComponent() {
 
         </ScrollView>
       }
-      <Button onPress={addData} title='Add Data' />
 
     </View>
 

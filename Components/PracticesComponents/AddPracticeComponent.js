@@ -7,7 +7,6 @@ import { Picker } from '@react-native-picker/picker';
 import { IP } from '../../IP_Address';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Button, Snackbar } from 'react-native-paper'
-import { getDrawerStatusFromState } from '@react-navigation/drawer';
 import StudentCard from './StudentCheckBoxCard'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -56,7 +55,7 @@ export default function AddPracticeComponent(props) {
         if (value != undefined) {
             // (value.getDate())
             setDate(value);
-            setPracticeName(pickedTeam?pickedTeam:props.teams[0].Name+' - ' +value.getDate() + '/' + (value.getMonth() + 1) + '/' + value.getFullYear())
+            setPracticeName(pickedTeam?pickedTeam:props.teams[0].Name+' - ' +value.getDate() + '/' +0+ (value.getMonth() + 1) + '/' + value.getFullYear())
         }
     };
 
@@ -65,6 +64,7 @@ export default function AddPracticeComponent(props) {
         let stus = props.students.filter(s => s.Team_ID == props.teams[index]._id);
         setPickedStudents(stus)
         setPickedTeam(picked)
+        setPracticeName(picked.Name+' - ' +date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear())
 
     }
 
