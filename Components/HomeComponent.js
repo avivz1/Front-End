@@ -168,10 +168,8 @@ export default function HomeComponent() {
 
     <View style={styles.container}>
 
-      {isLoading() && <ActivityIndicator type={'large'} animating={true} color={Colors.red800} />}
-
-      {!isLoading() &&
-
+      {isLoading() ? <ActivityIndicator type={'large'} animating={true} color={Colors.red800} />
+      :
         <ScrollView>
 
           <Text style={{ fontSize: 30, padding: 15 }}>Student By Team</Text>
@@ -254,7 +252,7 @@ export default function HomeComponent() {
 
 
         </ScrollView>
-      }
+    }
 
     </View>
 
