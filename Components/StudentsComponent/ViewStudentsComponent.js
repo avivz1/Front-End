@@ -204,7 +204,7 @@ export default function ViewStudentsComponent() {
                 {addVisible && <AddStudentComponent onAddClostModal={closeAddModal} teams={allTeams} />}
             </Overlay>
 
-            <Overlay visible={callVisible} >
+            <Overlay visible={callVisible} onClose={()=>setCallVisible(false)} closeOnTouchOutside>
                 <TouchableOpacity onPress={()=>openDialer(pickedStudent.Phone)}>
                     <Text>Student Phone</Text>
                 </TouchableOpacity>

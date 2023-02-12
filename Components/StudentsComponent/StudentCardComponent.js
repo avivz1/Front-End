@@ -4,6 +4,7 @@ import { Card, Button, Checkbox } from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker';
 import { IP } from '../../IP_Address';
 import axios from 'axios';
+import Overlay from "react-native-modal-overlay";
 
 
 
@@ -13,6 +14,7 @@ export default function StudentCardComponent(props) {
     const [pickedImage, setPickedImage] = useState();
     const [isRadioBtnShow, setIsRadioBtnShow] = useState(false);
     const [checked, setChecked] = useState(false);
+    const [isImagePressed, setIsImagePRessed] = useState(false);
 
 
     useEffect(() => {
@@ -49,7 +51,7 @@ export default function StudentCardComponent(props) {
     }
 
     const pictureHandler = () => {
-        Alert.alert('Take a Picture','', [
+        Alert.alert('Take a Picture', '', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Gallery', onPress: () => { pickImage() } },
             { text: 'Camera', onPress: () => { takeImageHandler() } },
@@ -127,6 +129,10 @@ export default function StudentCardComponent(props) {
         }
     }
 
+    const onImagePress = () => {
+        setIsImagePRessed(true)
+    }
+
     return (
         <View style={[styles.container]}>
 
@@ -143,8 +149,16 @@ export default function StudentCardComponent(props) {
                         }}
                     />
                 }
+                {!props.isRadioBtnShow &&
+                    <TouchableOpacity onPress={onImagePress}>
+                        <Image style={{ width: 150, height: 50 }} resizeMode='cover' source={{ uri: pickedImage ? pickedImage : 'https://gsmauditors.com/wp-content/uploads/2016/05/istockphoto-1133765772-612x612-1.jpg' }} />
+                    </TouchableOpacity>
+                }
                 {/* require('../../assets/practicephoto.png') */}
-                {!props.isRadioBtnShow && <Image style={{ width: 150, height: 50 }} resizeMode='cover' source={{ uri: pickedImage ? pickedImage : 'https://gsmauditors.com/wp-content/uploads/2016/05/istockphoto-1133765772-612x612-1.jpg' }} />}
+
+                <Overlay visible={isImagePressed} style={{ width: 300, height: 300 }} onClose={() => setIsImagePRessed(false)} closeOnTouchOutside>
+                    {isImagePressed && <Image style={{ width: 300, height: 300 }} onPress={onImagePress} resizeMode='cover' source={{ uri: pickedImage ? pickedImage : 'https://gsmauditors.com/wp-content/uploads/2016/05/istockphoto-1133765772-612x612-1.jpg' }} />}
+                </Overlay>
 
                 {getBtnsState() &&
                     <View>
