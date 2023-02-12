@@ -39,38 +39,6 @@ export default function AddStudentsComponent(props) {
         setStuBelt(belt)
     }
 
-    // const isInputOk = () => {
-    //     let arr = []
-    //     if (stuName == '' || stuName == undefined) {
-    //         arr.push('stuName')
-    //     }
-    //     if (studentPhone == '' || studentPhone == undefined) {
-    //         arr.push('stuPhone')
-    //     }
-    //     if (emergencyName == '' || emergencyName == undefined) {
-    //         arr.push('emergencyName')
-    //     }
-    //     if (emergencyPhone == '' || emergencyPhone == undefined) {
-    //         arr.push('emergencyPhone')
-    //     }
-    //     if (stuAge == '' || stuAge == undefined) {
-    //         arr.push('stuAge')
-    //     }
-    //     if (stuBelt == '' || stuBelt == undefined) {
-    //         arr.push('stuBelt')
-    //     }
-    //     if (selectedCity == '' || selectedCity == undefined) {
-    //         arr.push('stuCity')
-    //     }
-    //     if (arr.length == 0) {
-    //         setErrorsArr([])
-    //         return true;
-    //     } else {
-    //         setErrorsArr(arr)
-    //         return false;
-    //     }
-    // }
-
     const onSubmit = () => {
         let input = isInputOk([{ stuName: stuName }, { stuAge: stuAge }, { stuBelt: stuBelt }, { stuPhone: studentPhone }, { stuCity: selectedCity }, { emergencyName: emergencyName }, { emergencyPhone: emergencyPhone }])
         if (!input.status) {

@@ -5,9 +5,9 @@ import DropDownPicker from 'react-native-dropdown-picker';
 
 
 
-export default function AddStudentsComponent(props) {
+export default function BeltsPickerComponent(props) {
 
-    const [pickdBelt, setPickedBelt] = useState('')
+    // const [pickdBelt, setPickedBelt] = useState('')
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState(props.data?props.data:null);
     const [items, setItems] = useState([
@@ -21,7 +21,6 @@ export default function AddStudentsComponent(props) {
     ]);
 
     const setBelt = (beltColor) => {
-        setPickedBelt(beltColor)
         props.callback(beltColor)
     }
 

@@ -5,6 +5,9 @@ import axios from 'axios';
 import { Context } from '../ContextAPI/Context';
 import { IP } from '../IP_Address';
 import textValidation from '../Services/TextValidation'
+
+
+
 export default function LoginComponent({ navigation }) {
     
     const { userId } = useContext(Context);

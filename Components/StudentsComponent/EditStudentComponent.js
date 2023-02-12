@@ -33,7 +33,6 @@ export default function EditStudentsComponent(props) {
 
 
     const onChangeIndex = (pickedTeam, index) => {
-        console.log(pickedTeam)
         setIndex(index)
     }
 
@@ -74,7 +73,6 @@ export default function EditStudentsComponent(props) {
     // }
 
     const onSubmit = () => {
-        console.log()
         let input = isInputOk([{stuCity:selectedCity},{stuBelt:stuBelt},{stuAge:stuAge},{emergencyName:emergencyName},{emergencyPhone:emergencyPhone},{stuPhone:studentPhone},{stuName:stuName}])
         if (!input.status) {
             setErrorsArr(input.data)

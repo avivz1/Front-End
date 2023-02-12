@@ -6,6 +6,7 @@ import { Context } from '../ContextAPI/Context';
 import DataToExcel from '../Services/DataToExcel'
 import Dialog from "react-native-dialog";
 import textValidation from '../Services/TextValidation'
+import SecurityQuestionDropDown from './SecurityQuestionPicker'
 
 
 
@@ -64,32 +65,6 @@ export default function SettingsComponent() {
         setVisible(false)
     };
 
-    // const isInputOk = () => {
-    //     let arr = []
-    //     if (userEmail == '' || userEmail == undefined) {
-    //         arr.push('email')
-    //     }
-    //     if (userPassword == '' || userPassword == undefined) {
-    //         arr.push('password')
-    //     }
-    //     if (userSecurityA == '' || userSecurityA == undefined) {
-    //         arr.push('securityA')
-    //     }
-    //     if (userSecurityQ == '' || userSecurityQ == undefined) {
-    //         arr.push('securityQ')
-    //     }
-
-    //     if (arr.length == 0) {
-    //         setErrorsArr([])
-    //         return true;
-    //     } else {
-    //         setErrorsArr(arr)
-    //         return false;
-    //     }
-    // }
-
-
-
     const submit = () => {
         let input = isInputOk([{email:userEmail},{password:userPassword},{securityA:userSecurityA},{securityQ:userSecurityQ}])
         if (input.status) {
@@ -112,6 +87,10 @@ export default function SettingsComponent() {
         }
     }
 
+    const setSecurityQuestionCallBack = (question)=>{
+        setUserSecurityQ(question)
+    }
+
     return (
         <View style={{ margin: 20 }}>
 
@@ -125,8 +104,7 @@ export default function SettingsComponent() {
             <TextInput value={userPassword} placeholder={'Password'} onChangeText={(pass) => setUserPassword(pass)} ></TextInput>
             {(errorsArr.includes('password')) && <Text>This is required.</Text>}
 
-            <Text>Security Question</Text>
-            <TextInput value={userSecurityQ} placeholder={'Security Question'} onChangeText={(secQ) => setUserSecurityQ(secQ)} ></TextInput>
+            <SecurityQuestionDropDown data={userSecurityQ} callback={setSecurityQuestionCallBack}/>
             {(errorsArr.includes('securityQ')) && <Text>This is required.</Text>}
 
             <Text>Security Answer</Text>

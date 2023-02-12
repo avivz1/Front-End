@@ -5,7 +5,8 @@ import { StyleSheet, Text, View, Button, TextInput, Alert } from 'react-native';
 import { IP } from '../IP_Address';
 import { Context } from '../ContextAPI/Context';
 import textValidation from '../Services/TextValidation.js'
-
+// import DropDownPicker from 'react-native-dropdown-picker';
+import SecurityQuestionDropDown from './SecurityQuestionPicker'
 
 
 
@@ -21,6 +22,15 @@ export default function SignUp({ navigation }) {
     const [securityA, setSecurityA] = useState('')
     const [errorsArr, setErrorsArr] = useState([])
     const { isInputOk } = textValidation;
+
+    // const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    // const [dropdownValue, setDropdownValue] = useState();
+    // const [items, setItems] = useState([
+    //     { label: 'What is your first School?', value: 'What is your first School?'},
+    //     { label: 'What is your first dog name?', value: 'What is your first dog name?'},
+    //     { label: 'What the name of street you grow up?', value: 'What the name of street you grow up?'},
+    // ]);
+
 
     const onSingUpPress = function () {
         let input = isInputOk([{email:email},{password:password},{passwordConfirm:passwordConfirm},{securityA:securityA},{securityQ:securityQ}]);
@@ -45,31 +55,6 @@ export default function SignUp({ navigation }) {
         }
     }
 
-    // const isInputOk = () => {
-    //     let arr = []
-    //     if (email == '' || email == undefined) {
-    //         arr.push('email')
-    //     }
-    //     if (password == '' || password == undefined) {
-    //         arr.push('password')
-    //     }
-    //     if (passwordConfirm == '' || passwordConfirm == undefined) {
-    //         arr.push('passwordConfirm')
-    //     }
-    //     if (securityQ == '' || securityQ == undefined) {
-    //         arr.push('securityQ')
-    //     }
-    //     if (securityA == '' || securityA == undefined) {
-    //         arr.push('securityA')
-    //     }
-    //     if (arr.length == 0) {
-    //         setErrorsArr([])
-    //         return true;
-    //     } else {
-    //         setErrorsArr(arr)
-    //         return false;
-    //     }
-    // }
 
     return (
         <View style={styles.container}>
@@ -84,7 +69,7 @@ export default function SignUp({ navigation }) {
             <TextInput secureTextEntry={true} style={styles.text} onChangeText={onPasswordConfirmChange} placeholder='Confirm Password'></TextInput>
             {(errorsArr.length > 0 && errorsArr.includes('passwordConfirm')) && <Text>This is required.</Text>}
 
-            <TextInput secureTextEntry={true} style={styles.text} onChangeText={(secQ) => setSecurityQ(secQ)} placeholder='Security Question'></TextInput>
+            <SecurityQuestionDropDown callback={(question)=>setSecurityQ(question)}/>
             {(errorsArr.length > 0 && errorsArr.includes('securityQ')) && <Text>This is required.</Text>}
 
             <TextInput secureTextEntry={true} style={styles.text} onChangeText={(secA) => setSecurityA(secA)} placeholder='Security Answer'></TextInput>
