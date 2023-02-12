@@ -16,7 +16,6 @@ export default function StudentDetailsComponent(props) {
     const [teamsNameMap, setMap] = teamsMap
     const [dates, setDates] = useState({})
     const [presentMonthPrecentage, setPresentMonthPrecentage] = useState('')
-    // const [attendanceArray, setAttendanceArray] = useState([])
     const [eventsArr, setEventsArr] = useState({ attendance: [], activities: [] })
     const [newActivityEvent, setNewActivityEvent] = useState('')
     const [newActivityNote, setNewActivityNote] = useState('')

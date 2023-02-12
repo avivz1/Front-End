@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Alert, TouchableOpacity, TouchableHighlight, Image, BackHandler, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Alert, TouchableOpacity, TouchableHighlight,Linking, Image, BackHandler, ScrollView } from 'react-native';
 import { Context } from '../../ContextAPI/Context';
 import ViewCardStudentComp from './StudentCardComponent';
 import { IP } from '../../IP_Address';
@@ -34,16 +34,14 @@ export default function ViewStudentsComponent() {
     const [isRadioBtnON, setIsRadioBtnON] = useState(false);
     const [isUserPressRemoveAll, setIsUserPressRemoveAll] = useState(false);
     const [studentsCheckedStatus, setStudentsCheckedStatus] = useState([]);
+    const [callVisible, setCallVisible] = useState(false);
 
     useEffect(() => {
         getAllStudents();
         getAllTeams();
     }, [])
 
-
-
     useEffect(() => {
-
         if (studentsCheckedStatus.length > 0 && studentsCheckedStatus.length == studentsArr.length && !isUserPressRemoveAll) {
             setIsRadioBtnON(true);
         }
@@ -70,8 +68,7 @@ export default function ViewStudentsComponent() {
             }
         })
     }
-    
-    
+
     const onCloseModal = () => {
         if (detailsVisible) {
             setDetailsVisible(false)
@@ -81,11 +78,11 @@ export default function ViewStudentsComponent() {
             setAddVisible(false)
         }
     }
-    
+
     const onAddPress = () => {
-        if(allTeams.length>0){
+        if (allTeams.length > 0) {
             setAddVisible(true)
-        }else{
+        } else {
             Alert.alert('must have a team before creating student')
         }
     }
@@ -109,7 +106,10 @@ export default function ViewStudentsComponent() {
             case 'updateRequest':
                 getAllStudents();
                 break;
- 
+
+            case 'callBtn': setCallVisible(true)
+                break;
+
             case 'detailsBtn': setDetailsVisible(true)
                 break;
             case 'editBtn': setEditVisible(true)
@@ -137,7 +137,6 @@ export default function ViewStudentsComponent() {
     const onChildCardLongPress = () => {
         setIsRadioBtnShow(true)
     }
-
 
     const checkOrUncheckStudent = (status, id) => {
         setIsUserPressRemoveAll(false);
@@ -179,6 +178,10 @@ export default function ViewStudentsComponent() {
         })
     }
 
+    const openDialer = (phone) => {
+        Linking.openURL(`tel:${phone}`);
+    }
+
     BackHandler.addEventListener('hardwareBackPress', () => {
         if (isRadioBtnShow == true) {
             setIsRadioBtnShow(false)
@@ -199,6 +202,15 @@ export default function ViewStudentsComponent() {
                 {editVisible && <EditStudentComponent onStudentUpdate={closeEditModal} teams={allTeams} student={pickedStudent ? pickedStudent : ''} />}
                 {detailsVisible && <StudentDetailsComponent student={pickedStudent ? pickedStudent : ''} />}
                 {addVisible && <AddStudentComponent onAddClostModal={closeAddModal} teams={allTeams} />}
+            </Overlay>
+
+            <Overlay visible={callVisible} >
+                <TouchableOpacity onPress={()=>openDialer(pickedStudent.Phone)}>
+                    <Text>Student Phone</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=>openDialer(pickedStudent.EmergencyContact.Phone)}>
+                    <Text>Emergency Phone</Text>
+                </TouchableOpacity>
             </Overlay>
 
             {/* {isRadioBtnShow && <Button title='Change Team' style={{ width: '10%', height: 30, margin:7}} onPress={changeTeamToFewStudents} />} */}

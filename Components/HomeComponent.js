@@ -68,7 +68,6 @@ export default function HomeComponent() {
     ],
   };
 
-
   const getBeltsAverage = () => {
     axios.post('http://' + IP + '/students/getBeltsAverage', { userId: userIdValue }).then(response => {
       if (response.data.length > 0) {

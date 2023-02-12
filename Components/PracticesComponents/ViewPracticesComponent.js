@@ -11,6 +11,7 @@ import { IP } from '../../IP_Address';
 import Overlay from 'react-native-modal-overlay';
 import { Card, FAB, Searchbar, RadioButton } from 'react-native-paper'
 import { useDispatch } from 'react-redux'
+import { ActivityIndicator, Colors } from 'react-native-paper';
 
 
 
@@ -35,6 +36,7 @@ export default function ViewPracticesComponent() {
   const [practicesCheckedStatus, setPracticesCheckedStatus] = useState([]);
 
   const onChangeSearch = query => setSearchText(query)
+
 
 
   useEffect(() => {
@@ -205,6 +207,14 @@ export default function ViewPracticesComponent() {
     })
   }
 
+  const isLoading = () => {
+    if (studentsArr.length > 0 && allPractices.length > 0 && allTeams.length > 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   return (
     <View style={[styles.container]}>
 
@@ -253,6 +263,9 @@ export default function ViewPracticesComponent() {
         icon='plus'
         onPress={openAddModal}
       />
+
+      {/* <ActivityIndicator type={'large'} animating={true} color={Colors.red800} /> */}
+
 
     </View>
   )
