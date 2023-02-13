@@ -274,7 +274,7 @@ export default function HomeComponent() {
 
 const styles = StyleSheet.create({
   container: {
-    alignSelf: 'center',
+    // alignSelf: 'center',
     // flex: 0,
     backgroundColor: '#fff',
     // alignItems: 'center',
