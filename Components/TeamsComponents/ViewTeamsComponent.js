@@ -10,7 +10,7 @@ import EditTeamComponent from './EditTeamComponent'
 import TeamCardComoponent from './TeamCardComponent'
 import TeamDetailsComponent from './TeamDetailsComponent'
 import RemoveTeamDialog from './RemoveTeamDialog'
-import { ActivityIndicator,Colors } from 'react-native-paper';
+import { ActivityIndicator, Colors } from 'react-native-paper';
 
 
 
@@ -101,6 +101,7 @@ export default function ViewTeamsComponent() {
     }
 
     const openAddModal = () => {
+        console.log('aad')
         setAddVisible(true);
     }
 
@@ -287,7 +288,6 @@ export default function ViewTeamsComponent() {
                     <Overlay visible={isVisible() ? true : false} onClose={onCloseModal} closeOnTouchOutside>
                         {editVisible && <EditTeamComponent onTeamUpdate={closeEditModal} team={pickedTeam ? pickedTeam : undefined} />}
                         {detailsVisible && <TeamDetailsComponent team={pickedTeam ? pickedTeam : undefined} />}
-                        {addVisible && <AddTeamComponent onAddTeam={closeAddModal} />}
                     </Overlay>
                     {removeVisible && <RemoveTeamDialog pickedTeam={pickedTeam} teams={allTeams} onRemoveOkPress={switchStudentsAndDeleteTeam} onRemoveCanclePress={closeRemoveModal} />}
 
@@ -330,6 +330,10 @@ export default function ViewTeamsComponent() {
                 icon='plus'
                 onPress={openAddModal}
             />
+            <Overlay visible={addVisible} onClose={onCloseModal} closeOnTouchOutside>
+            <AddTeamComponent onAddTeam={closeAddModal} />
+
+            </Overlay>
 
 
         </View>

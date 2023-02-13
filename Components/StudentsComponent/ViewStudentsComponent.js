@@ -214,7 +214,6 @@ export default function ViewStudentsComponent() {
                     <Overlay visible={editVisible ? true : detailsVisible ? true : addVisible ? true : false} onClose={onCloseModal} closeOnTouchOutside>
                         {editVisible && <EditStudentComponent onStudentUpdate={closeEditModal} teams={allTeams} student={pickedStudent ? pickedStudent : ''} />}
                         {detailsVisible && <StudentDetailsComponent student={pickedStudent ? pickedStudent : ''} />}
-                        {addVisible && <AddStudentComponent onAddClostModal={closeAddModal} teams={allTeams} />}
                     </Overlay>
 
                     <Overlay visible={callVisible} onClose={() => setCallVisible(false)} closeOnTouchOutside>
@@ -263,6 +262,11 @@ export default function ViewStudentsComponent() {
                 icon='plus'
                 onPress={onAddPress}
             />
+            <Overlay visible={addVisible} onClose={onCloseModal} closeOnTouchOutside>
+                <AddStudentComponent onAddClostModal={closeAddModal} teams={allTeams} />
+
+            </Overlay>
+
         </View>
     )
 

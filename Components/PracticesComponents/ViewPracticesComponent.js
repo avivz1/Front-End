@@ -31,16 +31,16 @@ export default function ViewPracticesComponent() {
   const [isRadioBtnON, setIsRadioBtnON] = useState(false);
   const [isUserPressRemoveAll, setIsUserPressRemoveAll] = useState(false);
   const [practicesCheckedStatus, setPracticesCheckedStatus] = useState([]);
-  const [isLoading,setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const onChangeSearch = query => setSearchText(query)
 
   useEffect(() => {
-    if(allTeams.length>0 && allPractices.length>0 && studentsArr.length>0){
+    if (allTeams.length > 0 && allPractices.length > 0 ) {
       setIsLoading(false)
-    }else{
+    } else {
       setIsLoading(true)
     }
-  }, [allTeams,allPractices,studentsArr])
+  }, [allTeams, allPractices, studentsArr])
 
   useEffect(() => {
     getAllPractices()
@@ -74,7 +74,7 @@ export default function ViewPracticesComponent() {
         res.data.forEach(team => {
           setMap(teamsNameMap.set(team._id, team.Name))
 
-          
+
         });
       } else {
         //Toast there was a problem
@@ -85,9 +85,9 @@ export default function ViewPracticesComponent() {
 
   const getAllPractices = () => {
     axios.post('http://' + IP + '/practices/getallpractices', { userID: userIdValue }).then(res => {
-      if(res.data){
+      if (res.data) {
         setPractices(res.data)
-      }else{
+      } else {
         //handel error
       }
 
@@ -220,14 +220,13 @@ export default function ViewPracticesComponent() {
 
   return (
     <View style={[styles.container]}>
-      {isLoading ? <ActivityIndicator type={'large'} animating={true} color={Colors.red800} />:
+      {isLoading ? <ActivityIndicator type={'large'} animating={true} color={Colors.red800} /> :
 
 
         <View>
           <Overlay visible={isVisible() ? true : false} onClose={onCloseModal} closeOnTouchOutside>
             {editVisible && <EditPracticeComponent onPracticeUpdate={closeEditModal} allTeams={allTeams} allStudents={studentsArr} practice={pickedPractice ? pickedPractice : ''} />}
             {detailsVisible && <PracticeDetailsComponent practice={pickedPractice ? pickedPractice : ''} />}
-            {addVisible && <AddPracticeComponent teams={allTeams} students={studentsArr} onAddPractice={closeAddModal} />}
           </Overlay>
 
 
@@ -259,16 +258,20 @@ export default function ViewPracticesComponent() {
 
           </ScrollView>
 
-          <FAB
-            style={{ margin: 16, position: 'absolute', right: 0, bottom: 0 }}
-            big
-            icon='plus'
-            onPress={openAddModal}
-          />
         </View>
-        
-        // <ActivityIndicator type={'large'} animating={true} color={Colors.red800} />
+
       }
+
+      <FAB
+        style={{ margin: 16, position: 'absolute', right: 0, bottom: 0 }}
+        big
+        icon='plus'
+        onPress={openAddModal}
+      />
+      <Overlay visible={addVisible} onClose={onCloseModal} closeOnTouchOutside>
+
+        <AddPracticeComponent teams={allTeams} students={studentsArr} onAddPractice={closeAddModal} />
+      </Overlay>
 
     </View>
   )
@@ -283,7 +286,6 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingTop: 10,
     backgroundColor: '#ffffff',
-    justifyContent: "center",
 
   },
   HeadStyle: {

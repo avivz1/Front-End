@@ -76,7 +76,6 @@ export default function AddPracticeComponent(props) {
 
     }
 
-
     const onSubmit = (data) => {
         if (practiceName != '' && date) {
             let obj = {
