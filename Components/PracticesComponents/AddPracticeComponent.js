@@ -20,7 +20,7 @@ export default function AddPracticeComponent(props) {
     const [index, setIndex] = React.useState(0);
     const [pickedTeam, setPickedTeam] = React.useState('');
     const [date, setDate] = useState(new Date());
-    const [practiceName, setPracticeName] = useState()
+    const [practiceName, setPracticeName] = useState('')
     const [isPickerShow, setIsPickerShow] = useState(false);
     const [pickedStudents, setPickedStudents] = useState('')
     const [checkedStudents, setCheckedStudents] = useState('')
@@ -52,27 +52,36 @@ export default function AddPracticeComponent(props) {
     };
 
     const onChangeDate = (event, value) => {
+        //im here- bug problem
+        console.log('OnChangeDate')
+        console.log(value)
+        console.log(value.getDate()>9)
+        console.log(pickedTeam)
+        console.log(props.teams[0].Name )
         setIsPickerShow(false);
-
         if (value != undefined) {
-            // (value.getDate())
             setDate(value);
             let day = value.getDate() > 9 ? value.getDate() : '0' + value.getDate();
             let month = value.getMonth() + 1 > 9 ? value.getMonth() + 1 : '0' + (value.getMonth() + 1);
-            // setPracticeName(props.teams[0].Name + ' - ' + day + '/' + month + '/' + date.getFullYear())
             setPracticeName(pickedTeam ? pickedTeam : props.teams[0].Name + ' - ' + day + '/' + month + '/' + value.getFullYear())
         }
     };
 
     const setChoosenTeam = (picked, index) => {
+        console.log('setChoosenTeam')
+
         setIndex(index)
+        setPickedTeam(picked)
         let stus = props.students.filter(s => s.Team_ID == props.teams[index]._id);
         setPickedStudents(stus)
-        setPickedTeam(picked)
+
         let day = date.getDate() > 9 ? date.getDate() : '0' + date.getDate();
         let month = date.getMonth() + 1 > 9 ? date.getMonth() + 1 : '0' + (date.getMonth() + 1);
-        setPracticeName(picked.Name + ' - ' + day + '/' + month + '/' + date.getFullYear())
-        // setPracticeName(picked.Name + ' - ' + date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear())
+        console.log(day)
+        console.log(month)
+        console.log(picked)
+        console.log(date.getFullYear())
+        setPracticeName(picked + ' - ' + day + '/' + month + '/' + date.getFullYear())
 
     }
 
@@ -107,7 +116,8 @@ export default function AddPracticeComponent(props) {
     return (
         <View style={styles.container}>
 
-            <TextInput style={styles.input} onChangeText={setPracticeName} value={practiceName}></TextInput>
+            <Text>{practiceName}</Text>
+            {/* <TextInput style={styles.input} onChangeText={setPracticeName} value={practiceName}></TextInput> */}
 
             <TextInput type="date" onChangeText={setDate} value={date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()} placeholder='Date'></TextInput>
 
@@ -124,11 +134,11 @@ export default function AddPracticeComponent(props) {
             )}
 
             < Picker
-                selectedValue={props.teams.lenght > 0 ? pickedTeam : props.teams[index]}
+                selectedValue={pickedTeam? pickedTeam : props.teams[index]}
                 onValueChange={setChoosenTeam} >
                 {
                     props.teams.map((team, index) => {
-                        return (<Picker.Item key={index} label={team.Name} value={team}></Picker.Item>)
+                        return (<Picker.Item key={team._id} label={team.Name} value={team.Name}></Picker.Item>)
                     })
                 }
             </Picker>
@@ -137,8 +147,9 @@ export default function AddPracticeComponent(props) {
                 <View style={styles.container}>
                     {pickedStudents.length > 0 ? pickedStudents.map((stu, index) => {
                         return (
-                            <View key={index}>
-                                <StudentCard key={index} data={stu} />
+
+                            <View key={stu._id}>
+                                <StudentCard key={stu._id} data={stu} />
                             </View>
                         )
                     }) : <Text>No Students</Text>}
