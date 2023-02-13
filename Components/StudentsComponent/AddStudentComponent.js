@@ -78,8 +78,8 @@ export default function AddStudentsComponent(props) {
             <Picker
                 selectedValue={props.teams.lenght > 0 ? pickedTeam : props.teams[index]}
                 onValueChange={setChoosenTeam}>
-                {props.teams.map((team, index) => {
-                    return (<Picker.Item key={index} label={team.Name} value={team}></Picker.Item>)
+                {props.teams.map((team) => {
+                    return (<Picker.Item key={team._id} label={team.Name} value={team}></Picker.Item>)
                 })}
             </Picker>
 

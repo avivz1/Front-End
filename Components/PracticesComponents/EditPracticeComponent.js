@@ -16,7 +16,6 @@ import { useDispatch, useSelector } from 'react-redux'
 
 export default function EditPracticeComponent(props) {
     const { userId, teamsMap } = React.useContext(Context);
-    // const [teamsNameMap, setMap] = teamsMap
     const [userIdValue] = userId;
 
     const [isPickerShow, setIsPickerShow] = useState(false);
@@ -123,10 +122,10 @@ export default function EditPracticeComponent(props) {
 
             <ScrollView>
                 <View style={styles.container}>
-                    {pickedStudents.length > 0 ? pickedStudents.map((stu, index) => {
+                    {pickedStudents.length > 0 ? pickedStudents.map((stu) => {
                         return (
-                            <View key={index}>
-                                <StudentCard key={index} data={stu} />
+                            <View key={stu._id}>
+                                <StudentCard key={stu._id} data={stu} />
                             </View>
                         )
                     }) : <Text>No Students</Text>}

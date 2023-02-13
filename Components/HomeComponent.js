@@ -17,17 +17,27 @@ export default function HomeComponent() {
   const [practicePieData, setPracticePieData] = useState([])
   const [barChartData, setBarChartData] = useState([])
   const [beltsPieData, setBeltsPieData] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const redColors = ['rgb(179, 0, 0)', 'rgb(230, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 51, 51)', 'rgb(255, 102, 102)', 'rgb(255, 153, 153)']
   const blueColors = ['rgb(0, 0, 80)', 'rgb(0, 0, 153)', 'rgb(0, 0, 255)', 'rgb(128, 128, 255)', 'rgb(204, 204, 255)']
   const screenWidth = Dimensions.get("window").width;
+
+
 
   useEffect(() => {
     getBeltsAverage()
     getTotalDivisionByMonth();
     getdistributionbyTeam();
     getTotalDivision();
-
   }, [])
+
+  useEffect(() => {
+    if (barChartData && teamsPieData && practicePieData && beltsPieData) {
+      setIsLoading(false)
+    }else{
+      setIsLoading(true)
+    }
+  }, [barChartData, teamsPieData, practicePieData, beltsPieData])
 
   const chartConfig = {
     backgroundGradientFrom: "#1E2923",
@@ -155,7 +165,7 @@ export default function HomeComponent() {
     })
   }
 
-  const isLoading = () => {
+  const isLoading1 = () => {
     if (barChartData.length <= 0 && teamsPieData.length <= 0 && practicePieData.length <= 0) {
       return true;
     } else {
@@ -167,8 +177,8 @@ export default function HomeComponent() {
 
     <View style={styles.container}>
 
-      {isLoading() ? <ActivityIndicator type={'large'} animating={true} color={Colors.red800} />
-      :
+      {isLoading ? <ActivityIndicator type={'large'} animating={true} color={Colors.red800} />
+        :
         <ScrollView>
 
           <Text style={{ fontSize: 30, padding: 15 }}>Student By Team</Text>
@@ -251,7 +261,7 @@ export default function HomeComponent() {
 
 
         </ScrollView>
-    }
+      }
 
     </View>
 

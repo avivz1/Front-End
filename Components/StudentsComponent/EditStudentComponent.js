@@ -109,8 +109,8 @@ export default function EditStudentsComponent(props) {
             <Picker
                 selectedValue={props.teams[index].Name}
                 onValueChange={onChangeIndex}>
-                {props.teams.map((team, index) => {
-                    return (<Picker.Item key={index} label={team.Name} value={team.Name}></Picker.Item>)
+                {props.teams.map((team) => {
+                    return (<Picker.Item key={team._id} label={team.Name} value={team.Name}></Picker.Item>)
                 })
                 }
             </Picker>

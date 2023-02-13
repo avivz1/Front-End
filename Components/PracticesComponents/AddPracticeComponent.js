@@ -56,7 +56,6 @@ export default function AddPracticeComponent(props) {
     };
 
     const onChangeDate = (event, value) => {
-        console.log('OnChangeDate')
         setIsPickerShow(false);
         if (value != undefined) {
             setDate(value);

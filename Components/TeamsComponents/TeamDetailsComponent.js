@@ -58,9 +58,9 @@ export default function TeamDetailsComponent(props) {
                     </DataTable.Header>
 
                     <ScrollView style={{ height: '60%', width: '100%', }} >
-                        {studentsList.length > 0 ? studentsList.map((stu, index) => {
+                        {studentsList.length > 0 ? studentsList.map((stu) => {
                             return (
-                                <DataTable.Row onPress={() => { }} key={index}>
+                                <DataTable.Row onPress={() => { }} key={stu._id}>
                                     <DataTable.Cell>{stu.Name}</DataTable.Cell>
                                     <DataTable.Cell>{stu.Belt}</DataTable.Cell>
                                     <DataTable.Cell>{stu.Age}</DataTable.Cell>

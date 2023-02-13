@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { StyleSheet, Text, View, Alert, ScrollView, BackHandler, Image, TouchableOpacity } from 'react-native';
@@ -9,8 +8,7 @@ import PracticeDetailsComponent from './PracticeDetailsComponent'
 import { Context } from '../../ContextAPI/Context';
 import { IP } from '../../IP_Address';
 import Overlay from 'react-native-modal-overlay';
-import { Card, FAB, Searchbar, RadioButton } from 'react-native-paper'
-import { useDispatch } from 'react-redux'
+import { FAB, Searchbar, RadioButton } from 'react-native-paper'
 import { ActivityIndicator, Colors } from 'react-native-paper';
 
 
@@ -21,10 +19,9 @@ export default function ViewPracticesComponent() {
   const [userIdValue] = userId;
   const [teamsNameMap, setMap] = teamsMap
 
-
   const [studentsArr, setStudents] = useState([]);
   const [allTeams, setTeams] = useState([]);
-  const [allPractices, setPractices] = useState(false);
+  const [allPractices, setPractices] = useState([]);
   const [pickedPractice, setPickedPractice] = useState({});
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [editVisible, setEditVisible] = useState(false);
@@ -34,10 +31,16 @@ export default function ViewPracticesComponent() {
   const [isRadioBtnON, setIsRadioBtnON] = useState(false);
   const [isUserPressRemoveAll, setIsUserPressRemoveAll] = useState(false);
   const [practicesCheckedStatus, setPracticesCheckedStatus] = useState([]);
-
+  const [isLoading,setIsLoading] = useState(false)
   const onChangeSearch = query => setSearchText(query)
 
-
+  useEffect(() => {
+    if(allTeams.length>0 && allPractices.length>0 && studentsArr.length>0){
+      setIsLoading(false)
+    }else{
+      setIsLoading(true)
+    }
+  }, [allTeams,allPractices,studentsArr])
 
   useEffect(() => {
     getAllPractices()
@@ -55,7 +58,9 @@ export default function ViewPracticesComponent() {
     axios.post('http://' + IP + '/students/getallstudentsbyuserid', { userid: userIdValue }).then(res => {
       if (res.data) {
         setStudents(res.data)
+
       } else {
+
         //Toast there was a problem
       }
     })
@@ -68,6 +73,8 @@ export default function ViewPracticesComponent() {
         setTeams(res.data)
         res.data.forEach(team => {
           setMap(teamsNameMap.set(team._id, team.Name))
+
+          
         });
       } else {
         //Toast there was a problem
@@ -78,7 +85,12 @@ export default function ViewPracticesComponent() {
 
   const getAllPractices = () => {
     axios.post('http://' + IP + '/practices/getallpractices', { userID: userIdValue }).then(res => {
-      setPractices(res.data)
+      if(res.data){
+        setPractices(res.data)
+      }else{
+        //handel error
+      }
+
     })
   }
 
@@ -192,7 +204,6 @@ export default function ViewPracticesComponent() {
   }
 
   const removeFewPractices = () => {
-
     axios.post('http://' + IP + '/practices/removeFewPractices', { userID: userIdValue, practices: practicesCheckedStatus }).then(res => {
       if (res.data == true) {
         axios.post('http://' + IP + '/practices/getallpractices', { userID: userIdValue }).then(res1 => {
@@ -207,65 +218,57 @@ export default function ViewPracticesComponent() {
     })
   }
 
-  const isLoading = () => {
-    if (studentsArr.length > 0 && allPractices.length > 0 && allTeams.length > 0) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
   return (
     <View style={[styles.container]}>
-
-      <Overlay visible={isVisible() ? true : false} onClose={onCloseModal} closeOnTouchOutside>
-        {editVisible && <EditPracticeComponent onPracticeUpdate={closeEditModal} allTeams={allTeams} allStudents={studentsArr} practice={pickedPractice ? pickedPractice : ''} />}
-        {detailsVisible && <PracticeDetailsComponent practice={pickedPractice ? pickedPractice : ''} />}
-        {addVisible && <AddPracticeComponent teams={allTeams} students={studentsArr} onAddPractice={closeAddModal} />}
-      </Overlay>
+      {isLoading ? <ActivityIndicator type={'large'} animating={true} color={Colors.red800} />:
 
 
-      <Searchbar placeholder='Search' onChangeText={onChangeSearch} value={searchText} />
-      {isRadioBtnShow &&
-        <RadioButton
-          value="mainRadioBtn"
-          status={isRadioBtnON ? 'checked' : 'unchecked'}
-          onPress={() => onRadionBtnPresses()}
-        />
-      }
-      {isRadioBtnShow && <TouchableOpacity onPress={removeFewPractices}><Image style={{ width: 20, height: 30, margin: 7 }} source={require('../../assets/garbageIcon.png')} ></Image></TouchableOpacity>}
+        <View>
+          <Overlay visible={isVisible() ? true : false} onClose={onCloseModal} closeOnTouchOutside>
+            {editVisible && <EditPracticeComponent onPracticeUpdate={closeEditModal} allTeams={allTeams} allStudents={studentsArr} practice={pickedPractice ? pickedPractice : ''} />}
+            {detailsVisible && <PracticeDetailsComponent practice={pickedPractice ? pickedPractice : ''} />}
+            {addVisible && <AddPracticeComponent teams={allTeams} students={studentsArr} onAddPractice={closeAddModal} />}
+          </Overlay>
 
-      <ScrollView>
-        <View style={[styles.container]}>
-          {allPractices.length > 0 ? allPractices.map((practice, index) => {
-            return (
-              <View key={index}>
-                {
-                  practice.Name.includes(searchText) &&
-                  <PracticeCardComponent checkUnCheckPractice={checkOrUncheckPractice} isUserRemoveAll={isUserPressRemoveAll} isRadioBtnON={isRadioBtnON} isRadioBtnShow={isRadioBtnShow} key={index} onLongPress={onChildCardLongPress} callBack={practiceCardPress} practice={practice} />
-                }
-                {/* {deleteAllFlag ?
-                  practice.Name.includes(searchText) && <PracticeCardComponent isRemoveAll={deleteAllFlag} key={index} onLongPress={onChildCardLongPress} callBack={practiceCardPress} practice={practice} />
-                  :
-                  <PracticeCardComponent isRemoveAll={deleteAllFlag} key={index} onLongPress={onChildCardLongPress} callBack={practiceCardPress} practice={practice} />
-                } */}
 
-              </View>
-            )
-          }) : <Text>No Practices</Text>}
+          <Searchbar placeholder='Search' onChangeText={onChangeSearch} value={searchText} />
+          {isRadioBtnShow &&
+            <RadioButton
+              value="mainRadioBtn"
+              status={isRadioBtnON ? 'checked' : 'unchecked'}
+              onPress={() => onRadionBtnPresses()}
+            />
+          }
+
+          {isRadioBtnShow && <TouchableOpacity onPress={removeFewPractices}><Image style={{ width: 20, height: 30, margin: 7 }} source={require('../../assets/garbageIcon.png')} ></Image></TouchableOpacity>}
+
+
+          <ScrollView>
+            <View style={[styles.container]}>
+              {allPractices.length > 0 ? allPractices.map((practice) => {
+                return (
+                  <View key={practice._id}>
+                    {
+                      practice.Name.includes(searchText) &&
+                      <PracticeCardComponent checkUnCheckPractice={checkOrUncheckPractice} isUserRemoveAll={isUserPressRemoveAll} isRadioBtnON={isRadioBtnON} isRadioBtnShow={isRadioBtnShow} key={practice._id} onLongPress={onChildCardLongPress} callBack={practiceCardPress} practice={practice} />
+                    }
+                  </View>
+                )
+              }) : <Text>No Practices</Text>}
+            </View>
+
+          </ScrollView>
+
+          <FAB
+            style={{ margin: 16, position: 'absolute', right: 0, bottom: 0 }}
+            big
+            icon='plus'
+            onPress={openAddModal}
+          />
         </View>
-
-      </ScrollView>
-
-      <FAB
-        style={{ margin: 16, position: 'absolute', right: 0, bottom: 0 }}
-        big
-        icon='plus'
-        onPress={openAddModal}
-      />
-
-      {/* <ActivityIndicator type={'large'} animating={true} color={Colors.red800} /> */}
-
+        
+        // <ActivityIndicator type={'large'} animating={true} color={Colors.red800} />
+      }
 
     </View>
   )

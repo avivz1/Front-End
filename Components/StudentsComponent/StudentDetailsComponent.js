@@ -72,7 +72,7 @@ export default function StudentDetailsComponent(props) {
                         getAllActivities()
                         Alert.alert('Success')
                     } else {
-                        console.log('Somthing went wrong')
+                        //handel rjeect
                     }
                 })
         } else {
@@ -157,8 +157,8 @@ export default function StudentDetailsComponent(props) {
                     } else {
                         obj[activity.Date] = { selected: true, marked: true, selectedColor: 'red', dotColor: 'black' }
 
-                    } 
-                }else{
+                    }
+                } else {
                     obj[activity.Date] = { marked: true, dotColor: 'green' }
                 }
                 return obj;
@@ -255,22 +255,7 @@ export default function StudentDetailsComponent(props) {
                     </ScrollView>
 
                 </DataTable>
-                {/* <View style={{ margin: 30 }}>
-                    <Text style={[styles.mainHeadLines]}>Add Activity </Text>
-                    <Text style={[styles.smallHeadLines]}>Add Event </Text>
-                    <TextInput placeholder='New Activity Event' onChangeText={(event) => setNewActivityEvent(event)} />
-                    {activityInputErrors.includes('activityEventError') && <Text>This is required</Text>}
-                    
-                    <Text style={[styles.smallHeadLines]}>Add Note </Text>
-                    <TextInput placeholder='New Activity Note' onChangeText={(note) => setNewActivityNote(note)} />
-                    {activityInputErrors.includes('activityNoteError') && <Text>This is required</Text>}
-                    
-                    <Text style={[styles.smallHeadLines]}>Date </Text>
-                    <TextInput placeholder='New Activity Date' onChangeText={(date) => setNewActivityDate(date)} />
-                    {activityInputErrors.includes('activityDateError') && <Text>This is required</Text>}
-                    
-                    <Button title='Add new Activity' onPress={() => addNewActivity()} />
-                </View> */}
+
             </ScrollView>
             <Overlay visible={addActivityFlag} onClose={() => setAddActivityFlag(false)} closeOnTouchOutside>
                 {addActivityFlag && <AddNewActivityComp studentID={props.student._id} data={dayPress} onError={handelErrorOnAddActivity} onSuccess={onAddActivity} onCancel={() => setAddActivityFlag(false)} />}

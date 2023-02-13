@@ -20,7 +20,9 @@ export default function SecurityQuestionPicker(props) {
         { label: 'What the name of street you grow up?', value: 'What the name of street you grow up?' },
     ]);
     useEffect(() => {
-        setValue(props.data)
+        if(props.data){
+            setValue(props.data)
+        }
     }, [props])
 
     const setSecurity = (question) => {

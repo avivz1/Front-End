@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Alert, TouchableOpacity, TouchableHighlight,Linking, Image, BackHandler, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Alert, TouchableOpacity, TouchableHighlight, Linking, Image, BackHandler, ScrollView } from 'react-native';
 import { Context } from '../../ContextAPI/Context';
 import ViewCardStudentComp from './StudentCardComponent';
 import { IP } from '../../IP_Address';
@@ -10,6 +10,7 @@ import StudentDetailsComponent from './StudentDetailsComponent'
 import AddStudentComponent from './AddStudentComponent'
 import { FAB, Searchbar, RadioButton } from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker';
+import { ActivityIndicator, Colors } from 'react-native-paper';
 
 
 
@@ -30,11 +31,20 @@ export default function ViewStudentsComponent() {
     const [searchText, setSearchText] = useState('');
     const onChangeSearch = query => setSearchText(query)
 
+    const [isLoading, setIsLoading] = useState(false)
     const [isRadioBtnShow, setIsRadioBtnShow] = useState(false);
     const [isRadioBtnON, setIsRadioBtnON] = useState(false);
     const [isUserPressRemoveAll, setIsUserPressRemoveAll] = useState(false);
     const [studentsCheckedStatus, setStudentsCheckedStatus] = useState([]);
     const [callVisible, setCallVisible] = useState(false);
+
+    useEffect(() => {
+        if (allTeams.length > 0 && studentsArr.length > 0) {
+            setIsLoading(false)
+        } else {
+            setIsLoading(true)
+        }
+    }, [allTeams, studentsArr])
 
     useEffect(() => {
         getAllStudents();
@@ -198,58 +208,61 @@ export default function ViewStudentsComponent() {
 
         <View style={[styles.container]}>
 
-            <Overlay visible={editVisible ? true : detailsVisible ? true : addVisible ? true : false} onClose={onCloseModal} closeOnTouchOutside>
-                {editVisible && <EditStudentComponent onStudentUpdate={closeEditModal} teams={allTeams} student={pickedStudent ? pickedStudent : ''} />}
-                {detailsVisible && <StudentDetailsComponent student={pickedStudent ? pickedStudent : ''} />}
-                {addVisible && <AddStudentComponent onAddClostModal={closeAddModal} teams={allTeams} />}
-            </Overlay>
+            {isLoading ? <ActivityIndicator type={'large'} animating={true} color={Colors.red800} /> :
+                <View>
 
-            <Overlay visible={callVisible} onClose={()=>setCallVisible(false)} closeOnTouchOutside>
-                <TouchableOpacity onPress={()=>openDialer(pickedStudent.Phone)}>
-                    <Text>Student Phone</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={()=>openDialer(pickedStudent.EmergencyContact.Phone)}>
-                    <Text>Emergency Phone</Text>
-                </TouchableOpacity>
-            </Overlay>
+                    <Overlay visible={editVisible ? true : detailsVisible ? true : addVisible ? true : false} onClose={onCloseModal} closeOnTouchOutside>
+                        {editVisible && <EditStudentComponent onStudentUpdate={closeEditModal} teams={allTeams} student={pickedStudent ? pickedStudent : ''} />}
+                        {detailsVisible && <StudentDetailsComponent student={pickedStudent ? pickedStudent : ''} />}
+                        {addVisible && <AddStudentComponent onAddClostModal={closeAddModal} teams={allTeams} />}
+                    </Overlay>
 
-            {/* {isRadioBtnShow && <Button title='Change Team' style={{ width: '10%', height: 30, margin:7}} onPress={changeTeamToFewStudents} />} */}
+                    <Overlay visible={callVisible} onClose={() => setCallVisible(false)} closeOnTouchOutside>
+                        <TouchableOpacity onPress={() => openDialer(pickedStudent.Phone)}>
+                            <Text>Student Phone</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => openDialer(pickedStudent.EmergencyContact.Phone)}>
+                            <Text>Emergency Phone</Text>
+                        </TouchableOpacity>
+                    </Overlay>
 
-            <Searchbar placeholder='Search' onChangeText={onChangeSearch} value={searchText} />
-            {isRadioBtnShow &&
-                <RadioButton
-                    value="mainRadioBtn"
-                    status={isRadioBtnON ? 'checked' : 'unchecked'}
-                    onPress={() => onRadionBtnPresses()}
-                />
-            }
-            {isRadioBtnShow && <TouchableOpacity onPress={removeFewStudents}><Image style={{ width: 20, height: 30, margin: 7 }} source={require('../../assets/garbageIcon.png')} ></Image></TouchableOpacity>}
+                    {/* {isRadioBtnShow && <Button title='Change Team' style={{ width: '10%', height: 30, margin:7}} onPress={changeTeamToFewStudents} />} */}
 
-            <ScrollView>
-                <View style={[styles.container]}>
+                    <Searchbar placeholder='Search' onChangeText={onChangeSearch} value={searchText} />
+                    {isRadioBtnShow &&
+                        <RadioButton
+                            value="mainRadioBtn"
+                            status={isRadioBtnON ? 'checked' : 'unchecked'}
+                            onPress={() => onRadionBtnPresses()}
+                        />
+                    }
+                    {isRadioBtnShow && <TouchableOpacity onPress={removeFewStudents}><Image style={{ width: 20, height: 30, margin: 7 }} source={require('../../assets/garbageIcon.png')} ></Image></TouchableOpacity>}
 
-                    {studentsArr.length > 0 ? studentsArr.map((stu, index) => {
+                    <ScrollView>
+                        <View style={[styles.container]}>
 
-                        return (
-                            <View key={index}>
-                                {
-                                    stu.Name.includes(searchText) &&
-                                    <ViewCardStudentComp checkUnCheckStudent={checkOrUncheckStudent} isUserRemoveAll={isUserPressRemoveAll} isRadioBtnON={isRadioBtnON} isRadioBtnShow={isRadioBtnShow} key={index} onLongPress={onChildCardLongPress} callBack={StudentCardPress} data={stu} />
-                                }
-                            </View>
-                        )
-                    }) : <Text>No Students</Text>}
+                            {studentsArr.length > 0 ? studentsArr.map((stu, index) => {
+                                return (
+                                    <View key={stu._id}>
+                                        {
+                                            stu.Name.includes(searchText) &&
+                                            <ViewCardStudentComp checkUnCheckStudent={checkOrUncheckStudent} isUserRemoveAll={isUserPressRemoveAll} isRadioBtnON={isRadioBtnON} isRadioBtnShow={isRadioBtnShow} key={stu._id} onLongPress={onChildCardLongPress} callBack={StudentCardPress} data={stu} />
+                                        }
+                                    </View>
+                                )
+                            }) : <Text>No Students</Text>}
+                        </View>
+
+                    </ScrollView>
+
                 </View>
-
-            </ScrollView>
-
+            }
             <FAB
                 style={{ margin: 16, position: 'absolute', right: 0, bottom: 0 }}
                 big
                 icon='plus'
                 onPress={onAddPress}
             />
-
         </View>
     )
 
@@ -262,7 +275,8 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 10,
         paddingTop: 10,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+
     },
     HeadStyle: {
         height: 50,

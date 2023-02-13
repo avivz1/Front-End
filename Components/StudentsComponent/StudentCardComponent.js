@@ -150,11 +150,10 @@ export default function StudentCardComponent(props) {
                     />
                 }
                 {!props.isRadioBtnShow &&
-                    <TouchableOpacity onPress={onImagePress}>
-                        <Image style={{ width: 150, height: 50 }} resizeMode='cover' source={{ uri: pickedImage ? pickedImage : 'https://gsmauditors.com/wp-content/uploads/2016/05/istockphoto-1133765772-612x612-1.jpg' }} />
+                    <TouchableOpacity style={{width:80}} onPress={onImagePress}>
+                        <Image style={{ width: 80, height: 50 }} resizeMode='cover' source={{ uri: pickedImage ? pickedImage : 'https://gsmauditors.com/wp-content/uploads/2016/05/istockphoto-1133765772-612x612-1.jpg' }} />
                     </TouchableOpacity>
                 }
-                {/* require('../../assets/practicephoto.png') */}
 
                 <Overlay visible={isImagePressed} style={{ width: 300, height: 300 }} onClose={() => setIsImagePRessed(false)} closeOnTouchOutside>
                     {isImagePressed && <Image style={{ width: 300, height: 300 }} onPress={onImagePress} resizeMode='cover' source={{ uri: pickedImage ? pickedImage : 'https://gsmauditors.com/wp-content/uploads/2016/05/istockphoto-1133765772-612x612-1.jpg' }} />}

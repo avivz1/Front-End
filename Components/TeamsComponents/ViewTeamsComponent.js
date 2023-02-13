@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { StyleSheet, Text, View, Button, TextInput, Alert, TouchableOpacity, TouchableHighlight, BackHandler, ScrollView, Image } from 'react-native';
 import { Context } from '../../ContextAPI/Context';
@@ -10,6 +10,7 @@ import EditTeamComponent from './EditTeamComponent'
 import TeamCardComoponent from './TeamCardComponent'
 import TeamDetailsComponent from './TeamDetailsComponent'
 import RemoveTeamDialog from './RemoveTeamDialog'
+import { ActivityIndicator,Colors } from 'react-native-paper';
 
 
 
@@ -29,10 +30,19 @@ export default function ViewTeamsComponent() {
     const [searchText, setSearchText] = React.useState('');
     const onChangeSearch = query => setSearchText(query)
 
+    const [isLoading, setIsLoading] = useState(false)
     const [isRadioBtnShow, setIsRadioBtnShow] = useState(false);
     const [isRadioBtnON, setIsRadioBtnON] = useState(false);
     const [isUserPressRemoveAll, setIsUserPressRemoveAll] = useState(false);
     const [teamsCheckedStatus, setTeamsCheckedStatus] = useState([]);
+
+    useEffect(() => {
+        if (allTeams.length > 0) {
+            setIsLoading(false)
+        } else {
+            setIsLoading(true)
+        }
+    }, [allTeams])
 
     useEffect(() => {
         getAllTeams();
@@ -270,42 +280,49 @@ export default function ViewTeamsComponent() {
     return (
 
         <View style={[styles.container]}>
+            {isLoading ? <ActivityIndicator type={'large'} animating={true} color={Colors.red800} />
+                :
+                <View>
 
-            <Overlay visible={isVisible() ? true : false} onClose={onCloseModal} closeOnTouchOutside>
-                {editVisible && <EditTeamComponent onTeamUpdate={closeEditModal} team={pickedTeam ? pickedTeam : undefined} />}
-                {detailsVisible && <TeamDetailsComponent team={pickedTeam ? pickedTeam : undefined} />}
-                {addVisible && <AddTeamComponent onAddTeam={closeAddModal} />}
-            </Overlay>
-            {removeVisible && <RemoveTeamDialog pickedTeam={pickedTeam} teams={allTeams} onRemoveOkPress={switchStudentsAndDeleteTeam} onRemoveCanclePress={closeRemoveModal} />}
-
-
-            <Searchbar placeholder='Search' onChangeText={onChangeSearch} value={searchText} />
-            {isRadioBtnShow &&
-                <RadioButton
-                    value="mainRadioBtn"
-                    status={isRadioBtnON ? 'checked' : 'unchecked'}
-                    onPress={() => onRadionBtnPresses()}
-                />
-            }
-            {isRadioBtnShow && <TouchableOpacity onPress={removeFewTeams}><Image style={{ width: 20, height: 30, margin: 7 }} source={require('../../assets/garbageIcon.png')} ></Image></TouchableOpacity>}
+                    <Overlay visible={isVisible() ? true : false} onClose={onCloseModal} closeOnTouchOutside>
+                        {editVisible && <EditTeamComponent onTeamUpdate={closeEditModal} team={pickedTeam ? pickedTeam : undefined} />}
+                        {detailsVisible && <TeamDetailsComponent team={pickedTeam ? pickedTeam : undefined} />}
+                        {addVisible && <AddTeamComponent onAddTeam={closeAddModal} />}
+                    </Overlay>
+                    {removeVisible && <RemoveTeamDialog pickedTeam={pickedTeam} teams={allTeams} onRemoveOkPress={switchStudentsAndDeleteTeam} onRemoveCanclePress={closeRemoveModal} />}
 
 
-            <ScrollView>
-                <View style={[styles.container]}>
+                    <Searchbar placeholder='Search' onChangeText={onChangeSearch} value={searchText} />
+                    {isRadioBtnShow &&
+                        <RadioButton
+                            value="mainRadioBtn"
+                            status={isRadioBtnON ? 'checked' : 'unchecked'}
+                            onPress={() => onRadionBtnPresses()}
+                        />
+                    }
+                    {isRadioBtnShow && <TouchableOpacity onPress={removeFewTeams}><Image style={{ width: 20, height: 30, margin: 7 }} source={require('../../assets/garbageIcon.png')} ></Image></TouchableOpacity>}
 
-                    {allTeams.length > 0 ? allTeams.map((team, index) => {
-                        return (
-                            <View key={index}>
-                                {
-                                    team.Name.includes(searchText) &&
-                                    <TeamCardComoponent checkUnCheckTeam={checkOrUncheckTeam} isUserRemoveAll={isUserPressRemoveAll} isRadioBtnON={isRadioBtnON} isRadioBtnShow={isRadioBtnShow} onLongPress={onChildCardLongPress} key={index} callBack={TeamCardPress} team={team} />
-                                }
-                            </View>
-                        )
-                    }) : <Text>No Teams</Text>}
+
+                    <ScrollView>
+                        <View style={[styles.container]}>
+
+                            {allTeams.length > 0 ? allTeams.map((team, index) => {
+                                return (
+                                    <View key={team._id}>
+                                        {
+                                            team.Name.includes(searchText) &&
+                                            <TeamCardComoponent checkUnCheckTeam={checkOrUncheckTeam} isUserRemoveAll={isUserPressRemoveAll} isRadioBtnON={isRadioBtnON} isRadioBtnShow={isRadioBtnShow} onLongPress={onChildCardLongPress} key={team._id} callBack={TeamCardPress} team={team} />
+                                        }
+                                    </View>
+                                )
+                            }) : <Text>No Teams</Text>}
+                        </View>
+
+                    </ScrollView>
+
+
                 </View>
-
-            </ScrollView>
+            }
 
             <FAB
                 style={{ margin: 16, position: 'absolute', right: 0, bottom: 0 }}
@@ -313,6 +330,7 @@ export default function ViewTeamsComponent() {
                 icon='plus'
                 onPress={openAddModal}
             />
+
 
         </View>
     )
@@ -326,7 +344,8 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 10,
         paddingTop: 10,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+
     },
     HeadStyle: {
         height: 50,

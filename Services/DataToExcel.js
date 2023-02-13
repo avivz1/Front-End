@@ -26,15 +26,14 @@ const excelProcess = async (userId) => {
             );
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
                 // Start downloading
-                console.log('Storage Permission Granted.');
                 tryExcel();
             } else {
+                //permission granted
                 // If permission denied then show alert
                 Alert.alert('Error', 'Storage Permission Not Granted');
             }
         } catch (err) {
             // To handle permission related exception
-            console.log("++++" + err);
         }
     }
 };

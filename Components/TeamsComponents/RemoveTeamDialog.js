@@ -49,8 +49,8 @@ export default RemoveTeamDialog = forwardRef((props, ref) => {
                     <Picker
                         selectedValue={teams[index]}
                         onValueChange={setChoosenTeam}>
-                        {teams.map((team, index) => {
-                            return (<Picker.Item key={index} label={team.Name} value={team}></Picker.Item>)
+                        {teams.map((team) => {
+                            return (<Picker.Item key={team._id} label={team.Name} value={team}></Picker.Item>)
                         })}
                     </Picker>
                     <Button

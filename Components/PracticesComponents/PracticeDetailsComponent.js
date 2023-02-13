@@ -70,9 +70,9 @@ export default function PracticeDetailsComponent(props) {
                     </DataTable.Header>
 
                     <ScrollView style={[styles.scrollStyle]} >
-                        {studentsList.length > 0 ? studentsList.map((stu, index) => {
+                        {studentsList.length > 0 ? studentsList.map((stu) => {
                             return (
-                                <DataTable.Row onPress={() => { }} key={index}>
+                                <DataTable.Row onPress={() => { }} key={stu._id}>
                                     <DataTable.Cell>{stu.Name}</DataTable.Cell>
                                     <DataTable.Cell>{stu.isDeleted ?
                                         <Image style={{ width: 12, height: 15 }} source={require('../../assets/garbageIcon.png')} />
