@@ -46,41 +46,33 @@ export default function AddPracticeComponent(props) {
         }
     }, [])
 
+    useEffect(() => {
+        let stus = props.students.filter(s => s.Team_ID == props.teams[index]._id);
+        setPickedStudents(stus)
+    }, [pickedTeam])
 
     const showPicker = () => {
         setIsPickerShow(true);
     };
 
     const onChangeDate = (event, value) => {
-        //im here- bug problem
         console.log('OnChangeDate')
-        console.log(value)
-        console.log(value.getDate()>9)
-        console.log(pickedTeam)
-        console.log(props.teams[0].Name )
         setIsPickerShow(false);
         if (value != undefined) {
             setDate(value);
             let day = value.getDate() > 9 ? value.getDate() : '0' + value.getDate();
             let month = value.getMonth() + 1 > 9 ? value.getMonth() + 1 : '0' + (value.getMonth() + 1);
-            setPracticeName(pickedTeam ? pickedTeam : props.teams[0].Name + ' - ' + day + '/' + month + '/' + value.getFullYear())
+            let fullDate = day + '/' + month + '/' + value.getFullYear()
+            let name = pickedTeam ? pickedTeam + ' - ' + fullDate : props.teams[0].Name + ' - ' + fullDate
+            setPracticeName(name)
         }
     };
 
     const setChoosenTeam = (picked, index) => {
-        console.log('setChoosenTeam')
-
         setIndex(index)
         setPickedTeam(picked)
-        let stus = props.students.filter(s => s.Team_ID == props.teams[index]._id);
-        setPickedStudents(stus)
-
         let day = date.getDate() > 9 ? date.getDate() : '0' + date.getDate();
         let month = date.getMonth() + 1 > 9 ? date.getMonth() + 1 : '0' + (date.getMonth() + 1);
-        console.log(day)
-        console.log(month)
-        console.log(picked)
-        console.log(date.getFullYear())
         setPracticeName(picked + ' - ' + day + '/' + month + '/' + date.getFullYear())
 
     }
@@ -134,7 +126,7 @@ export default function AddPracticeComponent(props) {
             )}
 
             < Picker
-                selectedValue={pickedTeam? pickedTeam : props.teams[index]}
+                selectedValue={pickedTeam ? pickedTeam : props.teams[index]}
                 onValueChange={setChoosenTeam} >
                 {
                     props.teams.map((team, index) => {
