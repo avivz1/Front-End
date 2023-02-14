@@ -24,13 +24,14 @@ export default function StudentDetailsComponent(props) {
     const [activityInputErrors, setActivityInputErrors] = useState('')
     const [addActivityFlag, setAddActivityFlag] = useState(false)
     const [dayPress, setDayPress] = useState('')
+    const [pickedDate, setPickedDate] = useState({ pickedMonth: (dateOBject.getMonth() + 1) > 9 ? dateOBject.getMonth + 1 : '0' + (dateOBject.getMonth() + 1), pickedYear: dateOBject.getFullYear() })
 
     useEffect(() => {
         getStudentPracticesDetails()
     }, []);
 
     useEffect(() => {
-        getPrecentageByMonth(dateOBject.getMonth() + 1);
+        getPrecentageByMonth(pickedDate.pickedMonth, pickedDate.pickedYear);
         processDates();
     }, [eventsArr])
 
@@ -119,13 +120,15 @@ export default function StudentDetailsComponent(props) {
         })
     }
 
-    const getPrecentageByMonth = (month) => {
+    const getPrecentageByMonth = (month, year) => {
+        setPickedDate({ pickedMonth: month, pickedYear: year });
         let obj = {}
         let arr = []
         eventsArr.attendance.forEach(practice => {
             let preDate = practice.date.split('-')
-            preDate = preDate[1]
-            if (preDate == month) {
+            let practiceMonth = preDate[1]
+            let practiceYear = preDate[0]
+            if (practiceMonth.toString() == month.toString() && practiceYear.toString() == year.toString()) {
                 obj = practice;
                 arr.push(obj);
             }
@@ -164,12 +167,17 @@ export default function StudentDetailsComponent(props) {
                 return obj;
             })
         }
+        let day = dateOBject.getDate() > 9 ? dateOBject.getDate() : '0' + (dateOBject.getDate())
+        let month = dateOBject.getMonth() > 9 ? dateOBject.getMonth() : '0' + (dateOBject.getMonth()+1)
+        let year = dateOBject.getFullYear()
+        let currentDate = year + '-' + month + '-' + day
+        obj[currentDate] = { dotColor: 'lightblue' , selected: true, marked: true, selectedColor: 'lightBlue' }
         setDates(obj)
     }
 
     const monthChange = (data) => {
-        let d = '0' + data.month
-        getPrecentageByMonth(d)
+        let month = '0' + data.month
+        getPrecentageByMonth(month, data.year)
         processDates();
     }
 
@@ -220,7 +228,7 @@ export default function StudentDetailsComponent(props) {
             <Text>Team : {getTeamName(props.student.Team_ID)}  </Text>
             <Text>Precentage By Month :{presentMonthPrecentage ? presentMonthPrecentage.toFixed(2) : 0}%  </Text>
             <Text>City : {props.student.City}</Text>
-            <Text> Emergency Contact :</Text>
+            <Text> Emergency Contact :{props.student.EmergencyContact.Name}</Text>
             <TouchableOpacity onPress={() => openDialer(props.student.EmergencyContact.Phone)}>
                 <Text>Emergency Phone :{props.student.EmergencyContact.Phone}</Text>
             </TouchableOpacity>
@@ -228,7 +236,8 @@ export default function StudentDetailsComponent(props) {
                 <Calendar
                     onDayPress={onDayPress}
                     onMonthChange={monthChange}
-                    markedDates={dates}
+                   markedDates={dates}
+
                 />
 
                 <DataTable style={{ width: '100%', paddingTop: 30 }} >

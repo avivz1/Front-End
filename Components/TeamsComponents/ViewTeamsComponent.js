@@ -101,7 +101,6 @@ export default function ViewTeamsComponent() {
     }
 
     const openAddModal = () => {
-        console.log('aad')
         setAddVisible(true);
     }
 

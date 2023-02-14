@@ -17,7 +17,6 @@ export default function PracticeDetailsComponent(props) {
     const screenWidth = Dimensions.get("window").width;
 
 
-
     useEffect(() => {
         getAttendancePrecent()
         getStudentsFullDetails()
@@ -37,7 +36,6 @@ export default function PracticeDetailsComponent(props) {
         axios.post('http://' + IP + '/practices/getstudentlistforpratice', { userId: userIdValue, practiceId: props.practice._id, students: props.practice.Students }).then(res => {
             if (res.data != false) {
                 setStudentsList(res.data)
-
             }
         })
     }

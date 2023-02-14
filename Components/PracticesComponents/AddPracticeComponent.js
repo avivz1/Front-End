@@ -107,10 +107,7 @@ export default function AddPracticeComponent(props) {
         <View style={styles.container}>
 
             <Text>{practiceName}</Text>
-            {/* <TextInput style={styles.input} onChangeText={setPracticeName} value={practiceName}></TextInput> */}
-
-            <TextInput type="date" onChangeText={setDate} value={date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()} placeholder='Date'></TextInput>
-
+            <Text>{date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()}</Text>
             <Button title='calendar' icon='calendar' onPress={showPicker} />
 
             {isPickerShow && (
