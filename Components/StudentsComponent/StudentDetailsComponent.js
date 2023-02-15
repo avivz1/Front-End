@@ -26,6 +26,10 @@ export default function StudentDetailsComponent(props) {
     const [dayPress, setDayPress] = useState('')
     const [pickedDate, setPickedDate] = useState({ pickedMonth: (dateOBject.getMonth() + 1) > 9 ? dateOBject.getMonth + 1 : '0' + (dateOBject.getMonth() + 1), pickedYear: dateOBject.getFullYear() })
 
+    useEffect(()=>{
+        getAllActivities()
+    },[addActivityFlag])
+
     useEffect(() => {
         getStudentPracticesDetails()
     }, []);
@@ -43,42 +47,6 @@ export default function StudentDetailsComponent(props) {
                 Alert.alert('failed to get activities')
             }
         })
-    }
-
-    const isInputValid = () => {
-        let arr = []
-        if (newActivityEvent == '' || newActivityEvent == undefined) {
-            arr.push('activityEventError')
-        }
-        if (newActivityNote == '' || newActivityNote == undefined) {
-            arr.push('activityNoteError')
-        }
-        if (newActivityDate == '' || newActivityDate == undefined) {
-            arr.push('activityDateError')
-        }
-        if (arr.length == 0) {
-            setActivityInputErrors([])
-            return true;
-        } else {
-            setActivityInputErrors(arr)
-            return false;
-        }
-    }
-
-    const addNewActivity = () => {
-        if (isInputValid) {
-            axios.post('http://' + IP + '/students/addnewstudentactivity', { userId: userIdValue, stuId: props.student._id, activity: { Event: newActivityEvent, Note: newActivityNote, Date: newActivityDate } })
-                .then(res => {
-                    if (res.data) {
-                        getAllActivities()
-                        Alert.alert('Success')
-                    } else {
-                        //handel rjeect
-                    }
-                })
-        } else {
-            Alert.alert('empty activity details')
-        }
     }
 
     const deleteActivity = (act) => {
