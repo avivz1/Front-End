@@ -23,9 +23,9 @@ export default function HomeStack({ navigation }) {
     return (
         <NavigationContainer>
             <Drawer.Navigator drawerContent={props=> <CustomDrawerLogOut {...props}/>}>
-            <Drawer.Screen name='Home' header={false} options={{ unmountOnBlur: true, headerTitle: "'"+'App Name'+"'" }} component={MainNavigation} />
-            <Drawer.Screen name='Settings' header={false} options={{ unmountOnBlur: true, headerTitle: "'"+'App Name'+"'" }} component={SettingsComp} />
-            <Drawer.Screen name='About Us' header={false} options={{ unmountOnBlur: true, headerTitle: "'"+'App Name'+"'" }} component={AboutUsComp} />
+            <Drawer.Screen name='Home' header={false} options={{ unmountOnBlur: true, headerTitle: 'Teams Management' }} component={MainNavigation} />
+            <Drawer.Screen name='Settings' header={false} options={{ unmountOnBlur: true, headerTitle: 'Settings' }} component={SettingsComp} />
+            <Drawer.Screen name='About Us' header={false} options={{ unmountOnBlur: true, headerTitle: 'About Us' }} component={AboutUsComp} />
             {/* <Drawer.Screen name='Log Out' header={false} options={{ unmountOnBlur: true, headerTitle: "'"+'App Name'+"'" }} component={LogoutComp} /> */}
             </Drawer.Navigator>
 

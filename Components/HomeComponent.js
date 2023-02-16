@@ -25,16 +25,16 @@ export default function HomeComponent() {
 
 
   useEffect(() => {
-    getBeltsAverage()
-    getTotalDivisionByMonth();
     getdistributionbyTeam();
     getTotalDivision();
+    getBeltsAverage()
+    getTotalDivisionByMonth();
   }, [])
 
   useEffect(() => {
     if (barChartData && teamsPieData && practicePieData && beltsPieData) {
       setIsLoading(false)
-    }else{
+    } else {
       setIsLoading(true)
     }
   }, [barChartData, teamsPieData, practicePieData, beltsPieData])
@@ -87,7 +87,6 @@ export default function HomeComponent() {
             let obj = {
               name: '% ' + colorObj[0],
               population: Math.trunc(colorObj[1]),
-              // color:greenColors[Math.floor(Math.random()*6)],
               color: colorObj[0],
               legendFontSize: 15,
               legendFontColor: "#7F7F7F",
@@ -108,6 +107,7 @@ export default function HomeComponent() {
     })
   }
 
+  // Math.floor(Math.random() * 5)
   const getdistributionbyTeam = () => {
     axios.post('http://' + IP + '/teams/getdistributionbyTeam', { userId: userIdValue }).then(res => {
       let isOnlyOneTeamWithoutStudents = res.data.length == 1 && res.data[0].studQuantity == 0
@@ -119,11 +119,11 @@ export default function HomeComponent() {
       } else {
 
         if (res.data.length > 0) {
-          res.data.forEach((data) => {
+          res.data.forEach((data,i) => {
             let obj = {
               name: "%  " + data.name,
               population: Math.trunc(data.studQuantity),
-              color: blueColors[Math.floor(Math.random() * 5)],
+              color: blueColors[i],
               legendFontSize: 15,
               legendFontColor: "#7F7F7F",
             }
@@ -138,21 +138,20 @@ export default function HomeComponent() {
   const getTotalDivision = () => {
     axios.post('http://' + IP + '/practices/getTotalDivision', { userId: userIdValue }).then(res => {
       let arr1 = [];
-
       if (res.data.present == 0 && res.data.notPresent == 0 && res.data.total == 0) {
         setPracticePieData(arr1);
       } else {
 
         let obj = {
           name: '%  Present',
-          population: ((res.data.present / res.data.total) * 100),
+          population: Math.trunc((res.data.present / res.data.total) * 100),
           color: redColors[Math.floor(Math.random() * 6)],
           legendFontSize: 15,
           legendFontColor: "#7F7F7F",
         }
         let obj1 = {
           name: '%  Not Present',
-          population: ((res.data.notPresent / res.data.total) * 100),
+          population: Math.trunc((res.data.notPresent / res.data.total) * 100),
           color: redColors[Math.floor(Math.random() * 6)],
           legendFontSize: 15,
           legendFontColor: "#7F7F7F",
@@ -165,13 +164,6 @@ export default function HomeComponent() {
     })
   }
 
-  const isLoading1 = () => {
-    if (barChartData.length <= 0 && teamsPieData.length <= 0 && practicePieData.length <= 0) {
-      return true;
-    } else {
-      return false
-    }
-  }
 
   return (
 

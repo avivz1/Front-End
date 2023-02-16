@@ -31,8 +31,13 @@ export default function ViewPracticesComponent() {
   const [isRadioBtnON, setIsRadioBtnON] = useState(false);
   const [isUserPressRemoveAll, setIsUserPressRemoveAll] = useState(false);
   const [practicesCheckedStatus, setPracticesCheckedStatus] = useState([]);
+  // const [practiceWasRemoveFlag,setPracticeWasRemoveFlag] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const onChangeSearch = query => setSearchText(query)
+
+  // useEffect(()=>{
+  //   getAllPractices()
+  // },[practiceWasRemoveFlag])
 
   useEffect(() => {
     if (allTeams.length > 0 && allPractices.length > 0 ) {
@@ -142,7 +147,8 @@ export default function ViewPracticesComponent() {
           text: 'Yes', onPress: () => {
             axios.post('http://' + IP + '/practices/deletepractice', { practice: practiceObj }).then((res => {
               if (res.data) {
-                getAllPractices()
+                // setPracticeWasRemoveFlag(!practiceWasRemoveFlag)
+                // getAllPractices()
                 Alert.alert('Practice has been deleted');
               } else {
                 Alert.alert('There was a problem. try again')

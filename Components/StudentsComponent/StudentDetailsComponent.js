@@ -60,10 +60,9 @@ export default function StudentDetailsComponent(props) {
     }
 
     const getStudentPracticesDetails = () => {
-        axios.post('http://' + IP + '/practices/getstudentattendents', { userId: userIdValue, stuId: props.student._id }).then(res => {
+        axios.post('http://' + IP + '/practices/getstudentattendants', { userId: userIdValue, stuId: props.student._id }).then(res => {
             if (res.data != false) {
                 let presentArr = []
-                // let activitiesArr = res.data.activities
                 res.data.notPresentPractices.forEach(prac => {
                     let d = prac.Date.split('T');
                     d = d[0];
@@ -135,11 +134,11 @@ export default function StudentDetailsComponent(props) {
                 return obj;
             })
         }
-        let day = dateOBject.getDate() > 9 ? dateOBject.getDate() : '0' + (dateOBject.getDate())
-        let month = dateOBject.getMonth() > 9 ? dateOBject.getMonth() : '0' + (dateOBject.getMonth()+1)
-        let year = dateOBject.getFullYear()
-        let currentDate = year + '-' + month + '-' + day
-        obj[currentDate] = { dotColor: 'lightblue' , selected: true, marked: true, selectedColor: 'lightBlue' }
+        // let day = dateOBject.getDate() > 9 ? dateOBject.getDate() : '0' + (dateOBject.getDate())
+        // let month = dateOBject.getMonth() > 9 ? dateOBject.getMonth() : '0' + (dateOBject.getMonth()+1)
+        // let year = dateOBject.getFullYear()
+        // let currentDate = year + '-' + month + '-' + day
+        // obj[currentDate] = { dotColor: 'lightblue' , selected: true, marked: true, selectedColor: 'lightBlue' }
         setDates(obj)
     }
 

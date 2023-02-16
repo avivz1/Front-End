@@ -33,7 +33,7 @@ export default function SecurityQuestionPicker(props) {
         <View>
 
             <DropDownPicker
-                placeholder='Select Security'
+                placeholder='Select Security Question'
                 open={open}
                 value={value}
                 items={items}

@@ -55,7 +55,7 @@ export default function SettingsComponent() {
     const handleDeleteDb = () => {
         //token
         //need to validate the input password
-        axios.post('http://' + IP + '/login/resetdb', { password: inputPassword, userId: userIdValue }).then(res => {
+        axios.post('http://' + IP + '/users/resetdb', { password: inputPassword, userId: userIdValue }).then(res => {
             if (res.data) {
                 Alert.alert('Success')
             } else {
