@@ -20,25 +20,6 @@ export default function EditTeamComponent2(props) {
     const [teamType, setTeamType] = React.useState(props.team.Type)
     const { isInputOk } = textValidation;
 
-    // const isInputOk = () => {
-    //     let arr = []
-    //     if (teamName == '' || teamName == undefined) {
-    //         arr.push('teamName')
-    //     }
-    //     if (teamType == '' || teamType == undefined) {
-    //         arr.push('teamType')
-    //     }
-    //     if (selectedCity == '' || selectedCity == undefined) {
-    //         arr.push('teamCity')
-    //     }
-    //     if (arr.length == 0) {
-    //         setErrorsArr([])
-    //         return true;
-    //     } else {
-    //         setErrorsArr(arr)
-    //         return false;
-    //     }
-    // }
 
     const onSubmit = () => {
         let input = isInputOk([{teamName:teamName},{teamType:teamType},{teamCity:selectedCity}])
@@ -88,63 +69,6 @@ export default function EditTeamComponent2(props) {
                     save="value"
                 />
                 {(errorsArr.length > 0 && errorsArr.includes('teamCity')) && <Text>This is required.</Text>}
-
-
-                {/* <Controller
-                    control={control}
-                    name="teamName"
-                    rules={{
-                        required: false,
-                    }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            style={styles.input}
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            defaultValue={props.team ? props.team.Name : ''}
-                        />
-                    )}
-                />
-
-                {errors.teamName && <Text>This is required.</Text>}
-
-
-                <Text>Team Type : </Text>
-                <Controller
-                    control={control}
-                    name="teamType"
-                    rules={{
-                        required: false,
-                    }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            style={styles.input}
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            defaultValue={props.team ? props.team.Type : ''}
-                        />
-                    )}
-                />
-                {errors.teamType && <Text>This is required.</Text>}
-
-
-                <Text>Student City : </Text>
-                <Controller
-                    control={control}
-                    name="teamCity"
-                    rules={{
-                        required: false,
-                    }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            style={styles.input}
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            defaultValue={props.team ? props.team.City : ''}
-                        />
-                    )}
-                />
-                {errors.teamCity && <Text>This is required.</Text>} */}
 
                 <Button title="Submit" onPress={onSubmit} />
 

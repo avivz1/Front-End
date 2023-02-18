@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, ScrollView, Image, Dimensions } from 'react-native';
-import { useContext, useState, useEffect } from 'react'
+import { useContext, useState, useEffect,useRef } from 'react'
 import { Context } from '../../ContextAPI/Context';
 import axios from 'axios';
 import { IP } from '../../IP_Address';
@@ -15,7 +15,6 @@ export default function PracticeDetailsComponent(props) {
     const [userIdValue] = userId;
     const [studentsList, setStudentsList] = useState([])
     const screenWidth = Dimensions.get("window").width;
-
 
     useEffect(() => {
         getAttendancePrecent()
@@ -56,7 +55,7 @@ export default function PracticeDetailsComponent(props) {
             <Text style={[styles.headLine]}>Hour : {props.practice.PracticeHour}</Text>
             <Text style={[styles.headLine]}>Total Students : {props.practice.Students.length}</Text>
 
-            <Text style={[styles.headLine]}>Team : {getTeamName(props.practice.Team.Team_ID)}  </Text>
+            <Text style={[styles.headLine]}>Team : {props.practice.Team.Name}  </Text>
             <Text style={[styles.headLine]}>Present : {precentage ? precentage.toFixed(2) : 0}%  </Text>
 
             <View style={{}}>

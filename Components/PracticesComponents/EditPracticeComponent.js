@@ -65,7 +65,9 @@ export default function EditPracticeComponent(props) {
     };
 
     const handelPracticeName = (fullDate) => {
-        let fullName = teamName + ' - ' + fullDate.getDate() + '/' +0+ (fullDate.getMonth() + 1) + '/' + fullDate.getFullYear()
+        let day = fullDate.getDate()>9?fullDate.getDate():'0'+(fullDate.getDate())
+        let month = fullDate.getMonth()>9?fullDate.getMonth()+1:'0'+(fullDate.getMonth()+1)
+        let fullName = teamName + ' - ' + day + '/' +month + '/' + fullDate.getFullYear()
         practiceNameRef.current.setNativeProps({text: fullName});
         setPracticeName(fullName)
     }
@@ -101,7 +103,7 @@ export default function EditPracticeComponent(props) {
 
     return (
         <View style={styles.container}>
-            <TextInput ref={practiceNameRef} style={styles.input} onChangeText={(data) => { setPracticeName(data) }} defaultValue={props.practice.Name} placeholder='Practice Name'></TextInput>
+            <Text ref={practiceNameRef} style={styles.text} defaultValue={props.practice.Name} placeholder='Practice Name'>{practiceName}</Text>
             {errorSubmit && <Text>This is required.</Text>}
 
             <Text style={{ float: 'left', textAlign: 'right', margin: 3 }} type="date" placeholder='Date'> {date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()} </Text>
@@ -155,12 +157,15 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         fontSize: 10,
     },
-    input: {
-        margin: 15,
+    text: {
+        marginTop: 10,
         height: 40,
-        borderColor: '#7a42f4',
+        borderColor: 'black',
         borderWidth: 1,
         fontSize: 15,
+        padding:10,
+        textAlign:'auto'
+        // alignContent:'center',
     },
     editForm: {
         margin: 10,

@@ -1,11 +1,11 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState, useContext } from "react";
-import { StyleSheet, Text, View, Image, TextInput, Button, Alert, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, Image, Button, Alert, TouchableOpacity } from "react-native";
 import axios from 'axios';
 import { Context } from '../ContextAPI/Context';
 import { IP } from '../IP_Address';
 import textValidation from '../Services/TextValidation'
-
+import {TextInput} from 'react-native-paper'
 
 
 export default function LoginComponent({ navigation }) {
@@ -15,6 +15,7 @@ export default function LoginComponent({ navigation }) {
     const [email, setEmail] = useState('a');
     const [password, setPassword] = useState('1');
     const [errorsArr, setErrorsArr] = useState([])
+    const [isPaasswordVisible,setIsPasswordVisible] = useState(true)
     const { isInputOk } = textValidation;
     
     const onSignUpPress = () => {
@@ -38,23 +39,6 @@ export default function LoginComponent({ navigation }) {
             })
         }
     }
-
-    // const isInputOk = () => {
-    //     let arr = []
-    //     if (email == '' || email == undefined) {
-    //         arr.push('email')
-    //     }
-    //     if (password == '' || password == undefined) {
-    //         arr.push('password')
-    //     }
-    //     if (arr.length == 0) {
-    //         setErrorsArr([])
-    //         return true;
-    //     } else {
-    //         setErrorsArr(arr)
-    //         return false;
-    //     }
-    // }
 
     const handeleForgotPassword = () => {
         // setForgotPasswordFlag(true)
@@ -82,10 +66,11 @@ export default function LoginComponent({ navigation }) {
             <View style={styles.inputView}>
                 <TextInput
                     style={styles.TextInput}
-                    placeholder="Password."
-                    placeholderTextColor="#003f5c"
-                    secureTextEntry={true}
+                    placeholder="Password" 
+                    secureTextEntry={isPaasswordVisible}
                     onChangeText={(password) => setPassword(password)}
+                    right={<TextInput.Icon name={isPaasswordVisible?'eye':'eye-off'} onPress={()=>setIsPasswordVisible(!isPaasswordVisible)}/>}
+
                 />
             </View>
             {(errorsArr.length > 0 && errorsArr.includes('password')) && <Text>This is required.</Text>}

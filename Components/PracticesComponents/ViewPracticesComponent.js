@@ -40,12 +40,12 @@ export default function ViewPracticesComponent() {
   // },[practiceWasRemoveFlag])
 
   useEffect(() => {
-    if (allTeams.length > 0 && allPractices.length > 0 ) {
+    if (allPractices.length > 0) {
       setIsLoading(false)
     } else {
       setIsLoading(true)
     }
-  }, [allTeams, allPractices, studentsArr])
+  }, [allPractices])
 
   useEffect(() => {
     getAllPractices()
@@ -90,9 +90,10 @@ export default function ViewPracticesComponent() {
 
   const getAllPractices = () => {
     axios.post('http://' + IP + '/practices/getallpractices', { userID: userIdValue }).then(res => {
-      if (res.data) {
+      if (res.data.length > 0) {
         setPractices(res.data)
       } else {
+        setPractices([])
         //handel error
       }
 
@@ -147,8 +148,7 @@ export default function ViewPracticesComponent() {
           text: 'Yes', onPress: () => {
             axios.post('http://' + IP + '/practices/deletepractice', { practice: practiceObj }).then((res => {
               if (res.data) {
-                // setPracticeWasRemoveFlag(!practiceWasRemoveFlag)
-                // getAllPractices()
+                getAllPractices()
                 Alert.alert('Practice has been deleted');
               } else {
                 Alert.alert('There was a problem. try again')

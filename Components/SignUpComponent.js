@@ -1,12 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, TextInput, Alert } from 'react-native';
+import { StyleSheet, Text, View, Button, Alert } from 'react-native';
 import { IP } from '../IP_Address';
 import { Context } from '../ContextAPI/Context';
 import textValidation from '../Services/TextValidation.js'
 // import DropDownPicker from 'react-native-dropdown-picker';
 import SecurityQuestionDropDown from './SecurityQuestionPicker'
+import {TextInput} from 'react-native-paper'
 
 
 
@@ -21,15 +22,8 @@ export default function SignUp({ navigation }) {
     const [securityQ, setSecurityQ] = useState('')
     const [securityA, setSecurityA] = useState('')
     const [errorsArr, setErrorsArr] = useState([])
+    const [isPaasswordVisible,setIsPasswordVisible] = useState(true)
     const { isInputOk } = textValidation;
-
-    // const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    // const [dropdownValue, setDropdownValue] = useState();
-    // const [items, setItems] = useState([
-    //     { label: 'What is your first School?', value: 'What is your first School?'},
-    //     { label: 'What is your first dog name?', value: 'What is your first dog name?'},
-    //     { label: 'What the name of street you grow up?', value: 'What the name of street you grow up?'},
-    // ]);
 
 
     const onSingUpPress = function () {
@@ -63,10 +57,12 @@ export default function SignUp({ navigation }) {
             <TextInput style={styles.text} onChangeText={onEmailChange} placeholder='Email'></TextInput>
             {(errorsArr.length > 0 && errorsArr.includes('email')) && <Text>This is required.</Text>}
 
-            <TextInput secureTextEntry={true} style={styles.text} onChangeText={onPasswordChange} placeholder='Password'></TextInput>
+            <TextInput secureTextEntry={isPaasswordVisible} style={styles.text} onChangeText={onPasswordChange} placeholder='Password'
+             right={<TextInput.Icon name={isPaasswordVisible?'eye':'eye-off'} onPress={()=>setIsPasswordVisible(!isPaasswordVisible)}/>}/>
             {(errorsArr.length > 0 && errorsArr.includes('password')) && <Text>This is required.</Text>}
 
-            <TextInput secureTextEntry={true} style={styles.text} onChangeText={onPasswordConfirmChange} placeholder='Confirm Password'></TextInput>
+            <TextInput secureTextEntry={isPaasswordVisible} style={styles.text} onChangeText={onPasswordConfirmChange} placeholder='Confirm Password' 
+            right={<TextInput.Icon name={isPaasswordVisible?'eye':'eye-off'} onPress={()=>setIsPasswordVisible(!isPaasswordVisible)}/>}/>
             {(errorsArr.length > 0 && errorsArr.includes('passwordConfirm')) && <Text>This is required.</Text>}
 
             <SecurityQuestionDropDown callback={(question)=>setSecurityQ(question)}/>
@@ -89,16 +85,17 @@ const styles = StyleSheet.create({
         height: '40%',
         width: '100%',
         backgroundColor: '#fff',
-        alignItems: 'center',
+        padding:10,
+        // alignItems: 'center',
         //justifyContent: 'center',
     },
     text: {
-        marginBottom: 20,
+        margin: 10,
         fontSize: 20
     },
     headline: {
-        marginVertical: 100,
-        marginBottom: 30,
+        marginVertical: 30,
+        // marginBottom: 30,
         fontSize: 30
     },
     btn: {

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button, TextInput, Alert, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, Alert, TouchableOpacity, Keyboard } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { Context } from '../../ContextAPI/Context';
@@ -69,8 +69,9 @@ export default function AddStudentsComponent(props) {
 
         }
     }
-
-
+    const keyboardDismiss = () => {
+        Keyboard.dismiss()
+    }
 
     return (
 
@@ -110,6 +111,8 @@ export default function AddStudentsComponent(props) {
                 setSelected={(cityName) => setSelectedCity(cityName)}
                 data={allCities}
                 save="value"
+                onPress={() =>  Keyboard.dismiss()}
+            
             />
             {(errorsArr.length > 0 && errorsArr.includes('stuCity')) && <Text>This is required.</Text>}
 

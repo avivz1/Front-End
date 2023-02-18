@@ -164,7 +164,12 @@ export default function ViewTeamsComponent() {
                                             },
                                             {
                                                 text: 'Switch to another team', onPress: () => {
-                                                    setRemoveVisible(true)
+                                                    if (allTeams.length < 2) {
+                                                        Alert.alert('You have only one team! try again')
+                                                        return;
+                                                    } else {
+                                                        setRemoveVisible(true)
+                                                    }
                                                 }
                                             },
                                             { text: 'Cancel' }
@@ -330,7 +335,7 @@ export default function ViewTeamsComponent() {
                 onPress={openAddModal}
             />
             <Overlay visible={addVisible} onClose={onCloseModal} closeOnTouchOutside>
-            <AddTeamComponent onAddTeam={closeAddModal} />
+                <AddTeamComponent onAddTeam={closeAddModal} />
 
             </Overlay>
 

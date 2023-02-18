@@ -21,46 +21,29 @@ export default function AddTeamComponent2(props) {
     const [teamType, setTeamType] = React.useState('')
     const { isInputOk } = textValidation;
 
-    // const isInputOk = () => {
-    //     let arr = []
-    //     if (teamName == '' || teamName == undefined) {
-    //         arr.push('teamName')
-    //     }
-    //     if (teamType == '' || teamType == undefined) {
-    //         arr.push('teamType')
-    //     }
-    //     if (selectedCity == '' || selectedCity == undefined) {
-    //         arr.push('teamCity')
-    //     }
-    //     if (arr.length == 0) {
-    //         setErrorsArr([])
-    //         return true;
-    //     } else {
-    //         setErrorsArr(arr)
-    //         return false;
-    //     }
-    // }
 
     const onSubmit = () => {
-        let input = isInputOk([{teamName:teamName},{teamType:teamType},{teamCity:selectedCity}])
+        let input = isInputOk([{ teamName: teamName }, { teamType: teamType }, { teamCity: selectedCity }])
         if (!input.status) {
             setErrorsArr(input.data)
             return;
-        }
+        } else {
 
-        axios.post('http://' + IP + '/teams/addteam', {
-            name: teamName,
-            type: teamType,
-            city: selectedCity,
-            userID: userIdValue
-        }).then(res => {
-            if (res.data == true) {
-                Alert.alert('Team Added')
-                props.onAddTeam();
-            } else {
-                Alert.alert('Somthing went wrong try again');
-            }
-        })
+
+            axios.post('http://' + IP + '/teams/addteam', {
+                name: teamName,
+                type: teamType,
+                city: selectedCity,
+                userID: userIdValue
+            }).then(res => {
+                if (res.data == true) {
+                    Alert.alert('Team Added')
+                    props.onAddTeam();
+                } else {
+                    Alert.alert('Somthing went wrong try again');
+                }
+            })
+        }
     }
 
     return (

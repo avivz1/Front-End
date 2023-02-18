@@ -145,14 +145,14 @@ export default function HomeComponent() {
         let obj = {
           name: '%  Present',
           population: Math.trunc((res.data.present / res.data.total) * 100),
-          color: redColors[Math.floor(Math.random() * 6)],
+          color: 'rgb(180, 0, 0)',
           legendFontSize: 15,
           legendFontColor: "#7F7F7F",
         }
         let obj1 = {
           name: '%  Not Present',
           population: Math.trunc((res.data.notPresent / res.data.total) * 100),
-          color: redColors[Math.floor(Math.random() * 6)],
+          color: 'rgb(0, 150, 0)',
           legendFontSize: 15,
           legendFontColor: "#7F7F7F",
         }

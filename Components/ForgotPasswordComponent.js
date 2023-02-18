@@ -4,7 +4,7 @@ import { StyleSheet, View, Image, TextInput, Text, Button, Alert } from 'react-n
 import { IP } from '../IP_Address';
 import SecurityQuestionDropDown from './SecurityQuestionPicker'
 import textValidation from '../Services/TextValidation'
-
+import CustomAlert from '../Utils/CustomAlert'
 
 
 export default function ForgotPasswordComponent({ navigation }) {
@@ -13,7 +13,8 @@ export default function ForgotPasswordComponent({ navigation }) {
     const { isInputOk } = textValidation;
     const [userCredentials, setUserCredentials] = useState({ securityA: '', securityQ: '', userEmail: '' })
     const [errorsArr, setErrorsArr] = useState([])
-
+    const [isAlertHandle,setIsAlertHandle] = useState(false)
+    const alertRef = useRef();
 
     const submit = () => {
         let input = isInputOk([{ email: userCredentials.userEmail }, { securityA: userCredentials.securityA }, { securityQ: userCredentials.securityQ }])
@@ -23,16 +24,22 @@ export default function ForgotPasswordComponent({ navigation }) {
         } else {
             axios.post('http://' + IP + '/users/forgotpassword', { user: userCredentials }).then(res => {
                 if (res.data) {
-                    console.log(res.data)
-                    Alert.alert('Your password is - ' + res.data)
-                    navigation.replace('Login')
+                    alertRef.current.setMsg('Your password is ' + res.data)
+                    setIsAlertHandle(false)
+                    alertRef.current.focus()
+    
                 } else {
-                    Alert.alert('There was a problem')
+                    alertRef.current.setMsg('There was a problem. try again')
+                    setIsAlertHandle(true)
+                    alertRef.current.focus()
                 }
             })
         }
     }
 
+    const navigateToLogin = () => {
+        navigation.replace('Login')
+    }
 
     const setSecurityQuestionCallBack = (question) => {
         setUserCredentials(prevState => ({ ...prevState, securityQ: question }))
@@ -40,6 +47,7 @@ export default function ForgotPasswordComponent({ navigation }) {
 
     return (
         <View style={[styles.container]}>
+            <CustomAlert oneBtn={true} twoBtn={false} selfHandle={isAlertHandle} callback={navigateToLogin} ref={alertRef} />
             <Text style={[styles.mainHeadLines]}>Forget Password </Text>
 
             <Text style={[styles.smallHeadLines]} >Please enter your email:</Text>
