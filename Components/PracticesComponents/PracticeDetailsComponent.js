@@ -15,13 +15,15 @@ export default function PracticeDetailsComponent(props) {
     const [userIdValue] = userId;
     const [studentsList, setStudentsList] = useState([])
     const screenWidth = Dimensions.get("window").width;
+    const [practiceDate,setPracticeDate] = useState('')
 
     useEffect(() => {
-        getAttendancePrecent()
-        getStudentsFullDetails()
-        let x = props.practice.Date.split('T')
-        props.practice.Date = x[0];
-        props.practice.Date = props.practice.Date.split('-').reverse().join('-')
+            getAttendancePrecent()
+            getStudentsFullDetails()
+            let x = props.practice.Date.split('T')
+            props.practice.Date = x[0];
+            setPracticeDate(props.practice.Date.split('-').reverse().join('-'))
+            // props.practice.Date = props.practice.Date.split('-').reverse().join('-')
     }, []);
 
 
@@ -51,11 +53,11 @@ export default function PracticeDetailsComponent(props) {
 
         <View style={[styles.container]}>
             <Text style={[styles.headLine]} >Name : {props.practice.Name}</Text>
-            <Text style={[styles.headLine]}>Date : {props.practice.Date}</Text>
+            <Text style={[styles.headLine]}>Date : {practiceDate}</Text>
             <Text style={[styles.headLine]}>Hour : {props.practice.PracticeHour}</Text>
             <Text style={[styles.headLine]}>Total Students : {props.practice.Students.length}</Text>
 
-            <Text style={[styles.headLine]}>Team : {props.practice.Team.Name}  </Text>
+            <Text style={[styles.headLine]}>Team : {getTeamName(props.practice.Team.Team_ID)}  </Text>
             <Text style={[styles.headLine]}>Present : {precentage ? precentage.toFixed(2) : 0}%  </Text>
 
             <View style={{}}>

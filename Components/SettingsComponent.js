@@ -8,6 +8,7 @@ import Dialog from "react-native-dialog";
 import textValidation from '../Services/TextValidation'
 import SecurityQuestionDropDown from './SecurityQuestionPicker'
 import { TextInput } from 'react-native-paper'
+import CustomAlert from '../Utils/CustomAlert'
 
 
 
@@ -27,7 +28,9 @@ export default function SettingsComponent() {
     const [errorsArr, setErrorsArr] = useState([])
     const [isPaasswordVisible, setIsPasswordVisible] = useState(true)
     const { isInputOk } = textValidation;
-
+    const [isAlertHandle, setIsAlertHandle] = useState(false)
+    const [alertOneBtn,setAlertOnebtn] = useState(true)
+    const alertRef = useRef();
 
     useEffect(() => {
         getUserDetails()
@@ -61,9 +64,13 @@ export default function SettingsComponent() {
         //need to validate the input password
         axios.post('http://' + IP + '/users/resetdb', { password: inputPassword, userId: userIdValue }).then(res => {
             if (res.data) {
-                Alert.alert('Success')
+                alertRef.current.setMsg('Success - Data Deleted')
+                setIsAlertHandle(true)
+                alertRef.current.focus()
             } else {
-                Alert.alert('Somthing went wrong. try again')
+                alertRef.current.setMsg('Somthing went wrong. try again')
+                setIsAlertHandle(true)
+                alertRef.current.focus()
             }
         })
         setVisible(false)
@@ -73,7 +80,9 @@ export default function SettingsComponent() {
         let input = isInputOk([{ email: userEmail }, { password: userPassword }, { securityA: userSecurityA }, { securityQ: userSecurityQ }, { confirmPassword: userConfirmPassword }])
         if (input.status) {
             if (userConfirmPassword != userPassword) {
-                Alert.alert('Passwords dont match. try again')
+                alertRef.current.setMsg('Passwords dont match. try again')
+                setIsAlertHandle(true)
+                alertRef.current.focus()
                 return;
             } else {
                 axios.post('http://' + IP + '/users/updateuserdetails', {
@@ -84,9 +93,15 @@ export default function SettingsComponent() {
                     securityAnswer: userSecurityA
                 }).then(res => {
                     if (res.data) {
-                        Alert.alert('Success')
+                        alertRef.current.setMsg('Success')
+                        setIsAlertHandle(true)
+                        alertRef.current.focus()
+                        return;
                     } else {
-                        Alert.alert('Somthing went wrong')
+                        alertRef.current.setMsg('Somthing went wrong')
+                        setIsAlertHandle(true)
+                        alertRef.current.focus()
+                        return;
                     }
                 })
             }
@@ -102,6 +117,7 @@ export default function SettingsComponent() {
 
     return (
         <View style={{ margin: 20 }}>
+            <CustomAlert oneBtn={alertOneBtn} selfHandle={isAlertHandle} ref={alertRef} />
 
             <Text style={styles.headline}>Profile</Text>
 
@@ -111,13 +127,13 @@ export default function SettingsComponent() {
 
             <Text>Password</Text>
             <TextInput style={styles.text} secureTextEntry={isPaasswordVisible} value={userPassword} placeholder={'Password'} onChangeText={(pass) => setUserPassword(pass)}
-                right={<TextInput.Icon name={isPaasswordVisible ? 'eye' : 'eye-off'} onPress={() => setIsPasswordVisible(!isPaasswordVisible)} />}
+                right={<TextInput.Icon name={isPaasswordVisible ? 'eye-off' : 'eye'} onPress={() => setIsPasswordVisible(!isPaasswordVisible)} />}
             />
             {(errorsArr.includes('password')) && <Text>This is required.</Text>}
 
             <Text>Confirm Password</Text>
             <TextInput style={styles.text} secureTextEntry={isPaasswordVisible} placeholder={'Confirm Password'} onChangeText={(confirmPass) => setUserConfirmPassword(confirmPass)}
-                right={<TextInput.Icon name={isPaasswordVisible ? 'eye' : 'eye-off'} onPress={() => setIsPasswordVisible(!isPaasswordVisible)} />}
+                right={<TextInput.Icon name={isPaasswordVisible ? 'eye-off' : 'eye'} onPress={() => setIsPasswordVisible(!isPaasswordVisible)} />}
             />
             {(errorsArr.includes('confirmPassword')) && <Text>This is required.</Text>}
 
@@ -126,7 +142,7 @@ export default function SettingsComponent() {
 
             <Text>Security Answer</Text>
             <TextInput style={styles.text} secureTextEntry={isPaasswordVisible} value={userSecurityA} placeholder={'Security Answer'} onChangeText={(secA) => setUserSecurityA(secA)}
-                right={<TextInput.Icon name={isPaasswordVisible ? 'eye' : 'eye-off'} onPress={() => setIsPasswordVisible(!isPaasswordVisible)} />}
+                right={<TextInput.Icon name={isPaasswordVisible ? 'eye-off' : 'eye'} onPress={() => setIsPasswordVisible(!isPaasswordVisible)} />}
             />
             {(errorsArr.includes('securityA')) && <Text>This is required.</Text>}
 

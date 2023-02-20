@@ -1,29 +1,33 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import { StyleSheet, Text, View, Image, Button, Alert, TouchableOpacity } from "react-native";
 import axios from 'axios';
 import { Context } from '../ContextAPI/Context';
 import { IP } from '../IP_Address';
 import textValidation from '../Services/TextValidation'
-import {TextInput} from 'react-native-paper'
+import { TextInput } from 'react-native-paper'
+import CustomAlert from '../Utils/CustomAlert'
 
 
 export default function LoginComponent({ navigation }) {
-    
+
     const { userId } = useContext(Context);
     const [userIdValue, setUserId] = userId;
     const [email, setEmail] = useState('a');
     const [password, setPassword] = useState('1');
     const [errorsArr, setErrorsArr] = useState([])
-    const [isPaasswordVisible,setIsPasswordVisible] = useState(true)
+    const [isPaasswordVisible, setIsPasswordVisible] = useState(true)
     const { isInputOk } = textValidation;
-    
+    const [isAlertHandle, setIsAlertHandle] = useState(false)
+    const alertRef = useRef();
+
+
     const onSignUpPress = () => {
         navigation.navigate('SignUp');
     }
 
     const onLoginPress = () => {
-        let input = isInputOk([{email:email},{password:password}]);
+        let input = isInputOk([{ email: email }, { password: password }]);
         if (!input.status) {
             setErrorsArr(input.data)
             return;
@@ -34,11 +38,14 @@ export default function LoginComponent({ navigation }) {
                     setUserId(res.data)
                     navigation.replace('Home')
                 } else {
-                    alert('User is not exists');
+                    alertRef.current.setMsg('User is not exists. Try again')
+                    setIsAlertHandle(true)
+                    alertRef.current.focus()
                 }
             })
         }
     }
+
 
     const handeleForgotPassword = () => {
         // setForgotPasswordFlag(true)
@@ -48,9 +55,9 @@ export default function LoginComponent({ navigation }) {
 
     return (
         <View style={styles.container}>
+            <CustomAlert oneBtn={true} selfHandle={isAlertHandle} ref={alertRef} />
+
             <Image style={styles.image} />
-            {/* require("./assets/log2.png") */}
-            {/* source={} */}
             <StatusBar style="auto" />
             <View style={styles.inputView}>
                 <TextInput
@@ -66,10 +73,10 @@ export default function LoginComponent({ navigation }) {
             <View style={styles.inputView}>
                 <TextInput
                     style={styles.TextInput}
-                    placeholder="Password" 
+                    placeholder="Password"
                     secureTextEntry={isPaasswordVisible}
                     onChangeText={(password) => setPassword(password)}
-                    right={<TextInput.Icon name={isPaasswordVisible?'eye':'eye-off'} onPress={()=>setIsPasswordVisible(!isPaasswordVisible)}/>}
+                    right={<TextInput.Icon name={isPaasswordVisible ? 'eye-off' : 'eye'} onPress={() => setIsPasswordVisible(!isPaasswordVisible)} />}
 
                 />
             </View>

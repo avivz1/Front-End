@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useRef } from 'react';
 import axios from 'axios';
 import { StyleSheet, Text, View, Button, Alert } from 'react-native';
 import { IP } from '../IP_Address';
@@ -7,7 +7,8 @@ import { Context } from '../ContextAPI/Context';
 import textValidation from '../Services/TextValidation.js'
 // import DropDownPicker from 'react-native-dropdown-picker';
 import SecurityQuestionDropDown from './SecurityQuestionPicker'
-import {TextInput} from 'react-native-paper'
+import { TextInput } from 'react-native-paper'
+import CustomAlert from '../Utils/CustomAlert'
 
 
 
@@ -22,12 +23,16 @@ export default function SignUp({ navigation }) {
     const [securityQ, setSecurityQ] = useState('')
     const [securityA, setSecurityA] = useState('')
     const [errorsArr, setErrorsArr] = useState([])
-    const [isPaasswordVisible,setIsPasswordVisible] = useState(true)
+    const [isPaasswordVisible, setIsPasswordVisible] = useState(true)
     const { isInputOk } = textValidation;
+    const [isAlertHandle, setIsAlertHandle] = useState(false)
+    const [alertOneBtn, setAlertOnebtn] = useState(true)
+    const alertRef = useRef();
+
 
 
     const onSingUpPress = function () {
-        let input = isInputOk([{email:email},{password:password},{passwordConfirm:passwordConfirm},{securityA:securityA},{securityQ:securityQ}]);
+        let input = isInputOk([{ email: email }, { password: password }, { passwordConfirm: passwordConfirm }, { securityA: securityA }, { securityQ: securityQ }]);
         if (!input.status) {
             setErrorsArr(input.data)
             return;
@@ -37,35 +42,45 @@ export default function SignUp({ navigation }) {
             axios.post('http://' + IP + '/login/signup', userData).then((res) => {
                 if (res.data) {
                     setUserId(res.data)
-
-                    alert('User Created');
-                    navigation.replace('Home')
+                    alertRef.current.setMsg('User Created')
+                    setIsAlertHandle(false)
+                    alertRef.current.focus()
                 } else {
-                    alert('There Was a problem. Try Again');
+                    alertRef.current.setMsg('There Was a problem. Try Again')
+                    setIsAlertHandle(true)
+                    alertRef.current.focus()
                 }
             });
         } else {
-            Alert.alert('Passwords dont match')
+            alertRef.current.setMsg('Passwords dont match. Try Again')
+            setIsAlertHandle(true)
+            alertRef.current.focus()
         }
+    }
+    
+    const navigateToLogin = ()=>{
+        navigation.replace('Login')
     }
 
 
     return (
         <View style={styles.container}>
+            <CustomAlert oneBtn={alertOneBtn} selfHandle={isAlertHandle} callback={()=>navigateToLogin()} ref={alertRef} />
+
             <Text style={styles.headline}>Sign Up</Text>
 
             <TextInput style={styles.text} onChangeText={onEmailChange} placeholder='Email'></TextInput>
             {(errorsArr.length > 0 && errorsArr.includes('email')) && <Text>This is required.</Text>}
 
             <TextInput secureTextEntry={isPaasswordVisible} style={styles.text} onChangeText={onPasswordChange} placeholder='Password'
-             right={<TextInput.Icon name={isPaasswordVisible?'eye':'eye-off'} onPress={()=>setIsPasswordVisible(!isPaasswordVisible)}/>}/>
+                right={<TextInput.Icon name={isPaasswordVisible ? 'eye' : 'eye-off'} onPress={() => setIsPasswordVisible(!isPaasswordVisible)} />} />
             {(errorsArr.length > 0 && errorsArr.includes('password')) && <Text>This is required.</Text>}
 
-            <TextInput secureTextEntry={isPaasswordVisible} style={styles.text} onChangeText={onPasswordConfirmChange} placeholder='Confirm Password' 
-            right={<TextInput.Icon name={isPaasswordVisible?'eye':'eye-off'} onPress={()=>setIsPasswordVisible(!isPaasswordVisible)}/>}/>
+            <TextInput secureTextEntry={isPaasswordVisible} style={styles.text} onChangeText={onPasswordConfirmChange} placeholder='Confirm Password'
+                right={<TextInput.Icon name={isPaasswordVisible ? 'eye' : 'eye-off'} onPress={() => setIsPasswordVisible(!isPaasswordVisible)} />} />
             {(errorsArr.length > 0 && errorsArr.includes('passwordConfirm')) && <Text>This is required.</Text>}
 
-            <SecurityQuestionDropDown callback={(question)=>setSecurityQ(question)}/>
+            <SecurityQuestionDropDown callback={(question) => setSecurityQ(question)} />
             {(errorsArr.length > 0 && errorsArr.includes('securityQ')) && <Text>This is required.</Text>}
 
             <TextInput secureTextEntry={true} style={styles.text} onChangeText={(secA) => setSecurityA(secA)} placeholder='Security Answer'></TextInput>
@@ -85,7 +100,7 @@ const styles = StyleSheet.create({
         height: '40%',
         width: '100%',
         backgroundColor: '#fff',
-        padding:10,
+        padding: 10,
         // alignItems: 'center',
         //justifyContent: 'center',
     },

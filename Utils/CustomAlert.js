@@ -11,7 +11,6 @@ export default CustomAlert = forwardRef((props, ref) => {
 
     const [isVisible, setIsVisible] = useState(false);
     const [msg, setMsg] = useState(' ')
-    // const [isSelfHandle, setIsSelfHandle] = useState(false)
 
     useImperativeHandle(ref, () => ({
         focus: () => {
@@ -23,9 +22,7 @@ export default CustomAlert = forwardRef((props, ref) => {
         setMsg: (m) => {
             setMsg(m)
         },
-        // setSelfHandle: (status)=>{
-        //     props.selfHandle=status
-        // }
+
     }))
 
 
@@ -33,7 +30,7 @@ export default CustomAlert = forwardRef((props, ref) => {
 
     return (
         <View>
-            {props.oneBtn==true&&props.twoBtn==false ?
+            {props.oneBtn == true ?
                 <Overlay style={[styles.container]} visible={isVisible} onClose={() => setIsVisible(false)} closeOnTouchOutside>
                     <Image source={require('../assets/info1.png')} style={[styles.iconStyle]} />
                     <Text style={[styles.text]}>{msg}</Text>
@@ -62,6 +59,37 @@ export default CustomAlert = forwardRef((props, ref) => {
                 </Overlay>
             }
 
+
+
+            {/* {props.oneBtn==true&&props.twoBtn!=true ?
+                <Overlay style={[styles.container]} visible={isVisible} onClose={() => setIsVisible(false)} closeOnTouchOutside>
+                    <Image source={require('../assets/info1.png')} style={[styles.iconStyle]} />
+                    <Text style={[styles.text]}>{msg}</Text>
+                    {props.selfHandle ?
+                        <Button color={'green'} onPress={() => setIsVisible(false)}>Ok</Button>
+                        :
+                        <Button color={'green'} onPress={() => props.callback()}>Ok</Button>
+                    }
+
+                </Overlay>
+                :
+                <Overlay style={[styles.container]} visible={isVisible} onClose={() => setIsVisible(false)} closeOnTouchOutside>
+                    <Image source={require('../assets/warningIconAlert.png')} style={[styles.iconStyle]} />
+                    <Text style={[styles.text]}>{msg}</Text>
+                    {props.selfHandle ?
+                        <View style={styles.btnsContainer}>
+                            <Button color={'red'} onPress={() => setIsVisible(false)}>Cancle</Button>
+                            <Button color={'green'} onPress={() => setIsVisible(false)}>Ok</Button>
+                        </View>
+                        :
+                        <View style={styles.btnsContainer}>
+                            <Button color={'red'} onPress={() => setIsVisible(false)}>Cancle</Button>
+                            <Button color={'green'} onPress={() => props.callback()}>Ok</Button>
+                        </View>
+                    }
+                </Overlay>
+            } */}
+
         </View>
     )
 })
@@ -79,8 +107,8 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 20,
     },
-    btnsContainer:{
-        flexDirection:'row'
-    }    
+    btnsContainer: {
+        flexDirection: 'row'
+    }
 
 });

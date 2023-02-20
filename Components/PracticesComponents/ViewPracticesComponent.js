@@ -31,13 +31,10 @@ export default function ViewPracticesComponent() {
   const [isRadioBtnON, setIsRadioBtnON] = useState(false);
   const [isUserPressRemoveAll, setIsUserPressRemoveAll] = useState(false);
   const [practicesCheckedStatus, setPracticesCheckedStatus] = useState([]);
-  // const [practiceWasRemoveFlag,setPracticeWasRemoveFlag] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const onChangeSearch = query => setSearchText(query)
 
-  // useEffect(()=>{
-  //   getAllPractices()
-  // },[practiceWasRemoveFlag])
+
 
   useEffect(() => {
     if (allPractices.length > 0) {
@@ -109,7 +106,13 @@ export default function ViewPracticesComponent() {
   }
 
   const openAddModal = () => {
-    setAddVisible(true);
+    if (allTeams.length > 0) {
+      setAddVisible(true);
+      return;
+    } else {
+      setAddVisible(false);
+      Alert.alert('Must have at least 1 team before creating a practice')
+    }
   }
 
   const onCloseModal = () => {

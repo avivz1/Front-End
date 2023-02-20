@@ -10,6 +10,7 @@ import { Button, Snackbar } from 'react-native-paper'
 import { getDrawerStatusFromState } from '@react-navigation/drawer';
 import StudentCard from './StudentCheckBoxCard'
 import { useDispatch, useSelector } from 'react-redux'
+import CustomAlert from '../../Utils/CustomAlert'
 
 
 
@@ -20,7 +21,6 @@ export default function EditPracticeComponent(props) {
 
     const [isPickerShow, setIsPickerShow] = useState(false);
     const [pickedStudents, setPickedStudents] = useState([])
-    // const [checkedStudents, setCheckedStudents] = useState('')
     const [practiceName, setPracticeName] = useState('')
     const [errorSubmit, setErrorSubmit] = useState(false)
     const [date, setDate] = useState(new Date(props.practice.Date.split('T')[0]));
@@ -28,18 +28,24 @@ export default function EditPracticeComponent(props) {
     const dispatch = useDispatch()
     const selectorArr = useSelector((s) => s.StudentSelected)
     const practiceNameRef = useRef();
+    const [isAlertHandle, setIsAlertHandle] = useState(false)
+    const [alertOneBtn, setAlertOnebtn] = useState(true)
+    const alertRef = useRef();
 
     useEffect(() => {
-        setPracticeName(props.practice.Name)
-        dispatch({ type: "CLEAR" })
-        if (props.practice.Team.Name == null || props.practice.Team.Name == '') {
-            let team = props.allTeams.filter(t => t._id == props.practice.Team.Team_ID)
-            setTeamName(team[0].Name)
-        } else {
-            setTeamName(props.practice.Team.Name)
-        }
-        if (props.practice.Students.length > 0) {
-            getStudentsList()
+
+        if (props.practice) {
+            setPracticeName(props.practice.Name)
+            dispatch({ type: "CLEAR" })
+            if (props.practice.Team.Name == null || props.practice.Team.Name == '') {
+                let team = props.allTeams.filter(t => t._id == props.practice.Team.Team_ID)
+                setTeamName(team[0].Name)
+            } else {
+                setTeamName(props.practice.Team.Name)
+            }
+            if (props.practice.Students.length > 0) {
+                getStudentsList()
+            }
         }
     }, [])
 
@@ -65,10 +71,10 @@ export default function EditPracticeComponent(props) {
     };
 
     const handelPracticeName = (fullDate) => {
-        let day = fullDate.getDate()>9?fullDate.getDate():'0'+(fullDate.getDate())
-        let month = fullDate.getMonth()>9?fullDate.getMonth()+1:'0'+(fullDate.getMonth()+1)
-        let fullName = teamName + ' - ' + day + '/' +month + '/' + fullDate.getFullYear()
-        practiceNameRef.current.setNativeProps({text: fullName});
+        let day = fullDate.getDate() > 9 ? fullDate.getDate() : '0' + (fullDate.getDate())
+        let month = fullDate.getMonth() > 9 ? fullDate.getMonth() + 1 : '0' + (fullDate.getMonth() + 1)
+        let fullName = teamName + ' - ' + day + '/' + month + '/' + fullDate.getFullYear()
+        practiceNameRef.current.setNativeProps({ text: fullName });
         setPracticeName(fullName)
     }
 
@@ -89,20 +95,27 @@ export default function EditPracticeComponent(props) {
                 allStudents: pickedStudents,
                 chosenStudents: selectorArr.arr
             }).then(res => {
-                if (res.data) {
+                if (!res.data) {
                     props.onPracticeUpdate()
                 } else {
-                    Alert.alert('there was a problem try again')
-                    props.onPracticeUpdate()
+                    alertRef.current.setMsg('Somthing went wrong. try again')
+                    setIsAlertHandle(false)
+                    alertRef.current.focus()
+
                 }
             })
         }
 
     }
 
+    const callBackFromAlert = () => {
+        props.onPracticeUpdate()
+    }
 
     return (
         <View style={styles.container}>
+            <CustomAlert oneBtn={alertOneBtn} selfHandle={isAlertHandle} callback={callBackFromAlert} ref={alertRef} />
+
             <Text ref={practiceNameRef} style={styles.text} defaultValue={props.practice.Name} placeholder='Practice Name'>{practiceName}</Text>
             {errorSubmit && <Text>This is required.</Text>}
 
@@ -163,8 +176,8 @@ const styles = StyleSheet.create({
         borderColor: 'black',
         borderWidth: 1,
         fontSize: 15,
-        padding:10,
-        textAlign:'auto'
+        padding: 10,
+        textAlign: 'auto'
         // alignContent:'center',
     },
     editForm: {

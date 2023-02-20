@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, Dimensions, TextInput, ScrollView, Alert } from 'react-native';
+import { StyleSheet, Text, View, Button, Dimensions, TextInput, ScrollView } from 'react-native';
 import { Context } from '../ContextAPI/Context';
 import { IP } from '../IP_Address';
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";

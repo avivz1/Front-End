@@ -47,7 +47,7 @@ export default function ForgotPasswordComponent({ navigation }) {
 
     return (
         <View style={[styles.container]}>
-            <CustomAlert oneBtn={true} twoBtn={false} selfHandle={isAlertHandle} callback={navigateToLogin} ref={alertRef} />
+            <CustomAlert oneBtn={true}  selfHandle={isAlertHandle} callback={navigateToLogin} ref={alertRef} />
             <Text style={[styles.mainHeadLines]}>Forget Password </Text>
 
             <Text style={[styles.smallHeadLines]} >Please enter your email:</Text>

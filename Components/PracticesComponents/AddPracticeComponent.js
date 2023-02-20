@@ -9,6 +9,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Button, Snackbar } from 'react-native-paper'
 import StudentCard from './StudentCheckBoxCard'
 import { useDispatch, useSelector } from 'react-redux'
+import CustomAlert from '../../Utils/CustomAlert'
 
 
 
@@ -25,14 +26,18 @@ export default function AddPracticeComponent(props) {
     const [pickedStudents, setPickedStudents] = useState('')
     const [checkedStudents, setCheckedStudents] = useState('')
     const [error, setError] = useState(false)
+    const [isAlertHandle, setIsAlertHandle] = useState(false)
+    const [alertOneBtn, setAlertOnebtn] = useState(true)
+    const alertRef = useRef();
 
     const dispatch = useDispatch()
     const selectorArr = useSelector((s) => s.StudentSelected)
 
 
     useEffect(() => {
-        dispatch({ type: "CLEAR" })
         if (props.teams.length > 0) {
+            dispatch({ type: "CLEAR" })
+            // if (props.teams.length > 0) {
             let day = date.getDate() > 9 ? date.getDate() : '0' + date.getDate();
             let month = date.getMonth() + 1 > 9 ? date.getMonth() + 1 : '0' + (date.getMonth() + 1);
             setPracticeName(props.teams[0].Name + ' - ' + day + '/' + month + '/' + date.getFullYear())
@@ -41,8 +46,10 @@ export default function AddPracticeComponent(props) {
                 setPickedStudents(stus)
             }
         } else {
-            Alert.alert('You must create a team first')
-            props.onAddPractice()
+            alertRef.current.setMsg('You must create a team before creating a practice')
+            setIsAlertHandle(false)
+            alertRef.current.focus()
+            // props.onAddPractice()
         }
     }, [])
 
@@ -76,7 +83,7 @@ export default function AddPracticeComponent(props) {
 
     }
 
-    const onSubmit = (data) => {
+    const onSubmit = () => {
         if (practiceName != '' && date) {
             let obj = {
                 userid: userIdValue,
@@ -93,8 +100,10 @@ export default function AddPracticeComponent(props) {
                 if (res.data) {
                     props.onAddPractice()
                 } else {
-                    Alert.alert('ther was a problem try again')
-                    props.onAddPractice()
+                    alertRef.current.setMsg('There was a problem try again')
+                    setIsAlertHandle(true)
+                    alertRef.current.focus()
+                    // props.onAddPractice()
                 }
             })
         } else {
@@ -103,9 +112,14 @@ export default function AddPracticeComponent(props) {
 
     }
 
+    const handleAlertCallback = () => {
+        props.onAddPractice()
+    }
+
+
     return (
         <View style={styles.container}>
-
+            <CustomAlert oneBtn={alertOneBtn} selfHandle={isAlertHandle} callback={() => handleAlertCallback()} ref={alertRef} />
             <Text>{practiceName}</Text>
             <Text>{date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()}</Text>
             <Button title='calendar' icon='calendar' onPress={showPicker} />
