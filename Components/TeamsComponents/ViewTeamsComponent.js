@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import axios from 'axios';
 import { StyleSheet, Text, View, Button, TextInput, Alert, TouchableOpacity, TouchableHighlight, BackHandler, ScrollView, Image } from 'react-native';
 import { Context } from '../../ContextAPI/Context';
@@ -11,6 +11,7 @@ import TeamCardComoponent from './TeamCardComponent'
 import TeamDetailsComponent from './TeamDetailsComponent'
 import RemoveTeamDialog from './RemoveTeamDialog'
 import { ActivityIndicator, Colors } from 'react-native-paper';
+import CustomAlert from '../../Utils/CustomAlert'
 
 
 
@@ -36,6 +37,11 @@ export default function ViewTeamsComponent() {
     const [isUserPressRemoveAll, setIsUserPressRemoveAll] = useState(false);
     const [teamsCheckedStatus, setTeamsCheckedStatus] = useState([]);
 
+    const [isAlertHandle, setIsAlertHandle] = useState(false)
+    const [alertOneBtn, setAlertOnebtn] = useState(true)
+    const alertRef = useRef();
+
+
     useEffect(() => {
         if (allTeams.length > 0) {
             setIsLoading(false)
@@ -57,13 +63,22 @@ export default function ViewTeamsComponent() {
     const switchStudentsAndDeleteTeam = (switchToTeam) => {
         axios.post('http://' + IP + '/students/changestudentsteams/', { students: students, teamId: switchToTeam._id }).then(res => {
             if (res.data) {
-                Alert.alert('All Student of this team Was Moved to another team')
+                alertRef.current.setMsg('Students Switched Successfuly')
+                setIsAlertHandle(true)
+                alertRef.current.focus()
+                // Alert.alert('All Student of this team Was Moved to another team')
                 axios.post('http://' + IP + '/teams/deleteteam', { teamId: pickedTeam._id, userId: userIdValue }).then((res_ => {
                     if (res_.data) {
                         getAllTeams()
-                        Alert.alert('Team has been deleted');
+                        alertRef.current.setMsg('Team has been deleted')
+                        setIsAlertHandle(true)
+                        alertRef.current.focus()
+                        // Alert.alert('Team has been deleted');
                     } else {
-                        Alert.alert('There was a problem. try again')
+                        alertRef.current.setMsg('There was a problem. try again')
+                        setIsAlertHandle(true)
+                        alertRef.current.focus()
+                        // Alert.alert('There was a problem. try again')
                     }
                 }))
             }
@@ -147,15 +162,28 @@ export default function ViewTeamsComponent() {
                                                 text: 'Delete Students', onPress: () => {
                                                     axios.post('http://' + IP + '/students/deleteFewStudents', { students: res.data, userId: userIdValue }).then(res_DeleteFewStudents => {
                                                         if (!res_DeleteFewStudents.data) {
-                                                            Alert.alert('Failed. try again')
+                                                            // Alert.alert('Failed. try again')
+                                                            alertRef.current.setMsg('Failed. try again')
+                                                            setIsAlertHandle(true)
+                                                            alertRef.current.focus()
+                                                            
                                                         } else {
-                                                            Alert.alert('All Student of this team Was Deleted')
+                                                            // Alert.alert('All Student of this team Was Deleted')
+                                                            alertRef.current.setMsg('All Student of this team Was Deleted')
+                                                            setIsAlertHandle(true)
+                                                            alertRef.current.focus()
                                                             axios.post('http://' + IP + '/teams/deleteteam', { teamId: team._id, userId: userIdValue }).then((res_DeleteTeam => {
                                                                 if (res_DeleteTeam.data) {
                                                                     getAllTeams()
-                                                                    Alert.alert('Team has been deleted');
+                                                                    // Alert.alert('Team has been deleted');
+                                                                    alertRef.current.setMsg('Updated')
+                                                                    setIsAlertHandle(true)
+                                                                    alertRef.current.focus()
                                                                 } else {
-                                                                    Alert.alert('There was a problem. try again')
+                                                                    // Alert.alert('There was a problem. try again')
+                                                                    alertRef.current.setMsg('There was a problem. try again')
+                                                                    setIsAlertHandle(true)
+                                                                    alertRef.current.focus()
                                                                 }
                                                             }))
                                                         }
@@ -165,7 +193,10 @@ export default function ViewTeamsComponent() {
                                             {
                                                 text: 'Switch to another team', onPress: () => {
                                                     if (allTeams.length < 2) {
-                                                        Alert.alert('You have only one team! try again')
+                                                        alertRef.current.setMsg('You have only one team! try again')
+                                                        setIsAlertHandle(true)
+                                                        alertRef.current.focus()
+                                                        // Alert.alert('You have only one team! try again')
                                                         return;
                                                     } else {
                                                         setRemoveVisible(true)
@@ -179,9 +210,15 @@ export default function ViewTeamsComponent() {
                                         if (res2.data) {
                                             setTeams([])
                                             getAllTeams()
-                                            Alert.alert('Team has been deleted');
+                                            alertRef.current.setMsg('Team has been deleted')
+                                            setIsAlertHandle(true)
+                                            alertRef.current.focus()
+                                            // Alert.alert('Team has been deleted');
                                         } else {
-                                            Alert.alert('There was a problem. try again')
+                                            alertRef.current.setMsg('There was a problem. try again')
+                                            setIsAlertHandle(true)
+                                            alertRef.current.focus()
+                                            // Alert.alert('There was a problem. try again')
                                         }
                                     })
                                 }
@@ -285,6 +322,7 @@ export default function ViewTeamsComponent() {
     return (
 
         <View style={[styles.container]}>
+            <CustomAlert oneBtn={alertOneBtn} selfHandle={isAlertHandle} ref={alertRef} />
             {isLoading ? <ActivityIndicator type={'large'} animating={true} color={Colors.red800} />
                 :
                 <View>

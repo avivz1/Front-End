@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext,useRef } from 'react';
 import axios from 'axios';
 import { StyleSheet, Text, View, Alert, ScrollView, BackHandler, Image, TouchableOpacity } from 'react-native';
 import AddPracticeComponent from './AddPracticeComponent'
@@ -10,6 +10,7 @@ import { IP } from '../../IP_Address';
 import Overlay from 'react-native-modal-overlay';
 import { FAB, Searchbar, RadioButton } from 'react-native-paper'
 import { ActivityIndicator, Colors } from 'react-native-paper';
+import CustomAlert from '../../Utils/CustomAlert'
 
 
 
@@ -32,6 +33,9 @@ export default function ViewPracticesComponent() {
   const [isUserPressRemoveAll, setIsUserPressRemoveAll] = useState(false);
   const [practicesCheckedStatus, setPracticesCheckedStatus] = useState([]);
   const [isLoading, setIsLoading] = useState(false)
+  const [isAlertHandle, setIsAlertHandle] = useState(false)
+  const [alertOneBtn, setAlertOnebtn] = useState(true)
+  const alertRef = useRef();
   const onChangeSearch = query => setSearchText(query)
 
 
@@ -111,7 +115,10 @@ export default function ViewPracticesComponent() {
       return;
     } else {
       setAddVisible(false);
-      Alert.alert('Must have at least 1 team before creating a practice')
+      alertRef.current.setMsg('Must have at least 1 team before creating a practice')
+      setIsAlertHandle(true)
+      alertRef.current.focus()
+      // Alert.alert('Must have at least 1 team before creating a practice')
     }
   }
 
@@ -152,9 +159,15 @@ export default function ViewPracticesComponent() {
             axios.post('http://' + IP + '/practices/deletepractice', { practice: practiceObj }).then((res => {
               if (res.data) {
                 getAllPractices()
-                Alert.alert('Practice has been deleted');
+                alertRef.current.setMsg('Practice has been deleted')
+                setIsAlertHandle(true)
+                alertRef.current.focus()
+                // Alert.alert('Practice has been deleted');
               } else {
-                Alert.alert('There was a problem. try again')
+                // Alert.alert('There was a problem. try again')
+                alertRef.current.setMsg('There was a problem. try again')
+                setIsAlertHandle(true)
+                alertRef.current.focus()
               }
             }))
           }
@@ -229,6 +242,8 @@ export default function ViewPracticesComponent() {
 
   return (
     <View style={[styles.container]}>
+
+      <CustomAlert oneBtn={alertOneBtn} selfHandle={isAlertHandle} ref={alertRef} />
       {isLoading ? <ActivityIndicator type={'large'} animating={true} color={Colors.red800} /> :
 
 

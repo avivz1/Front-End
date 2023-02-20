@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import axios from 'axios';
 import { StyleSheet, Text, View, Alert, TouchableOpacity, TouchableHighlight, Linking, Image, BackHandler, ScrollView } from 'react-native';
 import { Context } from '../../ContextAPI/Context';
@@ -11,6 +11,7 @@ import AddStudentComponent from './AddStudentComponent'
 import { FAB, Searchbar, RadioButton } from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker';
 import { ActivityIndicator, Colors } from 'react-native-paper';
+import CustomAlert from '../../Utils/CustomAlert'
 
 
 
@@ -37,6 +38,11 @@ export default function ViewStudentsComponent() {
     const [isUserPressRemoveAll, setIsUserPressRemoveAll] = useState(false);
     const [studentsCheckedStatus, setStudentsCheckedStatus] = useState([]);
     const [callVisible, setCallVisible] = useState(false);
+
+    const [isAlertHandle, setIsAlertHandle] = useState(false)
+    const [alertOneBtn, setAlertOnebtn] = useState(true)
+    const alertRef = useRef();
+
 
     useEffect(() => {
         if (allTeams.length > 0 && studentsArr.length > 0) {
@@ -93,7 +99,10 @@ export default function ViewStudentsComponent() {
         if (allTeams.length > 0) {
             setAddVisible(true)
         } else {
-            Alert.alert('must have a team before creating student')
+            alertRef.current.setMsg('Must have a team before creating a student')
+            setIsAlertHandle(true)
+            alertRef.current.focus()
+            // Alert.alert('must have a team before creating student')
         }
     }
 
@@ -108,7 +117,6 @@ export default function ViewStudentsComponent() {
         setAddVisible(false);
 
     }
-
 
     const StudentCardPress = (stu, btnType) => {
         setPickedStudent(stu);
@@ -131,9 +139,15 @@ export default function ViewStudentsComponent() {
                         axios.post('http://' + IP + '/students/deletestudent', { userId: userIdValue, stuId: stu._id }).then((res => {
                             if (res.data) {
                                 getAllStudents()
-                                Alert.alert('Student has been deleted');
+                                alertRef.current.setMsg('Student has been deleted')
+                                setIsAlertHandle(true)
+                                alertRef.current.focus()
+                                // Alert.alert('Student has been deleted');
                             } else {
-                                Alert.alert('There was a problem. try again')
+                                alertRef.current.setMsg('Must have a team before creating a student')
+                                setIsAlertHandle(true)
+                                alertRef.current.focus()
+                                // Alert.alert('There was a problem. try again')
                             }
                         }))
                     }
@@ -207,6 +221,7 @@ export default function ViewStudentsComponent() {
     return (
 
         <View style={[styles.container]}>
+            <CustomAlert oneBtn={alertOneBtn} selfHandle={isAlertHandle} ref={alertRef} />
 
             {isLoading ? <ActivityIndicator type={'large'} animating={true} color={Colors.red800} /> :
                 <View>

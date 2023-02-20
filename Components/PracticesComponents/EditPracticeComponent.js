@@ -33,7 +33,6 @@ export default function EditPracticeComponent(props) {
     const alertRef = useRef();
 
     useEffect(() => {
-
         if (props.practice) {
             setPracticeName(props.practice.Name)
             dispatch({ type: "CLEAR" })
@@ -95,8 +94,10 @@ export default function EditPracticeComponent(props) {
                 allStudents: pickedStudents,
                 chosenStudents: selectorArr.arr
             }).then(res => {
-                if (!res.data) {
-                    props.onPracticeUpdate()
+                if (res.data) {
+                    alertRef.current.setMsg('Updated!')
+                    setIsAlertHandle(false)
+                    alertRef.current.focus()
                 } else {
                     alertRef.current.setMsg('Somthing went wrong. try again')
                     setIsAlertHandle(false)

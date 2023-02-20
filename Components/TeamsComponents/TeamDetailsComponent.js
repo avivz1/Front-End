@@ -1,7 +1,5 @@
-import { StyleSheet, Text, View, Button, TextInput, ViewComponent, ScrollView, Image, Platform, Alert } from 'react-native';
+import { StyleSheet, Text, View,  ScrollView } from 'react-native';
 import React, { useState, useEffect } from 'react'
-import { inline } from 'react-native-web/dist/cjs/exports/StyleSheet/compiler';
-import { block } from 'react-native-reanimated';
 import { DataTable, FAB } from 'react-native-paper'
 import { Context } from '../../ContextAPI/Context';
 import axios from 'axios';

@@ -31,7 +31,7 @@ export default CustomAlert = forwardRef((props, ref) => {
     return (
         <View>
             {props.oneBtn == true ?
-                <Overlay style={[styles.container]} visible={isVisible} onClose={() => setIsVisible(false)} closeOnTouchOutside>
+                <Overlay style={[styles.container]} visible={isVisible} onClose={() => setIsVisible(false)} >
                     <Image source={require('../assets/info1.png')} style={[styles.iconStyle]} />
                     <Text style={[styles.text]}>{msg}</Text>
                     {props.selfHandle ?
@@ -42,7 +42,7 @@ export default CustomAlert = forwardRef((props, ref) => {
 
                 </Overlay>
                 :
-                <Overlay style={[styles.container]} visible={isVisible} onClose={() => setIsVisible(false)} closeOnTouchOutside>
+                <Overlay style={[styles.container]} visible={isVisible} onClose={() => setIsVisible(false)} >
                     <Image source={require('../assets/warningIconAlert.png')} style={[styles.iconStyle]} />
                     <Text style={[styles.text]}>{msg}</Text>
                     {props.selfHandle ?
@@ -58,37 +58,6 @@ export default CustomAlert = forwardRef((props, ref) => {
                     }
                 </Overlay>
             }
-
-
-
-            {/* {props.oneBtn==true&&props.twoBtn!=true ?
-                <Overlay style={[styles.container]} visible={isVisible} onClose={() => setIsVisible(false)} closeOnTouchOutside>
-                    <Image source={require('../assets/info1.png')} style={[styles.iconStyle]} />
-                    <Text style={[styles.text]}>{msg}</Text>
-                    {props.selfHandle ?
-                        <Button color={'green'} onPress={() => setIsVisible(false)}>Ok</Button>
-                        :
-                        <Button color={'green'} onPress={() => props.callback()}>Ok</Button>
-                    }
-
-                </Overlay>
-                :
-                <Overlay style={[styles.container]} visible={isVisible} onClose={() => setIsVisible(false)} closeOnTouchOutside>
-                    <Image source={require('../assets/warningIconAlert.png')} style={[styles.iconStyle]} />
-                    <Text style={[styles.text]}>{msg}</Text>
-                    {props.selfHandle ?
-                        <View style={styles.btnsContainer}>
-                            <Button color={'red'} onPress={() => setIsVisible(false)}>Cancle</Button>
-                            <Button color={'green'} onPress={() => setIsVisible(false)}>Ok</Button>
-                        </View>
-                        :
-                        <View style={styles.btnsContainer}>
-                            <Button color={'red'} onPress={() => setIsVisible(false)}>Cancle</Button>
-                            <Button color={'green'} onPress={() => props.callback()}>Ok</Button>
-                        </View>
-                    }
-                </Overlay>
-            } */}
 
         </View>
     )

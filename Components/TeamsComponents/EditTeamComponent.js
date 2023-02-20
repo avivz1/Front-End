@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Button, TextInput, Alert } from 'react-native';
-import React, { useEffect } from "react";
+import React, { useEffect, useRef,useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Picker } from '@react-native-picker/picker';
 import { IP } from "../../IP_Address";
@@ -7,6 +7,7 @@ import axios from 'axios';
 import citiesFile from '../../Utils/citisListUpdated.json'
 import { SelectList } from 'react-native-dropdown-select-list'
 import textValidation from '../../Services/TextValidation.js'
+import CustomAlert from '../../Utils/CustomAlert'
 
 
 
@@ -19,10 +20,14 @@ export default function EditTeamComponent2(props) {
     const [teamName, setTeamName] = React.useState(props.team.Name)
     const [teamType, setTeamType] = React.useState(props.team.Type)
     const { isInputOk } = textValidation;
+    const [isAlertHandle, setIsAlertHandle] = useState(false)
+    const [alertOneBtn, setAlertOnebtn] = useState(true)
+    const alertRef = useRef();
 
 
+    
     const onSubmit = () => {
-        let input = isInputOk([{teamName:teamName},{teamType:teamType},{teamCity:selectedCity}])
+        let input = isInputOk([{ teamName: teamName }, { teamType: teamType }, { teamCity: selectedCity }])
         if (!input.status) {
             setErrorsArr(input.data)
             return;
@@ -35,17 +40,28 @@ export default function EditTeamComponent2(props) {
             _id: props.team._id,
         }).then(res => {
             if (res.data == true) {
-                Alert.alert('Team Updated')
-                props.onTeamUpdate();
+                alertRef.current.setMsg('Team Updated')
+                setIsAlertHandle(false)
+                alertRef.current.focus()
+                // Alert.alert('Team Updated')
             } else {
-                Alert.alert('Somthing went wrong try again');
+                alertRef.current.setMsg('Somthing went wrong try again')
+                setIsAlertHandle(true)
+                alertRef.current.focus()
+                // Alert.alert('Somthing went wrong try again');
             }
         })
+    }
+
+    const callbackFromAlert = () => {
+        props.onTeamUpdate();
     }
 
     return (
 
         <View styles={[styles.container]}>
+            <CustomAlert oneBtn={alertOneBtn} callback={callbackFromAlert} selfHandle={isAlertHandle} ref={alertRef} />
+
             <Text>{props.team.Name}</Text>
 
 

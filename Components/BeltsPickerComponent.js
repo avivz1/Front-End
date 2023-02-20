@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, Keyboard } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 
 
@@ -7,9 +7,8 @@ import DropDownPicker from 'react-native-dropdown-picker';
 
 export default function BeltsPickerComponent(props) {
 
-    // const [pickdBelt, setPickedBelt] = useState('')
     const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(props.data?props.data:null);
+    const [value, setValue] = useState(props.data ? props.data : null);
     const [items, setItems] = useState([
         { label: 'White', value: 'white', icon: () => <Image source={require('../assets/white.png')} style={[styles.iconStyle]} /> },
         { label: 'Yellow', value: 'yellow', icon: () => <Image source={require('../assets/yellow.png')} style={[styles.iconStyle]} /> },
@@ -24,6 +23,13 @@ export default function BeltsPickerComponent(props) {
         props.callback(beltColor)
     }
 
+    const setOpenDropDown = (x) => {
+        Keyboard.dismiss()
+        setOpen(x)
+    }
+
+
+
     return (
         <View>
 
@@ -32,7 +38,7 @@ export default function BeltsPickerComponent(props) {
                 open={open}
                 value={value}
                 items={items}
-                setOpen={setOpen}
+                setOpen={(x) => setOpenDropDown(x)}
                 setValue={setValue}
                 setItems={setItems}
                 onChangeValue={setBelt}

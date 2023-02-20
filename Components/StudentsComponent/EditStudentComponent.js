@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Button, TextInput, Alert } from 'react-native';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Picker } from '@react-native-picker/picker';
 import { IP } from "../../IP_Address";
@@ -8,6 +8,7 @@ import { SelectList } from 'react-native-dropdown-select-list'
 import citiesFile from '../../Utils/citisListUpdated.json'
 import BeltsPickerComponent from '../../Components/BeltsPickerComponent'
 import textValidation from '../../Services/TextValidation.js'
+import CustomAlert from '../../Utils/CustomAlert'
 
 
 
@@ -24,6 +25,9 @@ export default function EditStudentsComponent(props) {
     const [emergencyName, setEmergencyName] = useState(props.student ? props.student.EmergencyContact.Name : '');
     const [emergencyPhone, setEmergencyPhone] = useState(props.student ? props.student.EmergencyContact.Phone.toString() : '');
     const [studentPhone, setStudentPhone] = useState(props.student ? props.student.Phone.toString() : '');
+    const [isAlertHandle, setIsAlertHandle] = useState(false)
+    const [alertOneBtn, setAlertOnebtn] = useState(true)
+    const alertRef = useRef();
     const { isInputOk } = textValidation;
 
     useEffect(() => {
@@ -40,40 +44,9 @@ export default function EditStudentsComponent(props) {
         setStuBelt(belt)
     }
 
-    // const isInputOk = () => {
-    //     let arr = []
-    //     if (stuName == '' || stuName == undefined) {
-    //         arr.push('stuName')
-    //     }
-    //     if (studentPhone == '' || studentPhone == undefined) {
-    //         arr.push('stuPhone')
-    //     }
-    //     if (emergencyName == '' || emergencyName == undefined) {
-    //         arr.push('emergencyName')
-    //     }
-    //     if (emergencyPhone == '' || emergencyPhone == undefined) {
-    //         arr.push('emergencyPhone')
-    //     }
-    //     if (stuAge == '' || stuAge == undefined) {
-    //         arr.push('stuAge')
-    //     }
-    //     if (stuBelt == '' || stuBelt == undefined) {
-    //         arr.push('stuBelt')
-    //     }
-    //     if (selectedCity == '' || selectedCity == undefined) {
-    //         arr.push('stuCity')
-    //     }
-    //     if (arr.length == 0) {
-    //         setErrorsArr([])
-    //         return true;
-    //     } else {
-    //         setErrorsArr(arr)
-    //         return false;
-    //     }
-    // }
 
     const onSubmit = () => {
-        let input = isInputOk([{stuCity:selectedCity},{stuBelt:stuBelt},{stuAge:stuAge},{emergencyName:emergencyName},{emergencyPhone:emergencyPhone},{stuPhone:studentPhone},{stuName:stuName}])
+        let input = isInputOk([{ stuCity: selectedCity }, { stuBelt: stuBelt }, { stuAge: stuAge }, { emergencyName: emergencyName }, { emergencyPhone: emergencyPhone }, { stuPhone: studentPhone }, { stuName: stuName }])
         if (!input.status) {
             setErrorsArr(input.data)
             return;
@@ -92,17 +65,28 @@ export default function EditStudentsComponent(props) {
 
         }).then(res => {
             if (res.data == true) {
-                Alert.alert('Student Updated')
-                props.onStudentUpdate();
+                alertRef.current.setMsg('Updated')
+                setIsAlertHandle(false)
+                alertRef.current.focus()
+                // Alert.alert('Student Updated')
             } else {
-                Alert.alert('Somthing went wrong try again');
+                alertRef.current.setMsg('Somthing went wrong try again')
+                setIsAlertHandle(true)
+                alertRef.current.focus()
+                // Alert.alert('Somthing went wrong try again');
             }
         })
+    }
+
+    const onEditCallbackFromAlert = () => {
+        props.onStudentUpdate();
+
     }
 
     return (
 
         <View style={[styles.container]}>
+            <CustomAlert oneBtn={alertOneBtn} callback={onEditCallbackFromAlert} selfHandle={isAlertHandle} ref={alertRef} />
 
             <Text>{props.student.Name}</Text>
 

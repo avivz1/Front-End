@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Button, TextInput, Alert } from 'react-native';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { Context } from '../../ContextAPI/Context';
 import axios from 'axios';
@@ -21,6 +21,9 @@ export default function AddTeamComponent2(props) {
     const [teamType, setTeamType] = React.useState('')
     const { isInputOk } = textValidation;
 
+    const [isAlertHandle, setIsAlertHandle] = useState(false)
+    const [alertOneBtn, setAlertOnebtn] = useState(true)
+    const alertRef = useRef();
 
     const onSubmit = () => {
         let input = isInputOk([{ teamName: teamName }, { teamType: teamType }, { teamCity: selectedCity }])
@@ -37,17 +40,27 @@ export default function AddTeamComponent2(props) {
                 userID: userIdValue
             }).then(res => {
                 if (res.data == true) {
-                    Alert.alert('Team Added')
-                    props.onAddTeam();
+                    alertRef.current.setMsg('Team Added')
+                    setIsAlertHandle(false)
+                    alertRef.current.focus()
+                    // Alert.alert('Team Added')
                 } else {
-                    Alert.alert('Somthing went wrong try again');
+                    alertRef.current.setMsg('Somthing went wrong try again')
+                    setIsAlertHandle(true)
+                    alertRef.current.focus()
+                    // Alert.alert('Somthing went wrong try again');
                 }
             })
         }
     }
+    
+    const callbackFromAlert = ()=>{
+        props.onAddTeam();
+    }
 
     return (
         <View styles={[styles.container]}>
+            <CustomAlert oneBtn={alertOneBtn} callback={callbackFromAlert} selfHandle={isAlertHandle} ref={alertRef} />
             <Text style={{ fontWeight: 'bold' }}>Add Team</Text>
 
 

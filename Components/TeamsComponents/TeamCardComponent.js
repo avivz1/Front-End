@@ -1,10 +1,11 @@
 import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import { Card, Button, Checkbox } from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker';
 import defaultImage from '../../assets/teaml.png'
 import axios from 'axios';
 import { IP } from '../../IP_Address';
+import CustomAlert from '../../Utils/CustomAlert'
 
 
 export default function TeamCardComponent(props) {
@@ -13,7 +14,9 @@ export default function TeamCardComponent(props) {
     const [isRadioBtnShow, setIsRadioBtnShow] = useState(false);
     const [checked, setChecked] = useState(false);
     const [pickedImage, setPickedImage] = useState();
-
+    const [isAlertHandle, setIsAlertHandle] = useState(false)
+    const [alertOneBtn, setAlertOnebtn] = useState(true)
+    const alertRef = useRef();
 
     /*-----------------------------------useEffect's section--------------------------------------------*/
     useEffect(() => {
@@ -81,18 +84,21 @@ export default function TeamCardComponent(props) {
         const result = await ImagePicker.requestMediaLibraryPermissionsAsync();
         // const result = await Permissions.askAsync(Permissions.CAMERA);
         if (result.status !== 'granted') {
-            Alert.alert(
-                'Insufficient permissions!',
-                'You need to grant camera permissions to use this app.',
-                [{ text: 'Okay' }]
-            );
+            // Alert.alert(
+            //     'Insufficient permissions!',
+            //     'You need to grant camera permissions to use this app.',
+            //     [{ text: 'Okay' }]
+            // );
+            alertRef.current.setMsg('Insufficient permissions! You need to grant camera permissions to use this app')
+            setIsAlertHandle(true)
+            alertRef.current.focus()
             return false;
         }
         return true;
     };
 
     const pictureHandler = () => {
-        Alert.alert('Take a Picture','', [
+        Alert.alert('Take a Picture', '', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Gallery', onPress: () => { pickImage() } },
             { text: 'Camera', onPress: () => { takeImageHandler() } },
@@ -121,9 +127,15 @@ export default function TeamCardComponent(props) {
     const addOrUpdateStudentPhoto = (image) => {
         axios.post('http://' + IP + '/teams/addorupdateteamphoto ', { teamID: props.team._id, photo: image }).then(res => {
             if (res.data == true) {
-                Alert.alert('updated')
+                alertRef.current.setMsg('Updated')
+                setIsAlertHandle(true)
+                alertRef.current.focus()
+                // Alert.alert('updated')
             } else {
-                Alert.alert('was a problem')
+                alertRef.current.setMsg('There was a problem. try again')
+                setIsAlertHandle(true)
+                alertRef.current.focus()
+                // Alert.alert('was a problem')
             }
         })
     }
@@ -133,6 +145,7 @@ export default function TeamCardComponent(props) {
 
 
         <View style={[styles.container]}>
+            <CustomAlert oneBtn={alertOneBtn} selfHandle={isAlertHandle} ref={alertRef} />
 
             <Card style={flag ? styles.mainCardWithBtns : styles.mainCardWithoutBtns} onPress={onPressEvent} onLongPress={longPressEvent} >
                 <View >
@@ -147,18 +160,9 @@ export default function TeamCardComponent(props) {
                         }}
                     />
                 }
-                {/* {pickedImage != undefined ?
-                    pickedImage.length>2?<Image style={{ width: 150, height: 50 }} resizeMode='cover' source={{uri:pickedImage}} />
-                    :
-                    <Image style={{ width: 150, height: 50 }} resizeMode='cover' source={defaultImage} />
-                    
-                } */}
 
-                <Image style={{ width: 150, height: 50 }} resizeMode='cover' source={pickedImage?{uri:pickedImage}:defaultImage} />
-                {/* {pickedImage!=undefined  && <Image style={{ width: 150, height: 50 }} resizeMode='cover' source={{uri:pickedImage}} />} */}
-                {/* {!pickedImage.isNaN() && <Image style={{ width: 150, height: 50 }} resizeMode='cover' source={defaultImage} />} */}
-                {/* {!props.isRadioBtnShow &&<Image style={{ width: 70, height: 70 }} resizeMode='cover' source={require('../../assets/teaml.png')} />} */}
-                {/* {!props.isRadioBtnShow && <Image style={{ width: 150, height: 50 }} resizeMode='cover'   source={{ uri: pickedImage ? pickedImage : 'https://gsmauditors.com/wp-content/uploads/2016/05/istockphoto-1133765772-612x612-1.jpg'}} />} */}
+
+                <Image style={{ width: 150, height: 50 }} resizeMode='cover' source={pickedImage ? { uri: pickedImage } : defaultImage} />
 
                 {getBtnsState() &&
                     <View>

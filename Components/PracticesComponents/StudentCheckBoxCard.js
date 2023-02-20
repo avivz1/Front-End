@@ -1,4 +1,4 @@
-import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Card, Button, Checkbox } from 'react-native-paper'
 import axios from "axios";

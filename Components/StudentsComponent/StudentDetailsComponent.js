@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Button, TextInput, ViewComponent, Platform, ScrollView, Alert, Linking, TouchableOpacity } from 'react-native';
-import { useContext, useState, useEffect } from 'react'
+import { useContext, useState, useEffect,useRef } from 'react'
 import { Context } from '../../ContextAPI/Context';
 import axios from 'axios';
 import { IP } from '../../IP_Address';
@@ -7,6 +7,7 @@ import { Calendar, CalendarList, Agenda } from 'react-native-calendars'
 import { DataTable } from 'react-native-paper'
 import AddNewActivityComp from './AddNewStudentActivity'
 import Overlay from 'react-native-modal-overlay';
+import CustomAlert from '../../Utils/CustomAlert'
 
 
 export default function StudentDetailsComponent(props) {
@@ -25,10 +26,15 @@ export default function StudentDetailsComponent(props) {
     const [addActivityFlag, setAddActivityFlag] = useState(false)
     const [dayPress, setDayPress] = useState('')
     const [pickedDate, setPickedDate] = useState({ pickedMonth: (dateOBject.getMonth() + 1) > 9 ? dateOBject.getMonth + 1 : '0' + (dateOBject.getMonth() + 1), pickedYear: dateOBject.getFullYear() })
+    const [isAlertHandle, setIsAlertHandle] = useState(false)
+    const [alertOneBtn, setAlertOnebtn] = useState(true)
+    const alertRef = useRef();
 
-    useEffect(()=>{
+
+
+    useEffect(() => {
         getAllActivities()
-    },[addActivityFlag])
+    }, [addActivityFlag])
 
     useEffect(() => {
         getStudentPracticesDetails()
@@ -44,7 +50,10 @@ export default function StudentDetailsComponent(props) {
             if (res.data) {
                 setActivities(res.data)
             } else {
-                Alert.alert('failed to get activities')
+                alertRef.current.setMsg('failed to get activities')
+                setIsAlertHandle(true)
+                alertRef.current.focus()
+                // Alert.alert('failed to get activities')
             }
         })
     }
@@ -54,7 +63,10 @@ export default function StudentDetailsComponent(props) {
             if (res.data) {
                 getAllActivities()
             } else {
-                Alert.alert('Error')
+                alertRef.current.setMsg('Failed to delete Activity. try again')
+                setIsAlertHandle(true)
+                alertRef.current.focus()
+                // Alert.alert('Error')
             }
         })
     }
@@ -154,14 +166,19 @@ export default function StudentDetailsComponent(props) {
     }
 
     const onRowLongPress = (data) => {
-        Alert.alert('Delete This Activity?', data.Event, [
-            { text: 'Cancel' },
-            {
-                text: 'Ok', onPress: () => {
-                    deleteActivity(data)
-                }
-            }
-        ])
+        alertRef.current.setMsg('Delete This Activity ? - ' +data.Event)
+        setIsAlertHandle(false)
+        alertRef.current.focus()
+
+
+        // Alert.alert('Delete This Activity?', data.Event, [
+        //     { text: 'Cancel' },
+        //     {
+        //         text: 'Ok', onPress: () => {
+        //             deleteActivity(data)
+        //         }
+        //     }
+        // ])
     }
 
     const openDialer = (phone) => {
@@ -179,13 +196,21 @@ export default function StudentDetailsComponent(props) {
     }
 
     const handelErrorOnAddActivity = () => {
-        Alert.alert('somthing went wrong try again')
+        alertRef.current.setMsg('Somthing went wrong try again.')
+        setIsAlertHandle(true)
+        alertRef.current.focus()
+        // Alert.alert('somthing went wrong try again')
     }
 
+    const callbackFromAlert = ()=>{
+        deleteActivity(data)
+    }
 
     return (
 
         <View style={{ height: '80%' }}>
+            <CustomAlert oneBtn={alertOneBtn} selfHandle={isAlertHandle} callback={callbackFromAlert} ref={alertRef} />
+
             <Text>Name : {props.student.Name}</Text>
             <TouchableOpacity onPress={() => openDialer(props.student.Phone)}>
                 <Text>Phone :{props.student.Phone}</Text>
@@ -203,7 +228,7 @@ export default function StudentDetailsComponent(props) {
                 <Calendar
                     onDayPress={onDayPress}
                     onMonthChange={monthChange}
-                   markedDates={dates}
+                    markedDates={dates}
 
                 />
 

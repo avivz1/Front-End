@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button, TextInput, Alert, TouchableOpacity, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, Alert, Keyboard } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { Context } from '../../ContextAPI/Context';
@@ -9,6 +9,7 @@ import BeltsPickerComponent from '../../Components/BeltsPickerComponent'
 import { SelectList } from 'react-native-dropdown-select-list'
 import citiesFile from '../../Utils/citisListUpdated.json'
 import textValidation from '../../Services/TextValidation.js'
+import CustomAlert from '../../Utils/CustomAlert'
 
 
 
@@ -28,7 +29,9 @@ export default function AddStudentsComponent(props) {
     const [emergencyName, setEmergencyName] = React.useState('');
     const [emergencyPhone, setEmergencyPhone] = React.useState('');
     const { isInputOk } = textValidation;
-
+    const [isAlertHandle, setIsAlertHandle] = useState(false)
+    const [alertOneBtn, setAlertOnebtn] = useState(true)
+    const alertRef = useRef();
 
     const setChoosenTeam = (picked, index) => {
         setPickedTeam(picked)
@@ -46,7 +49,10 @@ export default function AddStudentsComponent(props) {
             return;
         }
         if (isNaN(stuAge)) {
-            Alert.alert('Age is not a Number! try again')
+            alertRef.current.setMsg('Age is not a Number! try again')
+            setIsAlertHandle(true)
+            alertRef.current.focus()
+            // Alert.alert('Age is not a Number! try again')
         } else {
             axios.post('http://' + IP + '/students/addstudent', {
                 userid: userIdValue,
@@ -59,23 +65,34 @@ export default function AddStudentsComponent(props) {
                 emergencyContact: { Name: emergencyName, Phone: emergencyPhone }
             }).then(res => {
                 if (res.data) {
-                    Alert.alert('Student Was Added')
-                    props.onAddClostModal()
+                    // Alert.alert('Student Was Added')
+                    alertRef.current.setMsg('Student Was Added')
+                    setIsAlertHandle(false)
+                    alertRef.current.focus()
+                    // props.onAddClostModal()
                 } else {
-                    Alert.alert("Somthing went wrong. Try again")
+                    alertRef.current.setMsg('Somthing went wrong. Try again')
+                    setIsAlertHandle(true)
+                    alertRef.current.focus()
+                    // Alert.alert("Somthing went wrong. Try again")
+                    
                 }
             })
 
 
         }
     }
-    const keyboardDismiss = () => {
-        Keyboard.dismiss()
+
+    const onAddStuCallbackFromAlert = ()=>{
+        props.onAddClostModal()
+
     }
 
     return (
 
         <View style={styles.container}>
+            <CustomAlert oneBtn={alertOneBtn} selfHandle={isAlertHandle} callback={onAddStuCallbackFromAlert} ref={alertRef} />
+
             <Picker
                 selectedValue={props.teams.lenght > 0 ? pickedTeam : props.teams[index]}
                 onValueChange={setChoosenTeam}>
@@ -111,8 +128,8 @@ export default function AddStudentsComponent(props) {
                 setSelected={(cityName) => setSelectedCity(cityName)}
                 data={allCities}
                 save="value"
-                onPress={() =>  Keyboard.dismiss()}
-            
+                on
+
             />
             {(errorsArr.length > 0 && errorsArr.includes('stuCity')) && <Text>This is required.</Text>}
 

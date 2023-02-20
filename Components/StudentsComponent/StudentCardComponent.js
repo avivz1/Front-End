@@ -1,10 +1,11 @@
 import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, Button, Checkbox } from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker';
 import { IP } from '../../IP_Address';
 import axios from 'axios';
 import Overlay from "react-native-modal-overlay";
+import CustomAlert from '../../Utils/CustomAlert'
 
 
 
@@ -15,7 +16,9 @@ export default function StudentCardComponent(props) {
     const [isRadioBtnShow, setIsRadioBtnShow] = useState(false);
     const [checked, setChecked] = useState(false);
     const [isImagePressed, setIsImagePRessed] = useState(false);
-
+    const [isAlertHandle, setIsAlertHandle] = useState(false)
+    const [alertOneBtn, setAlertOnebtn] = useState(true)
+    const alertRef = useRef();
 
     useEffect(() => {
         if (props.data.Image != undefined && props.data.Image != null && props.data.Image != '') {
@@ -42,10 +45,15 @@ export default function StudentCardComponent(props) {
     const addOrUpdateStudentPhoto = (image) => {
         axios.post('http://' + IP + '/students/addorupdatestudentphoto ', { studentId: props.data._id, photo: image }).then(res => {
             if (res.data == true) {
-                // props.data.Image=image;
-                Alert.alert('updated')
+                // alertRef.current.setMsg('Updated')
+                // setIsAlertHandle(true)
+                // alertRef.current.focus()
+                // Alert.alert('updated')
             } else {
-                Alert.alert('was problem')
+                alertRef.current.setMsg('There was a problem. try again')
+                setIsAlertHandle(false)
+                alertRef.current.focus()
+                // Alert.alert('was problem')
             }
         })
     }
@@ -58,7 +66,6 @@ export default function StudentCardComponent(props) {
         ])
 
     }
-
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -133,8 +140,10 @@ export default function StudentCardComponent(props) {
         setIsImagePRessed(true)
     }
 
+
     return (
         <View style={[styles.container]}>
+            <CustomAlert oneBtn={alertOneBtn}  selfHandle={isAlertHandle} ref={alertRef} />
 
             <Card style={flag ? styles.mainCardWithBtns : styles.mainCardWithoutBtns} onPress={onPressEvent} onLongPress={longPressEvent} >
                 <View >
@@ -150,7 +159,7 @@ export default function StudentCardComponent(props) {
                     />
                 }
                 {!props.isRadioBtnShow &&
-                    <TouchableOpacity style={{width:80}} onPress={onImagePress}>
+                    <TouchableOpacity style={{ width: 80 }} onPress={onImagePress}>
                         <Image style={{ width: 80, height: 50 }} resizeMode='cover' source={{ uri: pickedImage ? pickedImage : 'https://gsmauditors.com/wp-content/uploads/2016/05/istockphoto-1133765772-612x612-1.jpg' }} />
                     </TouchableOpacity>
                 }
