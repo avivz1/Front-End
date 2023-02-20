@@ -75,7 +75,7 @@ export default function AddStudentsComponent(props) {
                     setIsAlertHandle(true)
                     alertRef.current.focus()
                     // Alert.alert("Somthing went wrong. Try again")
-                    
+
                 }
             })
 
@@ -83,7 +83,7 @@ export default function AddStudentsComponent(props) {
         }
     }
 
-    const onAddStuCallbackFromAlert = ()=>{
+    const onAddStuCallbackFromAlert = () => {
         props.onAddClostModal()
 
     }
@@ -128,7 +128,6 @@ export default function AddStudentsComponent(props) {
                 setSelected={(cityName) => setSelectedCity(cityName)}
                 data={allCities}
                 save="value"
-                on
 
             />
             {(errorsArr.length > 0 && errorsArr.includes('stuCity')) && <Text>This is required.</Text>}
