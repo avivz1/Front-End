@@ -1,13 +1,10 @@
 import { StyleSheet, Text, View, TextInput, Alert, ScrollView } from 'react-native';
-import React, { useState, useEffect, useRef } from 'react';
-import { useForm, Controller } from "react-hook-form";
+import { useState, useEffect, useRef,useContext } from 'react';
 import { Context } from '../../ContextAPI/Context';
 import axios from 'axios';
-import { Picker } from '@react-native-picker/picker';
 import { IP } from '../../IP_Address';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Button, Snackbar } from 'react-native-paper'
-import { getDrawerStatusFromState } from '@react-navigation/drawer';
 import StudentCard from './StudentCheckBoxCard'
 import { useDispatch, useSelector } from 'react-redux'
 import CustomAlert from '../../Utils/CustomAlert'
@@ -16,7 +13,7 @@ import CustomAlert from '../../Utils/CustomAlert'
 
 
 export default function EditPracticeComponent(props) {
-    const { userId, teamsMap } = React.useContext(Context);
+    const { userId, teamsMap } = useContext(Context);
     const [userIdValue] = userId;
 
     const [isPickerShow, setIsPickerShow] = useState(false);

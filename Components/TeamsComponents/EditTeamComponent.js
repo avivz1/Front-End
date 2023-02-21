@@ -1,7 +1,5 @@
 import { StyleSheet, Text, View, Button, TextInput, Alert } from 'react-native';
-import React, { useEffect, useRef,useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { Picker } from '@react-native-picker/picker';
+import { useEffect, useRef,useState } from "react";
 import { IP } from "../../IP_Address";
 import axios from 'axios';
 import citiesFile from '../../Utils/citisListUpdated.json'
@@ -11,14 +9,14 @@ import CustomAlert from '../../Utils/CustomAlert'
 
 
 
-export default function EditTeamComponent2(props) {
+export default function EditTeamComponent(props) {
 
 
-    const [errorsArr, setErrorsArr] = React.useState([])
-    const [allCities, setAllCities] = React.useState(citiesFile)
-    const [selectedCity, setSelectedCity] = React.useState(props.team.City);
-    const [teamName, setTeamName] = React.useState(props.team.Name)
-    const [teamType, setTeamType] = React.useState(props.team.Type)
+    const [errorsArr, setErrorsArr] = useState([])
+    const [allCities, setAllCities] = useState(citiesFile)
+    const [selectedCity, setSelectedCity] = useState(props.team.City);
+    const [teamName, setTeamName] = useState(props.team.Name)
+    const [teamType, setTeamType] = useState(props.team.Type)
     const { isInputOk } = textValidation;
     const [isAlertHandle, setIsAlertHandle] = useState(false)
     const [alertOneBtn, setAlertOnebtn] = useState(true)

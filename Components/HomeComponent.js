@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState,useContext } from 'react';
 import axios from 'axios';
 import { StyleSheet, Text, View, Button, Dimensions, TextInput, ScrollView } from 'react-native';
 import { Context } from '../ContextAPI/Context';
@@ -11,7 +11,7 @@ import DataToExcel from '../Services/DataToExcel'
 
 export default function HomeComponent() {
 
-  const { userId, teamsMap } = React.useContext(Context);
+  const { userId, teamsMap } = useContext(Context);
   const [userIdValue] = userId;
   const [teamsPieData, setTeamsPieData] = useState([])
   const [practicePieData, setPracticePieData] = useState([])

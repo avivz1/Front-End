@@ -1,5 +1,5 @@
 import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image } from "react-native";
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, Button, Checkbox } from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker';
 import { IP } from '../../IP_Address';

@@ -1,9 +1,7 @@
 import { StyleSheet, Text, View, Button, TextInput, Alert } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
-import { useForm, Controller } from "react-hook-form";
+import { useRef, useState, useContext } from 'react';
 import { Context } from '../../ContextAPI/Context';
 import axios from 'axios';
-import { Picker } from '@react-native-picker/picker';
 import { IP } from '../../IP_Address';
 import citiesFile from '../../Utils/citisListUpdated.json'
 import { SelectList } from 'react-native-dropdown-select-list'
@@ -12,13 +10,13 @@ import textValidation from '../../Services/TextValidation.js'
 
 export default function AddTeamComponent2(props) {
 
-    const { userId } = React.useContext(Context);
+    const { userId } = useContext(Context);
     const [userIdValue] = userId;
-    const [errorsArr, setErrorsArr] = React.useState([])
-    const [allCities, setAllCities] = React.useState(citiesFile)
-    const [selectedCity, setSelectedCity] = React.useState('');
-    const [teamName, setTeamName] = React.useState('')
-    const [teamType, setTeamType] = React.useState('')
+    const [errorsArr, setErrorsArr] = useState([])
+    const [allCities, setAllCities] = useState(citiesFile)
+    const [selectedCity, setSelectedCity] = useState('');
+    const [teamName, setTeamName] = useState('')
+    const [teamType, setTeamType] = useState('')
     const { isInputOk } = textValidation;
 
     const [isAlertHandle, setIsAlertHandle] = useState(false)
@@ -53,8 +51,8 @@ export default function AddTeamComponent2(props) {
             })
         }
     }
-    
-    const callbackFromAlert = ()=>{
+
+    const callbackFromAlert = () => {
         props.onAddTeam();
     }
 

@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from "react-native";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, Button, Checkbox } from 'react-native-paper'
 import axios from "axios";
 import {useDispatch} from 'react-redux'
@@ -7,8 +7,8 @@ import {useDispatch} from 'react-redux'
 
 export default function StudentCheckBoxCard(props) {
 
-    const [checked, setChecked] = React.useState(false);
-    const [isDeleted, setIsDeleted] = React.useState(false);
+    const [checked, setChecked] = useState(false);
+    const [isDeleted, setIsDeleted] = useState(false);
     const dispatch = useDispatch();
 
     

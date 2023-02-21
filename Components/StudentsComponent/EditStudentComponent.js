@@ -1,6 +1,5 @@
-import { StyleSheet, Text, View, Button, TextInput, Alert } from 'react-native';
-import React, { useEffect, useState, useRef } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import { useEffect, useState, useRef } from "react";
 import { Picker } from '@react-native-picker/picker';
 import { IP } from "../../IP_Address";
 import axios from 'axios';

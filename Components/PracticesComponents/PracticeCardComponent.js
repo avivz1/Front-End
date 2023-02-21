@@ -1,5 +1,5 @@
 import { View, Text, TextInput, StyleSheet, Image } from "react-native";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, Button, Checkbox } from 'react-native-paper'
 import { useDispatch } from 'react-redux'
 

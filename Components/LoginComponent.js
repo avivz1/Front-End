@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState, useContext, useRef } from "react";
+import { useState, useContext, useRef } from "react";
 import { StyleSheet, Text, View, Image, Button, Alert, TouchableOpacity } from "react-native";
 import axios from 'axios';
 import { Context } from '../ContextAPI/Context';
@@ -10,6 +10,7 @@ import CustomAlert from '../Utils/CustomAlert'
 
 
 export default function LoginComponent({ navigation }) {
+
 
     const { userId } = useContext(Context);
     const [userIdValue, setUserId] = userId;

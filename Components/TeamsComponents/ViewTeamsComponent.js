@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef } from 'react';
+import { useEffect, useState,useRef,useContext } from 'react';
 import axios from 'axios';
 import { StyleSheet, Text, View, Button, TextInput, Alert, TouchableOpacity, TouchableHighlight, BackHandler, ScrollView, Image } from 'react-native';
 import { Context } from '../../ContextAPI/Context';
@@ -17,18 +17,18 @@ import CustomAlert from '../../Utils/CustomAlert'
 
 export default function ViewTeamsComponent() {
 
-    const { userId, teamsMap } = React.useContext(Context);
+    const { userId, teamsMap } = useContext(Context);
     const [teamsNameMap, setMap] = teamsMap
     const [userIdValue] = userId;
 
-    const [allTeams, setTeams] = React.useState([]);
-    const [detailsVisible, setDetailsVisible] = React.useState(false);
-    const [editVisible, setEditVisible] = React.useState(false);
-    const [addVisible, setAddVisible] = React.useState(false);
-    const [removeVisible, setRemoveVisible] = React.useState(false);
-    const [pickedTeam, setPickedTeam] = React.useState({});
-    const [students, setStudents] = React.useState([]);
-    const [searchText, setSearchText] = React.useState('');
+    const [allTeams, setTeams] = useState([]);
+    const [detailsVisible, setDetailsVisible] = useState(false);
+    const [editVisible, setEditVisible] = useState(false);
+    const [addVisible, setAddVisible] = useState(false);
+    const [removeVisible, setRemoveVisible] = useState(false);
+    const [pickedTeam, setPickedTeam] = useState({});
+    const [students, setStudents] = useState([]);
+    const [searchText, setSearchText] = useState('');
     const onChangeSearch = query => setSearchText(query)
 
     const [isLoading, setIsLoading] = useState(false)

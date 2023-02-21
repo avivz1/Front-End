@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View, Button, TextInput, Alert, Keyboard } from 'react-native';
-import React, { useState, useEffect, useRef } from 'react';
-import { useForm, Controller } from "react-hook-form";
+import { useState, useContext, useRef } from 'react';
 import { Context } from '../../ContextAPI/Context';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
@@ -15,19 +14,19 @@ import CustomAlert from '../../Utils/CustomAlert'
 
 export default function AddStudentsComponent(props) {
 
-    const { userId } = React.useContext(Context);
+    const { userId } = useContext(Context);
     const [userIdValue] = userId;
-    const [index, setIndex] = React.useState(0);
-    const [pickedTeam, setPickedTeam] = React.useState('');
-    const [stuBelt, setStuBelt] = React.useState('')
-    const [stuName, setStuName] = React.useState('')
-    const [stuAge, setStuAge] = React.useState('')
-    const [studentPhone, setStudentPhone] = React.useState('');
-    const [errorsArr, setErrorsArr] = React.useState([])
-    const [allCities, setAllCities] = React.useState(citiesFile)
-    const [selectedCity, setSelectedCity] = React.useState('');
-    const [emergencyName, setEmergencyName] = React.useState('');
-    const [emergencyPhone, setEmergencyPhone] = React.useState('');
+    const [index, setIndex] = useState(0);
+    const [pickedTeam, setPickedTeam] = useState('');
+    const [stuBelt, setStuBelt] = useState('')
+    const [stuName, setStuName] = useState('')
+    const [stuAge, setStuAge] = useState('')
+    const [studentPhone, setStudentPhone] = useState('');
+    const [errorsArr, setErrorsArr] = useState([])
+    const [allCities, setAllCities] = useState(citiesFile)
+    const [selectedCity, setSelectedCity] = useState('');
+    const [emergencyName, setEmergencyName] = useState('');
+    const [emergencyPhone, setEmergencyPhone] = useState('');
     const { isInputOk } = textValidation;
     const [isAlertHandle, setIsAlertHandle] = useState(false)
     const [alertOneBtn, setAlertOnebtn] = useState(true)

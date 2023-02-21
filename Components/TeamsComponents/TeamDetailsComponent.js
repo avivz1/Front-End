@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View,  ScrollView } from 'react-native';
-import React, { useState, useEffect } from 'react'
+import {useContext, useState, useEffect } from 'react'
 import { DataTable, FAB } from 'react-native-paper'
 import { Context } from '../../ContextAPI/Context';
 import axios from 'axios';
@@ -12,7 +12,7 @@ import { IP } from '../../IP_Address';
 
 export default function TeamDetailsComponent(props) {
 
-    const { userId } = React.useContext(Context);
+    const { userId } = useContext(Context);
     const [userIdValue] = userId;
 
     const [teamName, setTeamName] = useState(props.team.Name)

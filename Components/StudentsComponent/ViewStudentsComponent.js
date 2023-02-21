@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import axios from 'axios';
 import { StyleSheet, Text, View, Alert, TouchableOpacity, TouchableHighlight, Linking, Image, BackHandler, ScrollView } from 'react-native';
 import { Context } from '../../ContextAPI/Context';
@@ -9,7 +9,6 @@ import EditStudentComponent from './EditStudentComponent';
 import StudentDetailsComponent from './StudentDetailsComponent'
 import AddStudentComponent from './AddStudentComponent'
 import { FAB, Searchbar, RadioButton } from 'react-native-paper'
-import * as ImagePicker from 'expo-image-picker';
 import { ActivityIndicator, Colors } from 'react-native-paper';
 import CustomAlert from '../../Utils/CustomAlert'
 
@@ -17,12 +16,11 @@ import CustomAlert from '../../Utils/CustomAlert'
 
 export default function ViewStudentsComponent() {
 
-    const { userId, teamsMap } = React.useContext(Context);
+    const { userId, teamsMap } = useContext(Context);
     const [userIdValue] = userId;
     const [teamsNameMap, setMap] = teamsMap
 
 
-    // const [pickedImage, setPickedImage] = useState();
     const [studentsArr, setStudents] = useState([]);
     const [allTeams, setTeams] = useState([]);
     const [detailsVisible, setDetailsVisible] = useState(false);
