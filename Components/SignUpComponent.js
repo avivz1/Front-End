@@ -57,15 +57,15 @@ export default function SignUp({ navigation }) {
             alertRef.current.focus()
         }
     }
-    
-    const navigateToLogin = ()=>{
+
+    const navigateToLogin = () => {
         navigation.replace('Login')
     }
 
 
     return (
         <View style={styles.container}>
-            <CustomAlert oneBtn={alertOneBtn} selfHandle={isAlertHandle} callback={()=>navigateToLogin()} ref={alertRef} />
+            <CustomAlert oneBtn={alertOneBtn} selfHandle={isAlertHandle} callback={() => navigateToLogin()} ref={alertRef} />
 
             <Text style={styles.headline}>Sign Up</Text>
 
@@ -73,17 +73,18 @@ export default function SignUp({ navigation }) {
             {(errorsArr.length > 0 && errorsArr.includes('email')) && <Text>This is required.</Text>}
 
             <TextInput secureTextEntry={isPaasswordVisible} style={styles.text} onChangeText={onPasswordChange} placeholder='Password'
-                right={<TextInput.Icon name={isPaasswordVisible ? 'eye' : 'eye-off'} onPress={() => setIsPasswordVisible(!isPaasswordVisible)} />} />
+                right={<TextInput.Icon name={isPaasswordVisible ? 'eye-off' : 'eye'} onPress={() => setIsPasswordVisible(!isPaasswordVisible)} />} />
             {(errorsArr.length > 0 && errorsArr.includes('password')) && <Text>This is required.</Text>}
 
             <TextInput secureTextEntry={isPaasswordVisible} style={styles.text} onChangeText={onPasswordConfirmChange} placeholder='Confirm Password'
-                right={<TextInput.Icon name={isPaasswordVisible ? 'eye' : 'eye-off'} onPress={() => setIsPasswordVisible(!isPaasswordVisible)} />} />
+                right={<TextInput.Icon name={isPaasswordVisible ? 'eye-off' : 'eye'} onPress={() => setIsPasswordVisible(!isPaasswordVisible)} />} />
             {(errorsArr.length > 0 && errorsArr.includes('passwordConfirm')) && <Text>This is required.</Text>}
 
             <SecurityQuestionDropDown callback={(question) => setSecurityQ(question)} />
             {(errorsArr.length > 0 && errorsArr.includes('securityQ')) && <Text>This is required.</Text>}
 
-            <TextInput secureTextEntry={true} style={styles.text} onChangeText={(secA) => setSecurityA(secA)} placeholder='Security Answer'></TextInput>
+            <TextInput secureTextEntry={isPaasswordVisible} style={styles.text} onChangeText={(secA) => setSecurityA(secA)} placeholder='Security Answer'
+                right={<TextInput.Icon name={isPaasswordVisible ? 'eye-off' : 'eye'} onPress={() => setIsPasswordVisible(!isPaasswordVisible)} />} />
             {(errorsArr.length > 0 && errorsArr.includes('securityA')) && <Text>This is required.</Text>}
 
             <View>
