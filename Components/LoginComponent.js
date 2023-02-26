@@ -7,6 +7,7 @@ import { IP } from '../IP_Address';
 import textValidation from '../Services/TextValidation'
 import { TextInput } from 'react-native-paper'
 import CustomAlert from '../Utils/CustomAlert'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function LoginComponent({ navigation }) {
@@ -33,16 +34,20 @@ export default function LoginComponent({ navigation }) {
             setErrorsArr(input.data)
             return;
         } else {
-
             axios.post('http://' + IP + '/login', { inputEmail: email, inputPassword: password }).then((res) => {
-                if (res.data) {
-                    setUserId(res.data)
-                    navigation.replace('Home')
+                if (res.data.success) {
+                    AsyncStorage.setItem('jwtToken', res.data.data.token).then(() => {
+                        navigation.replace('Home')
+                    })
                 } else {
-                    alertRef.current.setMsg('User is not exists. Try again')
+                    alertRef.current.setMsg(res.data.message)
                     setIsAlertHandle(true)
                     alertRef.current.focus()
                 }
+            }).catch((err) => {
+                alertRef.current.setMsg(err.response.data.message)
+                setIsAlertHandle(true)
+                alertRef.current.focus()
             })
         }
     }
@@ -56,7 +61,7 @@ export default function LoginComponent({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <CustomAlert oneBtn={true} selfHandle={isAlertHandle} ref={alertRef} />
+            <CustomAlert oneBtn={true} callback={() => navigation.replace('Login')} selfHandle={isAlertHandle} ref={alertRef} />
 
             <Image style={styles.image} />
             <StatusBar style="auto" />

@@ -1,13 +1,14 @@
-import { useEffect,useState, } from 'react';
+import { useEffect, useState, } from 'react';
 import { PermissionsAndroid } from 'react-native';
 import XLSX from 'xlsx'
 import * as FileSystem from 'expo-file-system';
 import axios from 'axios';
 import { IP } from '../IP_Address';
 import * as IntentLauncher from 'expo-intent-launcher';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-let data=[]
+let data = []
 
 const excelProcess = async (userId) => {
     await dataForBackup(userId)
@@ -37,12 +38,15 @@ const excelProcess = async (userId) => {
     }
 };
 
-const dataForBackup = async(userIdValue) => {
-    axios.post('http://' + IP + '/login/backupdb', { userId: userIdValue }).then(res => {
-        if (res.data != false) {
-            data=res.data;
-        }
-    })
+const dataForBackup = async (userIdValue) => {
+    AsyncStorage.getItem('jwtToken').then((token => {
+
+        axios.post('http://' + IP + '/users/backupdb', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } }).then(res => {
+            if (res.data.success != false) {
+                data = res.data.data;
+            }
+        })
+    }))
 }
 
 const tryExcel = async () => {
@@ -113,4 +117,4 @@ const tryExcel = async () => {
 
 }
 
-module.exports = {excelProcess}
+module.exports = { excelProcess }

@@ -1,11 +1,11 @@
-import { useEffect, useState,useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { StyleSheet, Text, View, Button, Dimensions, TextInput, ScrollView } from 'react-native';
 import { Context } from '../ContextAPI/Context';
 import { IP } from '../IP_Address';
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
 import { ActivityIndicator, Colors } from 'react-native-paper';
-import DataToExcel from '../Services/DataToExcel'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -22,22 +22,31 @@ export default function HomeComponent() {
   const blueColors = ['rgb(0, 0, 80)', 'rgb(0, 0, 153)', 'rgb(0, 0, 255)', 'rgb(128, 128, 255)', 'rgb(204, 204, 255)']
   const screenWidth = Dimensions.get("window").width;
 
-
-
   useEffect(() => {
-    getdistributionbyTeam();
-    getTotalDivision();
-    getBeltsAverage()
-    getTotalDivisionByMonth();
+    getdistributionbyTeam().then(()=>getTotalDivision().then(()=>getBeltsAverage().then(()=>getTotalDivisionByMonth())))
+    // getTotalDivision();
+    // getBeltsAverage()
+    // getTotalDivisionByMonth();
   }, [])
 
   useEffect(() => {
-    if (barChartData && teamsPieData && practicePieData && beltsPieData) {
+    if (barChartData.length > 0 && teamsPieData && practicePieData && beltsPieData) {
       setIsLoading(false)
     } else {
       setIsLoading(true)
     }
   }, [barChartData, teamsPieData, practicePieData, beltsPieData])
+
+
+  const dataBarPie = {
+    labels: ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    datasets: [
+      {
+        data: barChartData,
+        color: (opacity = 1) => `rgba(200, 0, 0, ${opacity})`, // optional
+      }
+    ],
+  };
 
   const chartConfig = {
     backgroundGradientFrom: "#1E2923",
@@ -68,100 +77,101 @@ export default function HomeComponent() {
     useShadowColorFromDataset: false, // optional
   };
 
-  const dataBarPie = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    datasets: [
-      {
-        data: barChartData,
-        color: (opacity = 1) => `rgba(200, 0, 0, ${opacity})`, // optional
-      }
-    ],
-  };
+  const getBeltsAverage = async() => {
+    AsyncStorage.getItem('jwtToken').then((token => {
 
-  const getBeltsAverage = () => {
-    axios.post('http://' + IP + '/students/getBeltsAverage', { userId: userIdValue }).then(response => {
-      if (response.data.length > 0) {
-        let arr = []
-        response.data.forEach((colorObj, i) => {
-          if (colorObj[1] != 0) {
-            let obj = {
-              name: '% ' + colorObj[0],
-              population: Math.trunc(colorObj[1]),
-              color: colorObj[0],
-              legendFontSize: 15,
-              legendFontColor: "#7F7F7F",
+      axios.post('http://' + IP + '/students/getBeltsAverage', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } }).then(response => {
+        if (response.data.length > 0) {
+          let arr = []
+          response.data.forEach((colorObj, i) => {
+            if (colorObj[1] != 0) {
+              let obj = {
+                name: '% ' + colorObj[0],
+                population: Math.trunc(colorObj[1]),
+                color: colorObj[0],
+                legendFontSize: 15,
+                legendFontColor: "#7F7F7F",
+              }
+              arr.push(obj)
             }
-            arr.push(obj)
-          }
-        });
-        setBeltsPieData(arr)
-      }
-    })
-  }
-
-  const getTotalDivisionByMonth = () => {
-    axios.post('http://' + IP + '/practices/getTotalDivisionByMonth', { userId: userIdValue }).then(res => {
-      if (res.data) {
-        setBarChartData(res.data)
-      }
-    })
-  }
-
-  // Math.floor(Math.random() * 5)
-  const getdistributionbyTeam = () => {
-    axios.post('http://' + IP + '/teams/getdistributionbyTeam', { userId: userIdValue }).then(res => {
-      let isOnlyOneTeamWithoutStudents = res.data.length == 1 && res.data[0].studQuantity == 0
-      let arr = [];
-
-      if (isOnlyOneTeamWithoutStudents) {
-        setTeamsPieData([])
-
-      } else {
-
-        if (res.data.length > 0) {
-          res.data.forEach((data,i) => {
-            let obj = {
-              name: "%  " + data.name,
-              population: Math.trunc(data.studQuantity),
-              color: blueColors[i],
-              legendFontSize: 15,
-              legendFontColor: "#7F7F7F",
-            }
-            arr.push(obj)
           });
-          setTeamsPieData(arr)
+          setBeltsPieData(arr)
         }
-      }
-    })
+      })
+    }))
   }
 
-  const getTotalDivision = () => {
-    axios.post('http://' + IP + '/practices/getTotalDivision', { userId: userIdValue }).then(res => {
-      let arr1 = [];
-      if (res.data.present == 0 && res.data.notPresent == 0 && res.data.total == 0) {
-        setPracticePieData(arr1);
-      } else {
-
-        let obj = {
-          name: '%  Present',
-          population: Math.trunc((res.data.present / res.data.total) * 100),
-          color: 'rgb(180, 0, 0)',
-          legendFontSize: 15,
-          legendFontColor: "#7F7F7F",
+  const getTotalDivisionByMonth = async() => {
+    AsyncStorage.getItem('jwtToken').then((token => {
+      axios.post('http://' + IP + '/practices/getTotalDivisionByMonth', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } }).then(res => {
+        if (res.data) {
+          setBarChartData(res.data)
         }
-        let obj1 = {
-          name: '%  Not Present',
-          population: Math.trunc((res.data.notPresent / res.data.total) * 100),
-          color: 'rgb(0, 150, 0)',
-          legendFontSize: 15,
-          legendFontColor: "#7F7F7F",
-        }
-        arr1.push(obj)
-        arr1.push(obj1)
-        setPracticePieData(arr1)
-      }
+      })
+    }))
+  }
 
-    })
+  const getdistributionbyTeam = async() => {
+    AsyncStorage.getItem('jwtToken').then((token => {
+      axios.post('http://' + IP + '/teams/getdistributionbyTeam', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } }).then(res => {
+        console.log(res.data)
+        let isOnlyOneTeamWithoutStudents = res.data.length == 1 && res.data[0].studQuantity == 0
+        let arr = [];
+
+        if (isOnlyOneTeamWithoutStudents) {
+          setTeamsPieData([])
+
+        } else {
+
+          if (res.data.length > 0) {
+            res.data.forEach((data, i) => {
+              let obj = {
+                name: "%  " + data.name,
+                population: Math.trunc(data.studQuantity),
+                color: blueColors[i],
+                legendFontSize: 15,
+                legendFontColor: "#7F7F7F",
+              }
+              arr.push(obj)
+            });
+            setTeamsPieData(arr)
+          }
+        }
+      })
+    }))
+
+  }
+
+  const getTotalDivision = async() => {
+    AsyncStorage.getItem('jwtToken').then((token => {
+      axios.post('http://' + IP + '/practices/getTotalDivision', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } }).then(res => {
+        let arr1 = [];
+        if (res.data.present == 0 && res.data.notPresent == 0 && res.data.total == 0) {
+          setPracticePieData(arr1);
+        } else {
+
+          let obj = {
+            name: '%  Present',
+            population: Math.trunc((res.data.present / res.data.total) * 100),
+            color: 'rgb(0, 150, 0)',
+            legendFontSize: 15,
+            legendFontColor: "#7F7F7F",
+          }
+          let obj1 = {
+            name: '%  Not Present',
+            population: Math.trunc((res.data.notPresent / res.data.total) * 100),
+            color: 'rgb(180, 0, 0)',
+            legendFontSize: 15,
+            legendFontColor: "#7F7F7F",
+          }
+          arr1.push(obj)
+          arr1.push(obj1)
+          setPracticePieData(arr1)
+        }
+
+      })
+    }))
+
   }
 
 

@@ -29,7 +29,7 @@ export default function SettingsComponent() {
     const [isPaasswordVisible, setIsPasswordVisible] = useState(true)
     const { isInputOk } = textValidation;
     const [isAlertHandle, setIsAlertHandle] = useState(false)
-    const [alertOneBtn,setAlertOnebtn] = useState(true)
+    const [alertOneBtn, setAlertOnebtn] = useState(true)
     const alertRef = useRef();
 
     useEffect(() => {
@@ -38,12 +38,16 @@ export default function SettingsComponent() {
 
     const getUserDetails = () => {
         axios.post('http://' + IP + '/login/getuserdetails', { userId: userIdValue }).then(res => {
-            if (res.data) {
-                setUserEmail(res.data.Email)
-                setUserPassword(res.data.Password)
-                setUserSecurityA(res.data.SecurityAnswer)
-                setUserSecurityQ(res.data.SecurityQuestion)
+            if (res.status == 200) {
+                setUserEmail(res.data.data.Email)
+                setUserPassword(res.data.data.Password)
+                setUserSecurityA(res.data.data.SecurityAnswer)
+                setUserSecurityQ(res.data.data.SecurityQuestion)
             }
+        }).catch((error) => {
+            alertRef.current.setMsg(error.response.data.message)
+            setIsAlertHandle(true)
+            alertRef.current.focus()
         })
     }
 

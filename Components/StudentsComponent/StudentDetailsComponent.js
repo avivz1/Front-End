@@ -169,16 +169,6 @@ export default function StudentDetailsComponent(props) {
         alertRef.current.setMsg('Delete This Activity ? - ' +data.Event)
         setIsAlertHandle(false)
         alertRef.current.focus()
-
-
-        // Alert.alert('Delete This Activity?', data.Event, [
-        //     { text: 'Cancel' },
-        //     {
-        //         text: 'Ok', onPress: () => {
-        //             deleteActivity(data)
-        //         }
-        //     }
-        // ])
     }
 
     const openDialer = (phone) => {
@@ -199,7 +189,6 @@ export default function StudentDetailsComponent(props) {
         alertRef.current.setMsg('Somthing went wrong try again.')
         setIsAlertHandle(true)
         alertRef.current.focus()
-        // Alert.alert('somthing went wrong try again')
     }
 
     const callbackFromAlert = ()=>{

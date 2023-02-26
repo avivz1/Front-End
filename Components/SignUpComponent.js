@@ -5,7 +5,6 @@ import { StyleSheet, Text, View, Button, Alert } from 'react-native';
 import { IP } from '../IP_Address';
 import { Context } from '../ContextAPI/Context';
 import textValidation from '../Services/TextValidation.js'
-// import DropDownPicker from 'react-native-dropdown-picker';
 import SecurityQuestionDropDown from './SecurityQuestionPicker'
 import { TextInput } from 'react-native-paper'
 import CustomAlert from '../Utils/CustomAlert'
@@ -15,6 +14,7 @@ import CustomAlert from '../Utils/CustomAlert'
 
 export default function SignUp({ navigation }) {
 
+    
     const { userId } = useContext(Context);
     const [userIdValue, setUserId] = userId;
     const [email, onEmailChange] = useState("");
@@ -40,17 +40,21 @@ export default function SignUp({ navigation }) {
         if (password == passwordConfirm) {
             let userData = { inputEmail: email, inputPassword: password, securityA: securityA, securityQ: securityQ }
             axios.post('http://' + IP + '/login/signup', userData).then((res) => {
-                if (res.data) {
-                    setUserId(res.data)
+                if (res.data.success) {
+                    setUserId(res.data.data)
                     alertRef.current.setMsg('User Created')
                     setIsAlertHandle(false)
                     alertRef.current.focus()
                 } else {
-                    alertRef.current.setMsg('There Was a problem. Try Again')
+                    alertRef.current.setMsg(res.data.message)
                     setIsAlertHandle(true)
                     alertRef.current.focus()
                 }
-            });
+            }).catch((error)=>{
+                alertRef.current.setMsg(error.response.data.message)
+                setIsAlertHandle(true)
+                alertRef.current.focus()  
+            })
         } else {
             alertRef.current.setMsg('Passwords dont match. Try Again')
             setIsAlertHandle(true)
