@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useRef } from 'react';
 import axios from 'axios';
 import { StyleSheet, Text, View, Button, Dimensions, TextInput, ScrollView } from 'react-native';
 import { Context } from '../ContextAPI/Context';
@@ -6,6 +6,7 @@ import { IP } from '../IP_Address';
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
 import { ActivityIndicator, Colors } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustomAlert from '../Utils/CustomAlert'
 
 
 
@@ -21,12 +22,11 @@ export default function HomeComponent() {
   const redColors = ['rgb(179, 0, 0)', 'rgb(230, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 51, 51)', 'rgb(255, 102, 102)', 'rgb(255, 153, 153)']
   const blueColors = ['rgb(0, 0, 80)', 'rgb(0, 0, 153)', 'rgb(0, 0, 255)', 'rgb(128, 128, 255)', 'rgb(204, 204, 255)']
   const screenWidth = Dimensions.get("window").width;
+  const alertRef = useRef();
+
 
   useEffect(() => {
-    getdistributionbyTeam().then(()=>getTotalDivision().then(()=>getBeltsAverage().then(()=>getTotalDivisionByMonth())))
-    // getTotalDivision();
-    // getBeltsAverage()
-    // getTotalDivisionByMonth();
+    getDistributionByTeam().then(() => getTotalDivision().then(() => getBeltsAverage().then(() => getTotalDivisionByMonth())))
   }, [])
 
   useEffect(() => {
@@ -77,97 +77,128 @@ export default function HomeComponent() {
     useShadowColorFromDataset: false, // optional
   };
 
-  const getBeltsAverage = async() => {
+  const getBeltsAverage = async () => {
     AsyncStorage.getItem('jwtToken').then((token => {
 
       axios.post('http://' + IP + '/students/getBeltsAverage', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } }).then(response => {
-        if (response.data.length > 0) {
-          let arr = []
-          response.data.forEach((colorObj, i) => {
-            if (colorObj[1] != 0) {
-              let obj = {
-                name: '% ' + colorObj[0],
-                population: Math.trunc(colorObj[1]),
-                color: colorObj[0],
-                legendFontSize: 15,
-                legendFontColor: "#7F7F7F",
+        if (response.data.success == true) {
+
+          if (response.data.data.length > 0) {
+            let arr = []
+            response.data.data.forEach((colorObj, i) => {
+              if (colorObj[1] != 0) {
+                let obj = {
+                  name: '% ' + colorObj[0],
+                  population: Math.trunc(colorObj[1]),
+                  color: colorObj[0],
+                  legendFontSize: 15,
+                  legendFontColor: "#7F7F7F",
+                }
+                arr.push(obj)
               }
-              arr.push(obj)
-            }
-          });
-          setBeltsPieData(arr)
+            });
+            setBeltsPieData(arr)
+          }
+        } else {
+          alertRef.current.setMsg('error fetch data - beltsAvg')
+          alertRef.current.focus()
         }
+
+      }).catch((e) => {
+        alertRef.current.setMsg('error fetch data - beltsAvg')
+        alertRef.current.focus()
       })
     }))
   }
 
-  const getTotalDivisionByMonth = async() => {
+  const getTotalDivisionByMonth = async () => {
     AsyncStorage.getItem('jwtToken').then((token => {
       axios.post('http://' + IP + '/practices/getTotalDivisionByMonth', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } }).then(res => {
-        if (res.data) {
-          setBarChartData(res.data)
+        if (res.data.success == true) {
+          setBarChartData(res.data.data)
+        } else {
+          alertRef.current.setMsg('error fetch data - divisionByMonth')
+          alertRef.current.focus()
         }
+      }).catch((e) => {
+        alertRef.current.setMsg('error fetch data - divisionByMonth')
+        alertRef.current.focus()
       })
     }))
   }
 
-  const getdistributionbyTeam = async() => {
+  const getDistributionByTeam = async () => {
     AsyncStorage.getItem('jwtToken').then((token => {
       axios.post('http://' + IP + '/teams/getdistributionbyTeam', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } }).then(res => {
-        console.log(res.data)
-        let isOnlyOneTeamWithoutStudents = res.data.length == 1 && res.data[0].studQuantity == 0
-        let arr = [];
+        if (res.data.success == true) {
+          let data = res.data.data
+          let isOnlyOneTeamWithoutStudents = data.length == 1 && data[0].studQuantity == 0;
+          let arr = [];
+          if (isOnlyOneTeamWithoutStudents) {
+            setTeamsPieData([])
 
-        if (isOnlyOneTeamWithoutStudents) {
-          setTeamsPieData([])
-
-        } else {
-
-          if (res.data.length > 0) {
-            res.data.forEach((data, i) => {
-              let obj = {
-                name: "%  " + data.name,
-                population: Math.trunc(data.studQuantity),
-                color: blueColors[i],
-                legendFontSize: 15,
-                legendFontColor: "#7F7F7F",
-              }
-              arr.push(obj)
-            });
-            setTeamsPieData(arr)
+          } else {
+            if (data.length > 0) {
+              data.forEach((data, i) => {
+                let obj = {
+                  name: "%  " + data.name,
+                  population: Math.trunc(data.studQuantity),
+                  color: blueColors[i],
+                  legendFontSize: 15,
+                  legendFontColor: "#7F7F7F",
+                }
+                arr.push(obj)
+              });
+              setTeamsPieData(arr)
+            }
           }
+        } else {
+          alertRef.current.setMsg(res.data.message)
+          alertRef.current.focus()
         }
+
+      }).catch((e) => {
+        alertRef.current.setMsg('error fetch data - distributionTeam')
+        alertRef.current.focus()
       })
     }))
 
   }
 
-  const getTotalDivision = async() => {
+  const getTotalDivision = async () => {
     AsyncStorage.getItem('jwtToken').then((token => {
       axios.post('http://' + IP + '/practices/getTotalDivision', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } }).then(res => {
         let arr1 = [];
-        if (res.data.present == 0 && res.data.notPresent == 0 && res.data.total == 0) {
-          setPracticePieData(arr1);
-        } else {
+        if (res.data.success == true) {
+          if (res.data.data.present == 0 && res.data.data.notPresent == 0 && res.data.data.total == 0) {
+            setPracticePieData(arr1);
+          } else {
 
-          let obj = {
-            name: '%  Present',
-            population: Math.trunc((res.data.present / res.data.total) * 100),
-            color: 'rgb(0, 150, 0)',
-            legendFontSize: 15,
-            legendFontColor: "#7F7F7F",
+            let obj = {
+              name: '%  Present',
+              population: Math.trunc((res.data.data.present / res.data.data.total) * 100),
+              color: 'rgb(0, 150, 0)',
+              legendFontSize: 15,
+              legendFontColor: "#7F7F7F",
+            }
+            let obj1 = {
+              name: '%  Not Present',
+              population: Math.trunc((res.data.data.notPresent / res.data.data.total) * 100),
+              color: 'rgb(180, 0, 0)',
+              legendFontSize: 15,
+              legendFontColor: "#7F7F7F",
+            }
+            arr1.push(obj)
+            arr1.push(obj1)
+            setPracticePieData(arr1)
           }
-          let obj1 = {
-            name: '%  Not Present',
-            population: Math.trunc((res.data.notPresent / res.data.total) * 100),
-            color: 'rgb(180, 0, 0)',
-            legendFontSize: 15,
-            legendFontColor: "#7F7F7F",
-          }
-          arr1.push(obj)
-          arr1.push(obj1)
-          setPracticePieData(arr1)
+        } else {
+          alertRef.current.setMsg(res.data.message)
+          alertRef.current.focus()
         }
+      }).catch((e) => {
+        alertRef.current.setMsg('error fetch data - totalDevision')
+        alertRef.current.focus()
 
       })
     }))
@@ -178,6 +209,7 @@ export default function HomeComponent() {
   return (
 
     <View style={styles.container}>
+      <CustomAlert oneBtn={true} selfHandle={true} ref={alertRef} />
 
       {isLoading ? <ActivityIndicator type={'large'} animating={true} color={Colors.red800} />
         :

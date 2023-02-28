@@ -156,8 +156,9 @@ export default function ViewPracticesComponent() {
         { text: 'Cancel' },
         {
           text: 'Yes', onPress: () => {
-            axios.post('http://' + IP + '/practices/deletepractice', { practice: practiceObj }).then((res => {
+            axios.post('http://' + IP + '/practices/deletepractice', { practice: practiceObj },{ headers: { Authorization: `Bearer ${token}` } }).then((res => {
               if (res.data) {
+                //not finished
                 getAllPractices()
                 alertRef.current.setMsg('Practice has been deleted')
                 setIsAlertHandle(true)
