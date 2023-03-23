@@ -37,7 +37,7 @@ export default function SettingsComponent() {
     }, [])
 
     const getUserDetails = () => {
-        axios.post('http://' + IP + '/login/getuserdetails', { userId: userIdValue }).then(res => {
+        axios.post('http://' + IP + '/users/getuserdetails', { userId: userIdValue }).then(res => {
             if (res.status == 200) {
                 setUserEmail(res.data.data.Email)
                 setUserPassword(res.data.data.Password)

@@ -13,7 +13,6 @@ import { ActivityIndicator, Colors } from 'react-native-paper';
 import CustomAlert from '../../Utils/CustomAlert'
 
 
-
 export default function ViewPracticesComponent() {
 
   const { userId, teamsMap } = useContext(Context);

@@ -7,18 +7,24 @@ import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, Stacke
 import { ActivityIndicator, Colors } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomAlert from '../Utils/CustomAlert'
+import jwtService from '../Services/JwtAuth'
 
 
+export default function HomeComponent(navigation) {
 
-export default function HomeComponent() {
 
-  const { userId, teamsMap } = useContext(Context);
+  const { userId, teamsMap, token, route } = useContext(Context);
+  const [getRoute, setRoute] = route;
+  const [contextToken, setToken] = token
   const [userIdValue] = userId;
+  const { getToken, saveToken, deleteToken } = jwtService()
   const [teamsPieData, setTeamsPieData] = useState([])
   const [practicePieData, setPracticePieData] = useState([])
   const [barChartData, setBarChartData] = useState([])
   const [beltsPieData, setBeltsPieData] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isAlertSelfHandle, setIsAlertSelfHandle] = useState(false)
+
   const redColors = ['rgb(179, 0, 0)', 'rgb(230, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 51, 51)', 'rgb(255, 102, 102)', 'rgb(255, 153, 153)']
   const blueColors = ['rgb(0, 0, 80)', 'rgb(0, 0, 153)', 'rgb(0, 0, 255)', 'rgb(128, 128, 255)', 'rgb(204, 204, 255)']
   const screenWidth = Dimensions.get("window").width;
@@ -26,8 +32,19 @@ export default function HomeComponent() {
 
 
   useEffect(() => {
-    getDistributionByTeam().then(() => getTotalDivision().then(() => getBeltsAverage().then(() => getTotalDivisionByMonth())))
-  }, [])
+    // console.log(contextToken,getToken())
+    // getDistributionByTeam().then(() => getTotalDivision().then(() => getBeltsAverage().then(() => getTotalDivisionByMonth())))
+    if(contextToken){
+      getDistributionByTeam().then(()=>getTotalDivision())
+    }
+  }, [contextToken])
+
+  useEffect(() => {
+    if ((getRoute != undefined && getRoute != null) && contextToken == undefined) {
+      getRoute?.replace('Login')
+    }
+
+  }, [getRoute])
 
   useEffect(() => {
     if (barChartData.length > 0 && teamsPieData && practicePieData && beltsPieData) {
@@ -78,7 +95,8 @@ export default function HomeComponent() {
   };
 
   const getBeltsAverage = async () => {
-    AsyncStorage.getItem('jwtToken').then((token => {
+
+    AsyncStorage.getItem('jwt').then((token => {
 
       axios.post('http://' + IP + '/students/getBeltsAverage', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } }).then(response => {
         if (response.data.success == true) {
@@ -101,18 +119,33 @@ export default function HomeComponent() {
           }
         } else {
           alertRef.current.setMsg('error fetch data - beltsAvg')
+          setIsAlertSelfHandle(true)
           alertRef.current.focus()
         }
 
       }).catch((e) => {
         alertRef.current.setMsg('error fetch data - beltsAvg')
+        setIsAlertSelfHandle(true)
         alertRef.current.focus()
       })
     }))
   }
 
   const getTotalDivisionByMonth = async () => {
-    AsyncStorage.getItem('jwtToken').then((token => {
+    if (contextToken) {
+      let res = await axios.post('http://' + IP + '/practices/getTotalDivisionByMonth', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } })
+        .catch((error) => {
+          // console.log(error.response)
+        })
+
+
+      //if there is not token 
+    } else {
+      getRoute?.replace('Login')
+
+    }
+
+    AsyncStorage.getItem('jwt').then((token => {
       axios.post('http://' + IP + '/practices/getTotalDivisionByMonth', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } }).then(res => {
         if (res.data.success == true) {
           setBarChartData(res.data.data)
@@ -127,16 +160,25 @@ export default function HomeComponent() {
     }))
   }
 
+
   const getDistributionByTeam = async () => {
-    AsyncStorage.getItem('jwtToken').then((token => {
-      axios.post('http://' + IP + '/teams/getdistributionbyTeam', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } }).then(res => {
+      let res = await axios.get('http://' + IP + '/teams/getdistributionbyTeam', { headers: { Authorization: `Bearer ${contextToken}` } })
+        .catch(async (error) => {
+          if (error.response.status == 401 || error.response.status == 403) {
+            handleDeleteTokenLogOut()
+          }
+          if (error.response.status == 500) {
+              handleErrorFromRequest()
+          }
+        })
+
+      if (res != undefined && res!=null) {
         if (res.data.success == true) {
           let data = res.data.data
           let isOnlyOneTeamWithoutStudents = data.length == 1 && data[0].studQuantity == 0;
           let arr = [];
           if (isOnlyOneTeamWithoutStudents) {
             setTeamsPieData([])
-
           } else {
             if (data.length > 0) {
               data.forEach((data, i) => {
@@ -152,56 +194,78 @@ export default function HomeComponent() {
               setTeamsPieData(arr)
             }
           }
-        } else {
-          alertRef.current.setMsg(res.data.message)
-          alertRef.current.focus()
         }
-
-      }).catch((e) => {
-        alertRef.current.setMsg('error fetch data - distributionTeam')
-        alertRef.current.focus()
-      })
-    }))
-
+      }
   }
 
   const getTotalDivision = async () => {
-    AsyncStorage.getItem('jwtToken').then((token => {
-      axios.post('http://' + IP + '/practices/getTotalDivision', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } }).then(res => {
-        let arr1 = [];
-        if (res.data.success == true) {
-          if (res.data.data.present == 0 && res.data.data.notPresent == 0 && res.data.data.total == 0) {
-            setPracticePieData(arr1);
-          } else {
-
-            let obj = {
-              name: '%  Present',
-              population: Math.trunc((res.data.data.present / res.data.data.total) * 100),
-              color: 'rgb(0, 150, 0)',
-              legendFontSize: 15,
-              legendFontColor: "#7F7F7F",
-            }
-            let obj1 = {
-              name: '%  Not Present',
-              population: Math.trunc((res.data.data.notPresent / res.data.data.total) * 100),
-              color: 'rgb(180, 0, 0)',
-              legendFontSize: 15,
-              legendFontColor: "#7F7F7F",
-            }
-            arr1.push(obj)
-            arr1.push(obj1)
-            setPracticePieData(arr1)
+      let res = await axios.post('http://' + IP + '/practices/getTotalDivision', { userId: userIdValue }, { headers: { Authorization: `Bearer ${contextToken}` } })
+        .catch((error) => {
+          if (error.response.status == 401 || error.response.status == 403) {
+            handleDeleteTokenLogOut()
           }
-        } else {
-          alertRef.current.setMsg(res.data.message)
-          alertRef.current.focus()
-        }
-      }).catch((e) => {
-        alertRef.current.setMsg('error fetch data - totalDevision')
-        alertRef.current.focus()
+          if (error.response.status == 500) {
+              handleErrorFromRequest()
+          }
+        })
+        if(res!=undefined && res!=null){
+        let arr1 = [];
 
+      if (res.data.success == true) {
+        if (res.data.data.present == 0 && res.data.data.notPresent == 0 && res.data.data.total == 0) {
+          setPracticePieData(arr1);
+        } else {
+
+          let obj = {
+            name: '%  Present',
+            population: Math.trunc((res.data.data.present / res.data.data.total) * 100),
+            color: 'rgb(0, 150, 0)',
+            legendFontSize: 15,
+            legendFontColor: "#7F7F7F",
+          }
+          let obj1 = {
+            name: '%  Not Present',
+            population: Math.trunc((res.data.data.notPresent / res.data.data.total) * 100),
+            color: 'rgb(180, 0, 0)',
+            legendFontSize: 15,
+            legendFontColor: "#7F7F7F",
+          }
+          arr1.push(obj)
+          arr1.push(obj1)
+          setPracticePieData(arr1)
+        }
+
+      } else {
+        alertRef.current.setMsg(res.data.message)
+        setIsAlertSelfHandle(true)
+        alertRef.current.focus()
+      }
+    }
+
+
+  }
+
+  const handleErrorFromRequest = ()=>{
+    if (alertRef.current != null && alertRef.current != undefined) {
+      alertRef.current.setMsg('error fetch data - try refresh')
+      setIsAlertSelfHandle(true)
+      alertRef.current.focus()
+    }
+  }
+
+  const handleDeleteTokenLogOut = () => {
+    deleteToken().then(() => getRoute?.replace('Login'))
+      //if problem try to delete again
+      .catch(async () => {
+        await AsyncStorage.removeItem('jwt')
+        await setToken(null)
+        getRoute?.replace('Login')
       })
-    }))
+
+  }
+
+  const eventFromAlert = () => {
+    getRoute?.replace('Login')
 
   }
 
@@ -209,7 +273,7 @@ export default function HomeComponent() {
   return (
 
     <View style={styles.container}>
-      <CustomAlert oneBtn={true} selfHandle={true} ref={alertRef} />
+      <CustomAlert oneBtn={true} selfHandle={isAlertSelfHandle} ref={alertRef} callback={eventFromAlert} />
 
       {isLoading ? <ActivityIndicator type={'large'} animating={true} color={Colors.red800} />
         :
@@ -316,3 +380,65 @@ const styles = StyleSheet.create({
   }
 })
 
+
+
+
+
+
+
+            // deleteToken().then(() => getRoute?.replace('Login'))
+            //   .catch(async () => {
+            //     await AsyncStorage.removeItem('jwt')
+            //     getRoute?.replace('Login')
+            //   })
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+
+    // AsyncStorage.getItem('jwt').then((token => {
+    //   axios.post('http://' + IP + '/practices/getTotalDivision', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } }).then(res => {
+        // let arr1 = [];
+    //     if (res.data.success == true) {
+    //       if (res.data.data.present == 0 && res.data.data.notPresent == 0 && res.data.data.total == 0) {
+    //         setPracticePieData(arr1);
+    //       } else {
+
+    //         let obj = {
+    //           name: '%  Present',
+    //           population: Math.trunc((res.data.data.present / res.data.data.total) * 100),
+    //           color: 'rgb(0, 150, 0)',
+    //           legendFontSize: 15,
+    //           legendFontColor: "#7F7F7F",
+    //         }
+    //         let obj1 = {
+    //           name: '%  Not Present',
+    //           population: Math.trunc((res.data.data.notPresent / res.data.data.total) * 100),
+    //           color: 'rgb(180, 0, 0)',
+    //           legendFontSize: 15,
+    //           legendFontColor: "#7F7F7F",
+    //         }
+    //         arr1.push(obj)
+    //         arr1.push(obj1)
+    //         setPracticePieData(arr1)
+    //       }
+    //     } else {
+    //       alertRef.current.setMsg(res.data.message)
+    //       alertRef.current.focus()
+    //     }
+    //   }).catch((e) => {
+    //     alertRef.current.setMsg('error fetch data - totalDevision')
+    //     alertRef.current.focus()
+
+    //   })
+    // }))

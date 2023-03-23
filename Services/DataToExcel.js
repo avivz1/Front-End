@@ -39,7 +39,7 @@ const excelProcess = async (userId) => {
 };
 
 const dataForBackup = async (userIdValue) => {
-    AsyncStorage.getItem('jwtToken').then((token => {
+    AsyncStorage.getItem('jwt').then((token => {
 
         axios.post('http://' + IP + '/users/backupdb', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } }).then(res => {
             if (res.data.success != false) {

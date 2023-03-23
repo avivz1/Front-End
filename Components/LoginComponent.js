@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { useState, useContext, useRef } from "react";
+import { useState, useContext, useRef, useEffect } from "react";
 import { StyleSheet, Text, View, Image, Button, Alert, TouchableOpacity } from "react-native";
 import axios from 'axios';
 import { Context } from '../ContextAPI/Context';
@@ -8,12 +8,15 @@ import textValidation from '../Services/TextValidation'
 import { TextInput } from 'react-native-paper'
 import CustomAlert from '../Utils/CustomAlert'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import jwtService from '../Services/JwtAuth'
 
 
 export default function LoginComponent({ navigation }) {
 
 
-    const { userId } = useContext(Context);
+    const { userId, token } = useContext(Context);
+    // const [getToken, setToken] = token
+    const { getToken, saveToken, deleteToken } = jwtService()
     const [userIdValue, setUserId] = userId;
     const [email, setEmail] = useState('a');
     const [password, setPassword] = useState('1');
@@ -23,6 +26,11 @@ export default function LoginComponent({ navigation }) {
     const [isAlertHandle, setIsAlertHandle] = useState(false)
     const alertRef = useRef();
 
+    useEffect(() => {
+        //-request to api if the token is verify.
+        //-get token from AsyncStorage
+        //-if user have VALID token navigate to home
+    })
 
     const onSignUpPress = () => {
         navigation.navigate('SignUp');
@@ -36,16 +44,19 @@ export default function LoginComponent({ navigation }) {
         } else {
             axios.post('http://' + IP + '/login', { inputEmail: email, inputPassword: password }).then((res) => {
                 if (res.data.success) {
-                    AsyncStorage.setItem('jwtToken', res.data.data.token).then(() => {
-                        navigation.replace('Home')
-                    })
+                    saveToken(res.data.data.token).then(() => navigation.replace('Home'))
+                        .catch(() => {
+                            alertRef.current.setMsg('there was a problem try login again.')
+                            setIsAlertHandle(true)
+                            alertRef.current.focus()
+                        })
                 } else {
                     alertRef.current.setMsg(res.data.message)
                     setIsAlertHandle(true)
                     alertRef.current.focus()
                 }
             }).catch((err) => {
-                alertRef.current.setMsg(err.response.data.message)
+                alertRef.current.setMsg('Problem')
                 setIsAlertHandle(true)
                 alertRef.current.focus()
             })
@@ -54,9 +65,7 @@ export default function LoginComponent({ navigation }) {
 
 
     const handeleForgotPassword = () => {
-        // setForgotPasswordFlag(true)
         navigation.navigate('ForgotPassword');
-
     }
 
     return (
@@ -68,7 +77,7 @@ export default function LoginComponent({ navigation }) {
             <View style={styles.inputView}>
                 <TextInput
                     style={styles.TextInput}
-                    placeholder="Email."
+                    placeholder="Email"
                     placeholderTextColor="#003f5c"
                     onChangeText={(email) => setEmail(email)}
                 />

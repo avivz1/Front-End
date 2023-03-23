@@ -13,7 +13,7 @@ export default function ForgotPasswordComponent({ navigation }) {
     const { isInputOk } = textValidation;
     const [userCredentials, setUserCredentials] = useState({ securityA: '', securityQ: '', userEmail: '' })
     const [errorsArr, setErrorsArr] = useState([])
-    const [isAlertHandle,setIsAlertHandle] = useState(false)
+    const [isAlertHandle, setIsAlertHandle] = useState(false)
     const alertRef = useRef();
 
     const submit = () => {
@@ -27,13 +27,14 @@ export default function ForgotPasswordComponent({ navigation }) {
                     alertRef.current.setMsg('Your password is ' + res.data)
                     setIsAlertHandle(false)
                     alertRef.current.focus()
-    
+
                 } else {
                     alertRef.current.setMsg('There was a problem. try again')
                     setIsAlertHandle(true)
                     alertRef.current.focus()
                 }
-            })
+            }
+            )
         }
     }
 
@@ -47,7 +48,7 @@ export default function ForgotPasswordComponent({ navigation }) {
 
     return (
         <View style={[styles.container]}>
-            <CustomAlert oneBtn={true}  selfHandle={isAlertHandle} callback={navigateToLogin} ref={alertRef} />
+            <CustomAlert oneBtn={true} selfHandle={isAlertHandle} callback={navigateToLogin} ref={alertRef} />
             <Text style={[styles.mainHeadLines]}>Forget Password </Text>
 
             <Text style={[styles.smallHeadLines]} >Please enter your email:</Text>

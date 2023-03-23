@@ -11,6 +11,7 @@ export default function App() {
 
     <Provider store={store}>
     <ContextProvider>
+      
       <Navigator/>
     </ContextProvider>
     </Provider>

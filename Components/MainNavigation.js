@@ -1,13 +1,16 @@
 import { BottomNavigation } from 'react-native-paper'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import HomeComponent from './HomeComponent'
 import StudentsComponent from './StudentsComponent/ViewStudentsComponent'
 import TeamsComponent from './TeamsComponents/ViewTeamsComponent'
 import PracticesComponent from './PracticesComponents/ViewPracticesComponent'
+import { Context } from '../ContextAPI/Context';
 
 
-export default function MainNavigation() {
+export default function MainNavigation(navigation) {
 
+    const { route } = useContext(Context);
+    const [getRoute, setRoute] = route
     const [index, setIndex] = useState(0);
     const [routes] = useState([
         { key: 'Home', title: 'Home', icon: 'home' },
@@ -16,6 +19,13 @@ export default function MainNavigation() {
         { key: 'Practices', title: 'Practices', icon: { uri: 'https://icon-library.com/images/judo-icon/judo-icon-5.jpg' } },
     ])
 
+    useEffect(()=>{
+        setRoute(navigation.nav.navigation)
+    },[])
+
+
+
+    // props={navigation}
     const HomeRoute = () => <HomeComponent />
     const StudentsRoute = () => <StudentsComponent />
     const TeamsRoute = () => <TeamsComponent />
