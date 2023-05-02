@@ -35,8 +35,9 @@ export default function HomeComponent(navigation) {
     // console.log(contextToken,getToken())
     // getDistributionByTeam().then(() => getTotalDivision().then(() => getBeltsAverage().then(() => getTotalDivisionByMonth())))
     if(contextToken){
-      getDistributionByTeam().then(()=>getTotalDivision().then(()=>getTotalDivisionByMonth()))
+      getDistributionByTeam().then(()=>getTotalDivision().then(()=>getTotalDivisionByMonth().then(()=>getBeltsAverage())))
       // getTotalDivisionByMonth();
+      
     }
   }, [contextToken])
 
@@ -97,14 +98,23 @@ export default function HomeComponent(navigation) {
 
   const getBeltsAverage = async () => {
 
-    AsyncStorage.getItem('jwt').then((token => {
+    if(contextToken){
+      let res = await axios.post('http://' + IP + '/students/getBeltsAverage', { userId: userIdValue }, { headers: { Authorization: `Bearer ${contextToken}` } })
+      .catch((error)=>{
+        if (error.response.status == 401 || error.response.status == 403) {
+          handleDeleteTokenLogOut()
+        }
+        if (error.response.status == 500) {
+            handleErrorFromRequest()
+        }
+      })
 
-      axios.post('http://' + IP + '/students/getBeltsAverage', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } }).then(response => {
-        if (response.data.success == true) {
+      if(res!=null && res!=undefined){
+        if (res.data.success == true) {
 
-          if (response.data.data.length > 0) {
+          if (res.data.data.length > 0) {
             let arr = []
-            response.data.data.forEach((colorObj, i) => {
+            res.data.data.forEach((colorObj, i) => {
               if (colorObj[1] != 0) {
                 let obj = {
                   name: '% ' + colorObj[0],
@@ -123,13 +133,12 @@ export default function HomeComponent(navigation) {
           setIsAlertSelfHandle(true)
           alertRef.current.focus()
         }
+      }
+     
+    }else{
+      getRoute?.replace('Login')
+    }
 
-      }).catch((e) => {
-        alertRef.current.setMsg('error fetch data - beltsAvg')
-        setIsAlertSelfHandle(true)
-        alertRef.current.focus()
-      })
-    }))
   }
 
   const getTotalDivisionByMonth = async () => {
@@ -160,19 +169,6 @@ export default function HomeComponent(navigation) {
 
     }
 
-    // AsyncStorage.getItem('jwt').then((token => {
-    //   axios.post('http://' + IP + '/practices/getTotalDivisionByMonth', { userId: userIdValue }, { headers: { Authorization: `Bearer ${token}` } }).then(res => {
-    //     if (res.data.success == true) {
-    //       setBarChartData(res.data.data)
-    //     } else {
-    //       alertRef.current.setMsg('error fetch data - divisionByMonth')
-    //       alertRef.current.focus()
-    //     }
-    //   }).catch((e) => {
-    //     alertRef.current.setMsg('error fetch data - divisionByMonth')
-    //     alertRef.current.focus()
-    //   })
-    // }))
   }
 
   const getDistributionByTeam = async () => {
