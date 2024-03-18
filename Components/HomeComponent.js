@@ -25,6 +25,7 @@ export default function HomeComponent(navigation) {
   const [isLoading, setIsLoading] = useState(true)
   const [isAlertSelfHandle, setIsAlertSelfHandle] = useState(false)
 
+  
   const redColors = ['rgb(179, 0, 0)', 'rgb(230, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 51, 51)', 'rgb(255, 102, 102)', 'rgb(255, 153, 153)']
   const blueColors = ['rgb(0, 0, 80)', 'rgb(0, 0, 153)', 'rgb(0, 0, 255)', 'rgb(128, 128, 255)', 'rgb(204, 204, 255)']
   const screenWidth = Dimensions.get("window").width;
@@ -41,12 +42,13 @@ export default function HomeComponent(navigation) {
     }
   }, [contextToken])
 
-  useEffect(() => {
-    if ((getRoute != undefined && getRoute != null) && contextToken == undefined) {
-      getRoute?.replace('Login')
-    }
+  // useEffect(() => {
+  //   if ((getRoute != undefined && getRoute != null) && contextToken == undefined) {
+  //     console.log('UseEffect route to login')
+  //     getRoute?.replace('Login')
+  //   }
 
-  }, [getRoute])
+  // }, [getRoute])
 
   useEffect(() => {
     if (barChartData.length > 0 && teamsPieData && practicePieData && beltsPieData) {
@@ -97,9 +99,7 @@ export default function HomeComponent(navigation) {
   };
 
   const getBeltsAverage = async () => {
-
-    if(contextToken){
-      let res = await axios.post('http://' + IP + '/students/getBeltsAverage', { userId: userIdValue }, { headers: { Authorization: `Bearer ${contextToken}` } })
+      let res = await axios.get('http://' + IP + '/students/getBeltsAverage',{ headers: { Authorization: `Bearer ${contextToken}` } })
       .catch((error)=>{
         if (error.response.status == 401 || error.response.status == 403) {
           handleDeleteTokenLogOut()
@@ -135,15 +135,12 @@ export default function HomeComponent(navigation) {
         }
       }
      
-    }else{
-      getRoute?.replace('Login')
-    }
+    
 
   }
 
   const getTotalDivisionByMonth = async () => {
-    if (contextToken) {
-      let res = await axios.post('http://' + IP + '/practices/getTotalDivisionByMonth', { userId: userIdValue }, { headers: { Authorization: `Bearer ${contextToken}` } })
+      let res = await axios.get('http://' + IP + '/practices/getTotalDivisionByMonth', { headers: { Authorization: `Bearer ${contextToken}` } })
         .catch((error) => {
           if (error.response.status == 401 || error.response.status == 403) {
             handleDeleteTokenLogOut()
@@ -163,11 +160,7 @@ export default function HomeComponent(navigation) {
         }
       }
 
-      //if there is not token 
-    } else {
-      getRoute?.replace('Login')
-
-    }
+   
 
   }
 
@@ -209,7 +202,7 @@ export default function HomeComponent(navigation) {
   }
 
   const getTotalDivision = async () => {
-      let res = await axios.post('http://' + IP + '/practices/getTotalDivision', { userId: userIdValue }, { headers: { Authorization: `Bearer ${contextToken}` } })
+      let res = await axios.get('http://' + IP + '/practices/getTotalDivision', { headers: { Authorization: `Bearer ${contextToken}` } })
         .catch((error) => {
           if (error.response.status == 401 || error.response.status == 403) {
             handleDeleteTokenLogOut()
@@ -264,12 +257,12 @@ export default function HomeComponent(navigation) {
   }
 
   const handleDeleteTokenLogOut = () => {
-    deleteToken().then(() => getRoute?.replace('Login'))
+    deleteToken().then(() =>getRoute?.replace('Login'))
       //if problem try to delete again
       .catch(async () => {
         await AsyncStorage.removeItem('jwt')
         await setToken(null)
-        getRoute?.replace('Login')
+
       })
 
   }

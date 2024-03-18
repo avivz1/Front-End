@@ -27,6 +27,8 @@ export default function LoginComponent({ navigation }) {
     const alertRef = useRef();
 
     useEffect(() => {
+        let token = getToken();
+        
         //-request to api if the token is verify.
         //-get token from AsyncStorage
         //-if user have VALID token navigate to home
